@@ -16,7 +16,7 @@ config.db = {
   port: 5432,
   name: 'dismember',
   username: 'yourUsername',
-  password: 'yourPassword'
+  password: 'yourPassword',
 
   pool: {
     maxConnections: 5,
