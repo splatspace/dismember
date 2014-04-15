@@ -33,7 +33,7 @@ function getBaseUri(req, dropPort) {
       host = host.substring(0, i);
     }
   }
-  return req.protocol + '://' + host;
+  return req.protocol + '://' + host + config.uriPathPrefix;
 }
 
 function getSubmitUri(req) {
