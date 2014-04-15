@@ -91,7 +91,5 @@ module.exports = function (sequelize, DataTypes) {
     amount_charged_back: {
       type: DataTypes.DECIMAL(10, 2)
     }
-  }, {
-    underscored: true
   });
 }

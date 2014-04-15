@@ -65,7 +65,5 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     notes: DataTypes.TEXT
-  }, {
-    underscored: true
   });
 }

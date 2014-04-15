@@ -1,8 +1,19 @@
+var Q = require('q');
 var Sequelize = require('sequelize');
 
-var sequelize = new Sequelize('dismember', 'splat', 'splat', {
-  dialect: "postgres",
-  port: 5432
+var config = require('../config/config');
+
+var sequelize = new Sequelize(config.db.name, config.db.username, config.db.password, {
+  dialect: config.db.dialect,
+  host: config.db.host,
+  port: config.db.port,
+  pool: config.db.pool,
+
+  define: {
+    underscored: true,
+    charset: 'utf8',
+    timestamps: true
+  }
 })
 
 var Member = sequelize.import('./models/member');
@@ -23,21 +34,28 @@ Payment.hasMany(Security);
 // Some payments are donations
 Payment.hasMany(Donation);
 
-// Hack to add indexes until Sequelize gets support for them in models
+/**
+ * Hack to add indexes until Sequelize gets support for them in models.
+ * @returns a promise that resolves when the index is created
+ */
 function createIndexIfNotExists(table, attributes, options) {
   var qi = sequelize.getQueryInterface();
-  qi.showIndex(table)
-    .then(function(indexes) {
+  return qi.showIndex(table)
+    .then(function (indexes) {
       // See if it exists
       var exists = false;
-      indexes.forEach(function(index) {
+      indexes.forEach(function (index) {
         if (index.name === options.indexName) {
           exists = true;
         }
       });
 
       // Not found, create it
-      return exists ? true : qi.addIndex(table, attributes, options);
+      if (!exists) {
+        return qi.addIndex(table, attributes, options);
+      }
+
+      return new Q();
     });
 }
 
@@ -46,8 +64,12 @@ function createIndexIfNotExists(table, attributes, options) {
  */
 function sync() {
   return sequelize.sync({force: false})
-    .then(createIndexIfNotExists('payments', ['method'], { indexName: 'payments_method_idx' }))
-    .then(createIndexIfNotExists('payments', ['reference'], { indexName: 'payments_reference_idx' }));
+    .then(function () {
+      return createIndexIfNotExists('payments', ['method'], { indexName: 'payments_method_idx' });
+    })
+    .then(function () {
+      return createIndexIfNotExists('payments', ['reference'], { indexName: 'payments_reference_idx' });
+    });
 }
 
 module.exports = {

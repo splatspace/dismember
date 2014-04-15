@@ -1,6 +1,30 @@
 var config = {}
 
 /**
+ * @typedef {object} DbConfig
+ * @proeprty {string} dialect the Sequelize dialect ('postgres', etc.)
+ * @property {string} host the host name to connect to
+ * @property {number} port the port to connect to
+ * @property {string} name the name of the database to use
+ * @property {string} username the username to authenticate as
+ * @property {string} password the password to use to authenticate
+ * @property {object} pool connection pool options
+ */
+config.db = {
+  dialect: 'postgres',
+  host: 'localhost',
+  port: 5432,
+  name: 'dismember',
+  username: 'yourUsername',
+  password: 'yourPassword'
+
+  pool: {
+    maxConnections: 5,
+    maxIdleTime: 30
+  }
+};
+
+/**
  * @typedef {object} WePayConfig
  * @property {string} environment the WePay environment to connect to ('prod' or 'stage')
  * @property {string} clientId the application's client ID

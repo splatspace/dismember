@@ -23,7 +23,5 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     notes: DataTypes.TEXT
-  }, {
-    underscored: true
   });
 }
