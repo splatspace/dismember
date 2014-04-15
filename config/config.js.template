@@ -1,5 +1,11 @@
 var config = {}
 
+// A URI path string to prepend to links to static resources (CSS, Javascript, etc.).
+// Set this when hosting the application somewhere other than at the root of a
+// domain name (for example, behind a reverse proxy that proxies from
+// 'http://example.com/dismember').
+config.uriPathPrefix = '';
+
 /**
  * @typedef {object} DbConfig
  * @proeprty {string} dialect the Sequelize dialect ('postgres', etc.)

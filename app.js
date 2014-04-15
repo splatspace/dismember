@@ -28,6 +28,10 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+// Settings for all views
+
+app.locals.uriPathPrefix = config.uriPathPrefix;
+
 // This is nasty, but there's no easy way to call setMaxListeners on the actual EventEmitter
 // instance (the restler request) inside restler-q, so we set it globally.
 
