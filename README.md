@@ -1,4 +1,3 @@
-dismember
-=========
+# dismember
 
-Simple membership and payments web application
+A simple membership and payments web application for Splat Space.

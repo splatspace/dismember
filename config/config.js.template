@@ -1,0 +1,25 @@
+var config = {}
+
+/**
+ * @typedef {object} WePayConfig
+ * @property {string} environment the WePay environment to connect to ('prod' or 'stage')
+ * @property {string} clientId the application's client ID
+ * @property {string} clientSecret the application's client secret
+ */
+config.wePayApi = {
+  environment: 'prod', // 'stage' or 'prod'
+  clientId: '12345',
+  clientSecret: '123abc456'
+};
+
+/**
+ * @typedef {object} WePayAccount
+ * @property {string} accountId the account to transfer money to and from
+ * @property {string} accessToken an access token that grants us access to the account
+ */
+config.wePayAccount = {
+  accountId: '56789',
+  accessToken: 'PRODUCTION_a7654b912351a76236x61887fg34827g87fgi4t5453ggb74oq74ibf7at74gfab'
+}
+
+module.exports = config;
