@@ -47,28 +47,30 @@ app.post('/wepay/ipn', wePayRoute.ipn);
 
 // API Routes
 
-var membersApi = require('./api/members');
-app.post('/api/members', function (req, res) {
-  membersApi.create(req, res);
-});
-app.get('/api/members/:id', function (req, res) {
-  membersApi.get(req, res, req.params.id);
-});
-app.get('/api/members', function (req, res) {
-  membersApi.list(req, res);
-});
+// TODO enable when we add authentication
 
-
-var paymentsApi = require('./api/payments');
-app.post('/api/payments', function (req, res) {
-  paymentsApi.create(req, res);
-});
-app.get('/api/payments/:id', function (req, res) {
-  paymentsApi.get(req, res, req.params.id);
-});
-app.get('/api/payments', function (req, res) {
-  paymentsApi.list(req, res);
-});
+//var membersApi = require('./api/members');
+//app.post('/api/members', function (req, res) {
+//  membersApi.create(req, res);
+//});
+//app.get('/api/members/:id', function (req, res) {
+//  membersApi.get(req, res, req.params.id);
+//});
+//app.get('/api/members', function (req, res) {
+//  membersApi.list(req, res);
+//});
+//
+//
+//var paymentsApi = require('./api/payments');
+//app.post('/api/payments', function (req, res) {
+//  paymentsApi.create(req, res);
+//});
+//app.get('/api/payments/:id', function (req, res) {
+//  paymentsApi.get(req, res, req.params.id);
+//});
+//app.get('/api/payments', function (req, res) {
+//  paymentsApi.list(req, res);
+//});
 
 db.sequelize.authenticate()
   .then(db.sync)
