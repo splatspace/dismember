@@ -71,7 +71,7 @@ block content
 
     function authorize(amount, description, purpose) {
       var payFee = false;
-      window.location.href = '/wepay/authorize?amount=' + encodeURIComponent(amount)
+      window.location.href = '#{uriPathPrefix}/wepay/authorize?amount=' + encodeURIComponent(amount)
       + '&description=' + encodeURIComponent(description)
       + '&purpose=' + encodeURIComponent(purpose)
       + '&payFee=' + payFee;
