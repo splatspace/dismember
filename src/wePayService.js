@@ -103,8 +103,8 @@ function createOrUpdatePayment(checkout) {
         return payment.updateAttributes(paymentAttrs);
       }
     })
-    .except(function(err) {
-      console.error('Error creating or updating payment for checkout: ' + checkout);
+    .catch(function(err) {
+      console.error('Error creating or updating payment for checkout ' + checkout.id + ': ' + err);
     });
 }
 
