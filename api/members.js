@@ -1,10 +1,27 @@
+var Q = require('q');
 var db = require('../src/db');
 
 exports.create = function (req, res) {
   var member = req.body;
-  db.Member.create(member)
-    .success(function (member) {
+
+  var dbMember = db.Member.build(member);
+
+  // Manual validation pass because we need to hash the password
+  var validation = dbMember.validate();
+  if (validation) {
+    res
+      .status(403)
+      .send(validation);
+    return;
+  }
+
+  dbMember.setPassword(member.password)
+    .then(function (hash) {
+      return dbMember.save();
+    })
+    .then(function (member) {
       if (member) {
+        member.hidePrivateProperties();
         res
           .status(201)
           .set('Location', req.path + '/' + member.id)
@@ -15,7 +32,7 @@ exports.create = function (req, res) {
           .send();
       }
     })
-    .failure(function (err) {
+    .catch(function (err) {
       res
         .status(403)
         .send(err);
@@ -33,6 +50,7 @@ exports.get = function (req, res, id) {
   db.Member.find({where: where})
     .success(function (member) {
       if (member) {
+        member.hidePrivateProperties();
         res.status(200).send(member);
       } else {
         res.status(404).send();
@@ -46,6 +64,9 @@ exports.get = function (req, res, id) {
 exports.list = function (req, res) {
   db.Member.findAll()
     .success(function (members) {
+      members.forEach(function (member) {
+        member.hidePrivateProperties();
+      });
       res.status(200).send(members);
     })
     .failure(function (err) {

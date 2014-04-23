@@ -15,6 +15,9 @@
     "restler-q": "0.0.3",
     "q": "^1.0.1",
     "node-schedule": "^0.1.13",
-    "moment": "^2.6.0"
+    "moment": "^2.6.0",
+    "passport": "^0.2.0",
+    "passport-local": "^1.0.0",
+    "bcrypt": "^0.7.7"
   }
 }

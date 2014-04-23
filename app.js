@@ -3,10 +3,12 @@ var http = require('http');
 var path = require('path');
 var _ = require('underscore');
 var Q = require('q');
+var passport = require('passport');
 
 var config = require('./config/config');
 var db = require('./src/db');
 var jobs = require('./src/jobs');
+var auth = require('./src/auth');
 
 Q.longStackSupport = true;
 
@@ -21,6 +23,10 @@ app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
+app.use(express.cookieParser());
+app.use(express.session({secret: '64efcd95c7dd0749a09d76a93150560fac1b279fd6e90aef864d1c39ea079d19'}));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -49,16 +55,16 @@ app.post('/wepay/ipn', wePayRoute.ipn);
 
 // TODO enable when we add authentication
 
-//var membersApi = require('./api/members');
-//app.post('/api/members', function (req, res) {
-//  membersApi.create(req, res);
-//});
-//app.get('/api/members/:id', function (req, res) {
-//  membersApi.get(req, res, req.params.id);
-//});
-//app.get('/api/members', function (req, res) {
-//  membersApi.list(req, res);
-//});
+var membersApi = require('./api/members');
+app.post('/api/members', function (req, res) {
+  membersApi.create(req, res);
+});
+app.get('/api/members/:id', function (req, res) {
+  membersApi.get(req, res, req.params.id);
+});
+app.get('/api/members', function (req, res) {
+  membersApi.list(req, res);
+});
 //
 //
 //var paymentsApi = require('./api/payments');
@@ -75,6 +81,9 @@ app.post('/wepay/ipn', wePayRoute.ipn);
 db.sequelize.authenticate()
   .then(db.sync)
   .then(jobs.schedule)
+  .then(function() {
+    auth.configurePassport(passport, db);
+  })
   .then(function () {
     var deferred = Q.defer();
     var server = http.createServer(app);

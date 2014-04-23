@@ -6,6 +6,11 @@ var config = {}
 // 'http://example.com/dismember').
 config.uriPathPrefix = '';
 
+// The secret used to sign the session cookie.  Each application should use a
+// different value.  The output of `head -100 /dev/urandom | sha256sum` makes a
+// good secret.
+config.sessionCookieSecret = 'your secret here';
+
 /**
  * @typedef {object} DbConfig
  * @proeprty {string} dialect the Sequelize dialect ('postgres', etc.)
