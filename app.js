@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(express.cookieParser());
-app.use(express.session({secret: '64efcd95c7dd0749a09d76a93150560fac1b279fd6e90aef864d1c39ea079d19'}));
+app.use(express.session({secret: config.sessionCookieSecret}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(app.router);
@@ -50,6 +50,12 @@ app.get('/wepay', wePayRoute.index);
 app.get('/wepay/authorize', wePayRoute.authorize);
 app.get('/wepay/submit', wePayRoute.submit);
 app.post('/wepay/ipn', wePayRoute.ipn);
+
+var adminRoute = require('./routes/admin');
+app.get('/admin', adminRoute.index);
+app.get('/admin/login', adminRoute.login);
+app.post('/admin/authenticate', passport.authenticate('local', { successRedirect: '/admin', failureRedirect: '/admin/login?failed=true' }));
+app.get('/admin/logout', adminRoute.logout);
 
 // API Routes
 

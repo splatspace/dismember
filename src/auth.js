@@ -54,8 +54,18 @@ exports.configurePassport = function (passport, db) {
     function (email, password, done) {
       db.Member.find({where: {email: email}})
         .then(function (member) {
-          if (member && exports.checkPassword(password, member.password_hash)) {
-            done(null, member);
+          if (member) {
+            exports.checkPassword(password, member.password)
+              .then(function (matches) {
+                if (matches) {
+                  done(null, member);
+                } else {
+                  done(null, false);
+                }
+              })
+              .catch(function (err) {
+                done(err);
+              })
           } else {
             done(null, false);
           }
@@ -64,4 +74,18 @@ exports.configurePassport = function (passport, db) {
           done(err);
         });
     }));
+
+  passport.serializeUser(function (user, done) {
+    done(null, user.id);
+  });
+
+  passport.deserializeUser(function (id, done) {
+    db.Member.find({where: {id: id}})
+      .then(function (member) {
+        done(null, member);
+      })
+      .catch(function (err) {
+        done(err);
+      });
+  });
 }
