@@ -1,8 +1,7 @@
 var bcrypt = require('bcrypt');
+var config = require('../config/config');
 var LocalStrategy = require('passport-local').Strategy;
 var Q = require('q');
-
-var rounds = 10;
 
 /**
  * Hashes a password.
@@ -12,7 +11,7 @@ var rounds = 10;
  */
 exports.hashPassword = function (plaintext) {
   var deferred = Q.defer();
-  bcrypt.genSalt(rounds, function (err, salt) {
+  bcrypt.genSalt(config.bcryptRounds, function (err, salt) {
     bcrypt.hash(plaintext, salt, function (err, hash) {
       if (err) {
         deferred.reject(err);

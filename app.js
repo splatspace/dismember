@@ -62,9 +62,9 @@ app.get('/admin/logout', adminRoute.logout);
 // API Routes
 
 var membersApi = require('./api/members');
-app.post('/api/members', auth.hasRole('admin', function (req, res) {
+app.post('/api/members', function (req, res) {
   membersApi.create(req, res);
-}));
+});
 app.get('/api/members/:id', auth.hasRole('admin', function (req, res) {
   membersApi.get(req, res, req.params.id);
 }));

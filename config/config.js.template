@@ -11,6 +11,11 @@ config.uriPathPrefix = '';
 // good secret.
 config.sessionCookieSecret = 'your secret here';
 
+// The exponent n in the bcrypt round calculation equation: rounds=2^n.  Bigger
+// numbers mean slower hashes (more security).  bcrypt is used for hashing members'
+// passwords.
+config.bcryptRounds = 12;
+
 /**
  * @typedef {object} DbConfig
  * @proeprty {string} dialect the Sequelize dialect ('postgres', etc.)
