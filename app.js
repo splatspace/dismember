@@ -4,6 +4,7 @@ var path = require('path');
 var _ = require('underscore');
 var Q = require('q');
 var passport = require('passport');
+var flash = require('connect-flash');
 
 var config = require('./config/config');
 var db = require('./src/db');
@@ -25,6 +26,7 @@ app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(express.cookieParser());
 app.use(express.session({secret: config.sessionCookieSecret}));
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(app.router);
@@ -54,23 +56,21 @@ app.post('/wepay/ipn', wePayRoute.ipn);
 var adminRoute = require('./routes/admin');
 app.get('/admin', adminRoute.index);
 app.get('/admin/login', adminRoute.login);
-app.post('/admin/authenticate', passport.authenticate('local', { successRedirect: '/admin', failureRedirect: '/admin/login?failed=true' }));
+app.post('/admin/authenticate', passport.authenticate('local', { successRedirect: '/admin', failureRedirect: '/admin/login', failureFlash: "Login failed." }));
 app.get('/admin/logout', adminRoute.logout);
 
 // API Routes
 
-// TODO enable when we add authentication
-
 var membersApi = require('./api/members');
-app.post('/api/members', function (req, res) {
+app.post('/api/members', auth.hasRole('admin', function (req, res) {
   membersApi.create(req, res);
-});
-app.get('/api/members/:id', function (req, res) {
+}));
+app.get('/api/members/:id', auth.hasRole('admin', function (req, res) {
   membersApi.get(req, res, req.params.id);
-});
-app.get('/api/members', function (req, res) {
+}));
+app.get('/api/members', auth.hasRole('admin', function (req, res) {
   membersApi.list(req, res);
-});
+}));
 //
 //
 //var paymentsApi = require('./api/payments');

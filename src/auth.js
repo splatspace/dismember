@@ -89,3 +89,21 @@ exports.configurePassport = function (passport, db) {
       });
   });
 }
+
+exports.hasRole = function (role, handler) {
+  return function(req, res) {
+    var member = req.user;
+    if (!member) {
+      // Actually unauthenticated, but HTTP is all confused...
+      res.send('Unauthorized', 401);
+      return;
+    }
+
+    if (!member.hasRole(role)) {
+      res.send('Forbidden', 403);
+      return;
+    }
+
+    return handler(req, res);
+  }
+}

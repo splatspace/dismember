@@ -76,6 +76,15 @@ module.exports = function (sequelize, DataTypes) {
     notes: DataTypes.TEXT
   }, {
     instanceMethods: {
+      hasRole: function(role) {
+        var roles = this.getDataValue('roles');
+        if (!roles) {
+          return false;
+        }
+
+        return roles.indexOf(role) != -1;
+      },
+
       /**
        * Sets the password for a member.
        *

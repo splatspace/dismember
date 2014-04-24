@@ -1,8 +1,8 @@
 var _ = require('underscore');
+var passport = require('passport');
 
 var auth = require('../src/auth');
 var config = require('../config/config');
-
 /**
  * Serves the index page.
  *
@@ -20,7 +20,10 @@ exports.index = function (req, res) {
  * @param res
  */
 exports.login = function (req, res) {
-  res.render('admin/login', { title: 'Login' });
+  res.render('admin/login', {
+    title: 'Login',
+    flash: req.flash()
+  });
 };
 
 /**
