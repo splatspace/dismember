@@ -10,6 +10,10 @@ var config = require('../config/config');
  * @param res
  */
 exports.index = function (req, res) {
+  if (!req.user) {
+    res.redirect('/admin/login');
+    return;
+  }
   res.render('admin/index', { title: 'Admin' });
 };
 
