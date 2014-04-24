@@ -22,6 +22,7 @@ var Dues = sequelize.import('./models/dues');
 var Security = sequelize.import('./models/security');
 var Donation = sequelize.import('./models/donation');
 var WePayCheckout = sequelize.import('./models/wePayCheckout');
+var Role = sequelize.import('./models/role');
 
 // Some payments are for dues (and linked to a member)
 Member.hasMany(Dues);
@@ -33,6 +34,10 @@ Payment.hasMany(Security);
 
 // Some payments are donations
 Payment.hasMany(Donation);
+
+// Members can belong to many roles
+Role.hasMany(Member, {through: 'members_roles'});
+Member.hasMany(Role, {through: 'members_roles'});
 
 /**
  * Hack to add indexes until Sequelize gets support for them in models.
@@ -82,5 +87,6 @@ module.exports = {
   Dues: Dues,
   Security: Security,
   Donation: Donation,
-  WePayCheckout: WePayCheckout
+  WePayCheckout: WePayCheckout,
+  Role: Role
 };

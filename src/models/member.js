@@ -76,13 +76,22 @@ module.exports = function (sequelize, DataTypes) {
     notes: DataTypes.TEXT
   }, {
     instanceMethods: {
-      hasRole: function(role) {
-        var roles = this.getDataValue('roles');
-        if (!roles) {
-          return false;
-        }
-
-        return roles.indexOf(role) != -1;
+      /**
+       * Tests if the specified role is configured on this member.
+       *
+       * @param role the name of the role to test
+       * @returns a promise that resolves to true or false
+       */
+      roleEnabled: function(role) {
+        return this.getRoles()
+          .then(function(roles) {
+            return roles.some(function (r) {
+              return r.name === role;
+            });
+          })
+          .catch(function (err) {
+            return false;
+          })
       },
 
       /**

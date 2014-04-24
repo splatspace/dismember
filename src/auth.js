@@ -79,7 +79,7 @@ exports.configurePassport = function (passport, db) {
   });
 
   passport.deserializeUser(function (id, done) {
-    db.Member.find({where: {id: id}})
+    db.Member.find({where: {id: id}, include: [ db.Role ]})
       .then(function (member) {
         done(null, member);
       })
@@ -98,11 +98,16 @@ exports.hasRole = function (role, handler) {
       return;
     }
 
-    if (!member.hasRole(role)) {
-      res.send('Forbidden', 403);
-      return;
-    }
-
-    return handler(req, res);
+    member.roleEnabled(role)
+      .then(function(enabled) {
+        if (!enabled) {
+          res.send('Forbidden', 403);
+        } else {
+          handler(req, res);
+        }
+      })
+      .catch(function (err) {
+        res.send(err, 500);
+      });
   }
 }
