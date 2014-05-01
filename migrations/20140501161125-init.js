@@ -184,7 +184,13 @@ function createPayments(migration, DataTypes) {
       allowNull: false
     },
     notes: DataTypes.TEXT
-  });
+  })
+    .then(function () {
+      return migration.addIndex('payments', ['method'], { indexName: 'payments_method_idx' });
+    })
+    .then(function () {
+      return migration.addIndex('payments', ['reference'], { indexName: 'payments_reference_idx' });
+    });
 }
 
 function createRoles(migration, DataTypes) {

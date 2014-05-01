@@ -24,6 +24,23 @@ var Donation = sequelize.import('./models/donation');
 var WePayCheckout = sequelize.import('./models/wePayCheckout');
 var Role = sequelize.import('./models/role');
 
+function associate() {
+    // Some payments are for dues (and linked to a member)
+    Member.hasMany(Dues);
+    Payment.hasMany(Dues);
+
+    // Some payments are security deposits (and linked to a member)
+    Member.hasMany(Security);
+    Payment.hasMany(Security);
+
+    // Some payments are donations
+    Payment.hasMany(Donation);
+
+    // Members can belong to many roles
+    Role.hasMany(Member, {through: 'members_roles'});
+    Member.hasMany(Role, {through: 'members_roles'});
+}
+
 /**
  * Hack to add indexes until Sequelize gets support for them in models.
  * @returns a promise that resolves when the index is created
@@ -57,25 +74,9 @@ function migrate() {
     path: process.cwd() + '/migrations'
   });
 
+  // Set the model associations after migration so Sequelize doesn't create the join tables
   return migrator.migrate()
-    .then(function() {
-      // Establish model relations (do this after migrate so Sequelize doesn't create our join tables).
-
-      // Some payments are for dues (and linked to a member)
-      Member.hasMany(Dues);
-      Payment.hasMany(Dues);
-
-      // Some payments are security deposits (and linked to a member)
-      Member.hasMany(Security);
-      Payment.hasMany(Security);
-
-      // Some payments are donations
-      Payment.hasMany(Donation);
-
-      // Members can belong to many roles
-      Role.hasMany(Member, {through: 'members_roles'});
-      Member.hasMany(Role, {through: 'members_roles'});
-    });
+    .then(associate);
 
 //  return sequelize.sync({force: false})
 //    .then(function () {
