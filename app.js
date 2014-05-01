@@ -85,7 +85,7 @@ app.get('/api/members', auth.hasRole('admin', function (req, res) {
 //});
 
 db.sequelize.authenticate()
-  .then(db.sync)
+  .then(db.migrate)
   .then(jobs.schedule)
   .then(function() {
     auth.configurePassport(passport, db);
