@@ -19,7 +19,7 @@ module.exports = function (sequelize, DataTypes) {
         notEmpty: true
       }
     },
-    membership_type: {
+    membershipType: {
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {
@@ -28,7 +28,7 @@ module.exports = function (sequelize, DataTypes) {
         ]
       }
     },
-    membership_status: {
+    membershipStatus: {
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {
@@ -52,21 +52,21 @@ module.exports = function (sequelize, DataTypes) {
       }
     },
     phone: DataTypes.TEXT,
-    emergency_contact_name: {
+    emergencyContactName: {
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {
         notEmpty: true
       }
     },
-    emergency_contact_address: {
+    emergencyContactAddress: {
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {
         notEmpty: true
       }
     },
-    emergency_contact_phone: {
+    emergencyContactPhone: {
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {

@@ -69,13 +69,13 @@ exports.index = function (req, res) {
  */
 exports.authorize = function (req, res) {
   var checkout = {
-    account_id: config.wePayAccount.accountId,
-    short_description: req.query.description,
+    accountId: config.wePayAccount.accountId,
+    shortDescription: req.query.description,
     type: purposeToWePayCheckoutType(req.query.purpose),
     amount: req.query.amount,
-    fee_payer: req.query.payFee == 'true' ? 'payer' : 'payee',
-    callback_uri:  getIpnUri(req),
-    auto_capture: true,
+    feePayer: req.query.payFee == 'true' ? 'payer' : 'payee',
+    callbackUri:  getIpnUri(req),
+    autoCapture: true,
 
     purpose: req.query.purpose
   }

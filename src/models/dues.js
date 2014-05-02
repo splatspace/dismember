@@ -2,23 +2,19 @@
 
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define('dues', {
-    member_id: {
+    memberId: {
       type: DataTypes.INTEGER,
-      references: 'members',
-      referencesKey: 'id',
       allowNull: false
     },
-    payment_id: {
+    paymentId: {
       type: DataTypes.INTEGER,
-      references: 'payments',
-      referencesKey: 'id',
       allowNull: false
     },
-    period_start: {
+    periodStart: {
       type: DataTypes.DATE,
       allowNull: false
     },
-    period_end: {
+    periodEnd: {
       type: DataTypes.DATE,
       allowNull: false
     },

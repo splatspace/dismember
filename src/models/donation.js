@@ -2,10 +2,8 @@
 
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define('donation', {
-    payment_id: {
+    paymentId: {
       type: DataTypes.INTEGER,
-      references: 'payments',
-      referencesKey: 'id',
       allowNull: false
     },
     notes: DataTypes.TEXT

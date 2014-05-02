@@ -7,39 +7,6 @@ var config = require('../config/config')
 var wePayApi = require('./wePayApi');
 
 /**
- * Returns a copy of the specified checkout object with only the properties allowed
- * by the WePay web service.
- */
-function preserveWePayCheckoutProperties(checkout) {
-  return _.pick(checkout,
-    'account_id',
-    'short_description',
-    'type',
-    'amount',
-    'currency',
-    'long_description',
-    'payer_email_message',
-    'payee_email_message',
-    'reference_id',
-    'app_fee',
-    'fee_payer',
-    'redirect_uri',
-    'callback_uri',
-    'fallback_uri',
-    'auto_capture',
-    'require_shipping',
-    'shipping_fee',
-    'charge_tax',
-    'mode',
-    'preapproval_id',
-    'prefill_info',
-    'funding_sources',
-    'payment_method_id',
-    'payment_method_type'
-  );
-}
-
-/**
  * Invoked when a WePayCheckout has been refreshed from the server.
  *
  * @param checkout the new checkout
@@ -134,7 +101,7 @@ exports.authorizeCheckout = function (checkout, submitUri) {
 
   // We use id instead of uuid because that's what Sequelize wants for the primary key
   checkout.id = uuid.v4();
-  checkout.reference_id = checkout.id;
+  checkout.referenceId = checkout.id;
 
   // Create it in the database and return the auth URL
   return db.WePayCheckout.create(checkout)
@@ -158,14 +125,14 @@ exports.submitCheckout = function (checkoutUuid) {
   return db.WePayCheckout.find(checkoutUuid)
     .then(function (checkout) {
       if (checkout) {
-        // Scrub extra DB info from the object we send to WePay
-        var checkoutValues = preserveWePayCheckoutProperties(checkout.values);
+        // Get the values in the correct names for the web service
+        var webValues = checkout.toWebValues();
 
         // Submit the checkout to WePay
-        return wePayApi.call(config.wePayAccount.accessToken, '/checkout/create', checkoutValues)
+        return wePayApi.call(config.wePayAccount.accessToken, '/checkout/create', webValues)
           .then(function (checkoutResponse) {
             // Update the DB object with server-side WePay checkout ID
-            checkout.wepay_checkout_id = checkoutResponse.checkout_id;
+            checkout.wepayCheckoutId = checkoutResponse.checkout_id;
             return checkout.updateAttributes(checkout, ['wepay_checkout_id'])
               .then(function (checkout) {
                 // Promise the confirmation URI
@@ -203,15 +170,15 @@ exports.refreshCheckout = function (checkoutId) {
             var oldState = checkout.state;
 
             // Update the database with new info about the checkout
-            checkout.amount_refunded = checkoutResponse.amount_refunded;
-            checkout.amount_charged_back = checkoutResponse.amount_charged_back;
+            checkout.amountRefunded = checkoutResponse.amount_refunded;
+            checkout.amountChargedBack = checkoutResponse.amount_charged_back;
             checkout.state = checkoutResponse.state;
-            checkout.payer_name = checkoutResponse.payer_name;
-            checkout.payer_email = checkoutResponse.payer_email;
+            checkout.payerName = checkoutResponse.payer_name;
+            checkout.payerEmail = checkoutResponse.payer_email;
             checkout.gross = checkoutResponse.gross;
             checkout.fee = checkoutResponse.fee;
 
-            return checkout.updateAttributes(checkout, ['amount_refunded', 'amount_charged_back', 'state', 'payer_name', 'payer_email', 'gross', 'fee'])
+            return checkout.updateAttributes(checkout, ['amountRefunded', 'amountChargedBack', 'state', 'payerName', 'payerEmail', 'gross', 'fee'])
               .then(function (checkout) {
                 onCheckoutRefreshed(checkout, oldState);
 

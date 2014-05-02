@@ -33,11 +33,11 @@ module.exports = function (sequelize, DataTypes) {
 
     // Required for create
 
-    account_id: {
+    accountId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    short_description: {
+    shortDescription: {
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {
@@ -61,12 +61,12 @@ module.exports = function (sequelize, DataTypes) {
     // Optional for create
 
     currency: DataTypes.TEXT,
-    long_description: DataTypes.TEXT,
-    payer_email_message: DataTypes.TEXT,
-    payee_email_message: DataTypes.TEXT,
-    reference_id: DataTypes.TEXT,
-    app_fee: DataTypes.DECIMAL(10, 2),
-    fee_payer: {
+    longDescription: DataTypes.TEXT,
+    payerEmailMessage: DataTypes.TEXT,
+    payeeEmailMessage: DataTypes.TEXT,
+    referenceId: DataTypes.TEXT,
+    appFee: DataTypes.DECIMAL(10, 2),
+    feePayer: {
       type: DataTypes.TEXT,
       validate: {
         isIn: [
@@ -74,22 +74,44 @@ module.exports = function (sequelize, DataTypes) {
         ]
       }
     },
-    redirect_uri: DataTypes.TEXT,
-    callback_uri: DataTypes.TEXT,
-    auto_capture: DataTypes.BOOLEAN,
+    redirectUri: DataTypes.TEXT,
+    callbackUri: DataTypes.TEXT,
+    autoCapture: DataTypes.BOOLEAN,
 
     // Updated from IPNs
-    wepay_checkout_id: DataTypes.INTEGER,
-    payer_name: DataTypes.TEXT,
-    payer_email: DataTypes.TEXT,
+    wepayCheckoutId: DataTypes.INTEGER,
+    payerName: DataTypes.TEXT,
+    payerEmail: DataTypes.TEXT,
     state: DataTypes.TEXT,
     gross: DataTypes.DECIMAL(10, 2),
     fee: DataTypes.DECIMAL(10, 2),
-    amount_refunded: {
+    amountRefunded: {
       type: DataTypes.DECIMAL(10, 2)
     },
-    amount_charged_back: {
+    amountChargedBack: {
       type: DataTypes.DECIMAL(10, 2)
+    }
+  }, {
+    instanceMethods: {
+      // Converts this object's values to an object for submission to the WePay web services
+      toWebValues: function () {
+        return {
+          account_id: this.accountId,
+          short_description: this.shortDescription,
+          type: this.type,
+          amount: this.amount,
+          currency: this.currency,
+          long_description: this.longDescription,
+          payer_email_message: this.payerEmailMessage,
+          payee_email_message: this.payeeEmailMessage,
+          reference_id: this.referenceId,
+          app_fee: this.appFee,
+          fee_payer: this.feePayer,
+          redirect_uri: this.redirectUri,
+          callback_uri: this.callbackUri,
+          auto_capture: this.autoCapture
+        }
+      }
     }
   });
 }

@@ -22,7 +22,9 @@ module.exports = {
       .then(function () {
         return createWePayCheckouts(migration, DataTypes);
       })
-      .then(done);
+      .then(function() {
+        done();
+      });
   },
 
   down: function (migration, DataTypes, done) {
