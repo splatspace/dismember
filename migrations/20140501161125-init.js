@@ -34,9 +34,18 @@ module.exports = {
 
 function createWePayCheckouts(migration, DataTypes) {
   return migration.createTable('wepay_checkouts', {
+    // ID is a UUID
     id: {
       type: DataTypes.TEXT,
       primaryKey: true,
+      allowNull: false
+    },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    updated_at: {
+      type: DataTypes.DATE,
       allowNull: false
     },
     purpose: {
@@ -93,6 +102,14 @@ function createDonations(migration, DataTypes) {
       primaryKey: true,
       autoIncrement: true
     },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
     payment_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -109,6 +126,14 @@ function createSecurities(migration, DataTypes) {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
+    },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: false
     },
     member_id: {
       type: DataTypes.INTEGER,
@@ -141,6 +166,14 @@ function createDues(migration, DataTypes) {
       primaryKey: true,
       autoIncrement: true
     },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
     member_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -171,6 +204,14 @@ function createPayments(migration, DataTypes) {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
+    },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: false
     },
     amount: {
       type: DataTypes.DECIMAL(10, 2),
@@ -221,14 +262,6 @@ function createRoles(migration, DataTypes) {
 function createMembersRoles(migration, DataTypes) {
   return migration.createTable('members_roles', {
     // No ID for a join table
-    created_at: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    updated_at: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
     member_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
