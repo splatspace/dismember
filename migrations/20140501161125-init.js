@@ -262,6 +262,14 @@ function createRoles(migration, DataTypes) {
 function createMembersRoles(migration, DataTypes) {
   return migration.createTable('members_roles', {
     // No ID for a join table
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
     member_id: {
       type: DataTypes.INTEGER,
       allowNull: false,

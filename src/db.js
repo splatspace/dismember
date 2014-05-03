@@ -51,26 +51,33 @@ function createAdminMember() {
   var adminEmail = config.adminEmail;
   var adminPassword = config.adminPassword;
 
-  return Member.find({where: { email: adminEmail } })
-    .success(function (member) {
-      if (!member) {
+  return Role.find({where: {name: 'admin'}})
+    .success(function (adminRole) {
+      if (adminRole) {
+        return Member.find({where: { email: adminEmail } })
+          .success(function (member) {
+            if (!member) {
+              var adminAttrs = {
+                email: adminEmail,
+                membership_type: 'full',
+                membership_status: 'active',
+                name: 'Dismember Administrator',
+                address: '123 Sesame Street',
+                emergency_contact_name: 'Big Bird',
+                emergency_contact_address: '123 Sesame Street',
+                emergency_contact_phone: '+19195551212'
+              };
 
-        var adminAttrs = {
-          email: adminEmail,
-          membership_type: 'full',
-          membership_status: 'active',
-          name: 'Dismember Administrator',
-          address: '123 Sesame Street',
-          emergency_contact_name: 'Big Bird',
-          emergency_contact_address: '123 Sesame Street',
-          emergency_contact_phone: '+19195551212'
-        };
-
-        var adminMember = Member.build(adminAttrs);
-        adminMember.validate();
-        return adminMember.setPassword(adminPassword)
-          .then(function() {
-            return adminMember.save();
+              var adminMember = Member.build(adminAttrs);
+              adminMember.validate();
+              return adminMember.setPassword(adminPassword)
+                .then(function () {
+                  return adminMember.save();
+                })
+                .then(function () {
+                  return adminMember.setRoles([adminRole]);
+                });
+            }
           });
       }
     });
