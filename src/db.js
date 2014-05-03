@@ -42,13 +42,47 @@ function associate() {
   Member.hasMany(Role, {through: 'members_roles'});
 }
 
+function createDefaultRoles() {
+  return Role.findOrCreate({name: 'admin'})
+    .then(Role.findOrCreate({name: 'board'}));
+}
+
+function createAdminMember() {
+  var adminEmail = config.adminEmail;
+  var adminPassword = config.adminPassword;
+
+  return Member.find({where: { email: adminEmail } })
+    .success(function (member) {
+      if (!member) {
+
+        var adminAttrs = {
+          email: adminEmail,
+          membership_type: 'full',
+          membership_status: 'active',
+          name: 'Dismember Administrator',
+          address: '123 Sesame Street',
+          emergency_contact_name: 'Big Bird',
+          emergency_contact_address: '123 Sesame Street',
+          emergency_contact_phone: '+19195551212'
+        };
+
+        var adminMember = Member.build(adminAttrs);
+        adminMember.validate();
+        return adminMember.setPassword(adminPassword)
+          .then(function() {
+            return adminMember.save();
+          });
+      }
+    });
+}
+
 module.exports = {
   sequelize: sequelize,
 
   /**
    * @returns a promise that resolves when all database migrations have run
    */
-  migrate: function() {
+  migrate: function () {
     var migrator = sequelize.getMigrator({
       path: process.cwd() + '/migrations'
     });
@@ -56,6 +90,13 @@ module.exports = {
     // Set the model associations after migration so Sequelize doesn't create the join tables
     return migrator.migrate()
       .then(associate);
+  },
+
+  /**
+   * @returns a promise that resolves after default users and roles are created
+   */
+  createDefaults: function () {
+    return Q.all([createDefaultRoles(), createAdminMember()]);
   },
 
   // Models we loaded

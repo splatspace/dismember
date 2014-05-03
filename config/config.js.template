@@ -1,5 +1,11 @@
 var config = {}
 
+// The e-mail address and password for the "admin" member which is created if
+// it does not exist every time the server starts.  You should log in as this
+// user and change its password immediately.
+config.adminEmail = 'dismember@splatspace.org';
+config.adminPassword = 'admin';
+
 // A URI path string to prepend to links to static resources (CSS, Javascript, etc.).
 // Set this when hosting the application somewhere other than at the root of a
 // domain name (for example, behind a reverse proxy that proxies from

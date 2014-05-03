@@ -104,7 +104,7 @@ module.exports = function (sequelize, DataTypes) {
         var that = this;
         return auth.hashPassword(plaintext)
           .then(function (hash) {
-            that.setDataValue('password', hash);
+            that.password = hash;
           });
       },
 
@@ -114,12 +114,12 @@ module.exports = function (sequelize, DataTypes) {
        * @returns a promise that resolves to true or false
        */
       verifyPassword: function (plaintext) {
-        var hash = this.getDataValue('password');
+        var hash = this.password;
         return auth.checkPassword(plaintext, hash);
       },
 
       hidePrivateProperties: function() {
-        return this.setDataValue('password', undefined);
+        this.password = undefined;
       }
     }
   });
