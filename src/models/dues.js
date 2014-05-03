@@ -2,19 +2,19 @@
 
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define('dues', {
-    memberId: {
+    member_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    paymentId: {
+    payment_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    periodStart: {
+    period_start: {
       type: DataTypes.DATE,
       allowNull: false
     },
-    periodEnd: {
+    period_end: {
       type: DataTypes.DATE,
       allowNull: false
     },

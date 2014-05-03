@@ -2,11 +2,11 @@
 
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define('security', {
-    memberId: {
+    member_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    paymentId: {
+    payment_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -17,7 +17,7 @@ module.exports = function (sequelize, DataTypes) {
         notEmpty: true
       }
     },
-    refundedAt: {
+    refunded_at: {
       type: DataTypes.DATE,
       allowNull: true
     },
