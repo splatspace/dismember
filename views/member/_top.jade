@@ -1,11 +1,22 @@
-div(class='container-fluid')
+div(class='container-fluid' style='padding-bottom: 1.5em;')
+  // Nav bar
   div(class='row')
-    div(class='col-lg-12')
-      h2 #{member.name}
-      h4 #{member.email} (<a href='#{uriPathPrefix}/member/logout'>logout</a>)
-      - var roles = member.roles;
-      if roles && roles.length > 0
-        h6
-          each role in roles
-            span=ucfirst(role.name)
-            | &nbsp;
+    div(class='col-sm-12')
+      ul(class='nav nav-tabs')
+        li(class='active')
+          a(href='#{uriPathPrefix}/member') My Membership
+        li
+          a(href='#{uriPathPrefix}/member/dues') Dues
+        li
+          a(href='#{uriPathPrefix}/member/logout') Log Out
+  // Member name and roles
+  div(class='row')
+    div(class='col-sm-12')
+      h3 #{member.name}
+      h5 #{member.email}
+      if member.roles && member.roles.length > 0
+        each role in member.roles
+          span(class='label label-info')
+            span(class='glyphicon glyphicon-user')
+            span &nbsp;#{ucfirst(role.name)}
+          span &nbsp;

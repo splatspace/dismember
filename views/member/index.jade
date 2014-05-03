@@ -4,9 +4,16 @@ block content
   include _top
   div(class='container-fluid')
     div(class='row')
-      div(class='col-lg-12')
-        h4 Membership
-        ul
-          li Since: #{member.membership_start.toLocaleDateString()}
-          li Status: #{ucfirst(member.membership_status)}
-          li Type: #{ucfirst(member.membership_type)}
+      div(class='col-sm-4')
+        div(class='panel panel-default')
+          div(class='panel-heading') Membership
+          table(class='table')
+            tr
+              td Joined
+              td #{member.membership_start.toLocaleDateString()}
+            tr
+              td Status
+              td #{ucfirst(member.membership_status)}
+            tr
+              td Type
+              td #{ucfirst(member.membership_type)}
