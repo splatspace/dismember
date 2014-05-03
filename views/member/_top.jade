@@ -1,0 +1,11 @@
+div(class='container-fluid')
+  div(class='row')
+    div(class='col-lg-12')
+      h2 #{member.name}
+      h4 #{member.email} (<a href='#{uriPathPrefix}/member/logout'>logout</a>)
+      - var roles = member.roles;
+      if roles && roles.length > 0
+        h6
+          each role in roles
+            span=ucfirst(role.name)
+            | &nbsp;

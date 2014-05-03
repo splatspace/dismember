@@ -1,16 +1,8 @@
 extends ../common/layout
 
 block content
+  include _top
   div(class='container-fluid')
-    div(class='row')
-      div(class='col-lg-12')
-        h2 #{member.name}
-        h4 #{member.email} (<a href='#{uriPathPrefix}/member/logout'>logout</a>)
-        if member.roles && member.roles.length > 0
-          h6
-            each role in member.roles
-              span=ucfirst(role.name)
-              |&nbsp;
     div(class='row')
       div(class='col-lg-12')
         h4 Membership

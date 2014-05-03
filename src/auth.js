@@ -79,7 +79,7 @@ exports.configurePassport = function (passport, db) {
   });
 
   passport.deserializeUser(function (id, done) {
-    db.Member.find({where: {id: id}, include: [ db.Role ]})
+    db.Member.find({where: {id: id}, include: [db.Role]})
       .then(function (member) {
         done(null, member);
       })
@@ -90,7 +90,7 @@ exports.configurePassport = function (passport, db) {
 }
 
 exports.hasRole = function (role, handler) {
-  return function(req, res) {
+  return function (req, res) {
     var member = req.user;
     if (!member) {
       // Actually unauthenticated, but HTTP is all confused...
@@ -99,7 +99,7 @@ exports.hasRole = function (role, handler) {
     }
 
     member.roleEnabled(role)
-      .then(function(enabled) {
+      .then(function (enabled) {
         if (!enabled) {
           res.send('Forbidden', 403);
         } else {
