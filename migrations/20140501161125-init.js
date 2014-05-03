@@ -310,6 +310,10 @@ function createMembers(migration, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: false
       },
+      membership_start: {
+        type: DataTypes.DATE,
+        allowNull: false
+      },
       membership_type: {
         type: DataTypes.TEXT,
         allowNull: false

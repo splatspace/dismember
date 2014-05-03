@@ -39,6 +39,9 @@ if ('development' == app.get('env')) {
 // Settings for all views
 
 app.locals.uriPathPrefix = config.uriPathPrefix;
+app.locals.ucfirst = function (value) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+};
 
 // This is nasty, but there's no easy way to call setMaxListeners on the actual EventEmitter
 // instance (the restler request) inside restler-q, so we set it globally.
@@ -92,7 +95,7 @@ db.sequelize.authenticate()
   .then(db.migrate)
   .then(db.createDefaults)
   .then(jobs.schedule)
-  .then(function() {
+  .then(function () {
     auth.configurePassport(passport, db);
   })
   .then(function () {

@@ -19,6 +19,13 @@ module.exports = function (sequelize, DataTypes) {
         notEmpty: true
       }
     },
+    membership_start: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      validate: {
+        notEmpty: true
+      }
+    },
     membership_type: {
       type: DataTypes.TEXT,
       allowNull: false,

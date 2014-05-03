@@ -15,7 +15,7 @@ exports.index = function (req, res) {
     res.redirect('/member/login');
     return;
   }
-  res.render('member/index', { title: 'Member' });
+  res.render('member/index', { title: 'Member', member: req.user });
 };
 
 /**
@@ -26,7 +26,7 @@ exports.index = function (req, res) {
  */
 exports.login = function (req, res) {
   res.render('member/login', {
-    title: 'Login',
+    title: 'Member Login',
     flash: req.flash()
   });
 };
