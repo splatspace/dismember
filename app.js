@@ -53,11 +53,15 @@ app.get('/wepay/authorize', wePayRoute.authorize);
 app.get('/wepay/submit', wePayRoute.submit);
 app.post('/wepay/ipn', wePayRoute.ipn);
 
+var memberRoute = require('./routes/member');
+app.get('/member', memberRoute.index);
+app.get('/member/login', memberRoute.login);
+app.post('/member/authenticate', passport.authenticate('local', { successRedirect: '/member/loginSuccess', failureRedirect: '/member/login', failureFlash: "Login failed." }));
+app.get('/member/loginSuccess', memberRoute.loginSuccess);
+app.get('/member/logout', memberRoute.logout);
+
 var adminRoute = require('./routes/admin');
 app.get('/admin', adminRoute.index);
-app.get('/admin/login', adminRoute.login);
-app.post('/admin/authenticate', passport.authenticate('local', { successRedirect: '/admin', failureRedirect: '/admin/login', failureFlash: "Login failed." }));
-app.get('/admin/logout', adminRoute.logout);
 
 // API Routes
 

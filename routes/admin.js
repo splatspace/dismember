@@ -3,6 +3,7 @@ var passport = require('passport');
 
 var auth = require('../src/auth');
 var config = require('../config/config');
+
 /**
  * Serves the index page.
  *
@@ -11,33 +12,17 @@ var config = require('../config/config');
  */
 exports.index = function (req, res) {
   if (!req.user) {
-    res.redirect('/admin/login');
+    req.session.loginRedirect = config.uriPathPrefix + '/admin';
+    res.redirect('/member/login');
     return;
   }
-  res.render('admin/index', { title: 'Admin' });
+
+  req.user.roleEnabled('admin')
+    .then(function(enabled) {
+      if (enabled) {
+        res.render('admin/index', { title: 'Admin' });
+      } else {
+        res.send(403);
+      }
+    });
 };
-
-/**
- * Serves the login form.
- *
- * @param req
- * @param res
- */
-exports.login = function (req, res) {
-  res.render('admin/login', {
-    title: 'Login',
-    flash: req.flash()
-  });
-};
-
-/**
- * Logs our the user and serves the logout page.
- *
- * @param req
- * @param res
- */
-exports.logout = function (req, res) {
-  req.logout();
-  res.redirect('/');
-}
-
