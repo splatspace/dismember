@@ -1,7 +1,7 @@
 div(class='container-fluid' style='padding-bottom: 1.5em;')
   // Nav bar
   div(class='row')
-    div(class='col-sm-6')
+    div(class='col-sm-9')
       ul(class='nav nav-tabs')
         li(class=(activeTab == "index") ? "active" : "")
           a(href='#{uriPathPrefix}/member') My Membership
@@ -9,11 +9,10 @@ div(class='container-fluid' style='padding-bottom: 1.5em;')
           a(href='#{uriPathPrefix}/member/payments') Payments
         li(class=(activeTab == "logout") ? "active" : "")
           a(href='#{uriPathPrefix}/member/logout') Log Out
-  // Member name and roles
-  div(class='row')
-    div(class='col-sm-12')
-      h3 #{member.name}
-      h5 #{member.email}
+    // Member name and roles
+    div(class='col-sm-3 text-right')
+      h5 #{member.name}
+      h6 #{member.email}
       if member.roles && member.roles.length > 0
         each role in member.roles
           span(class='label label-info')
