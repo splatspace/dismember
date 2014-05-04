@@ -3,6 +3,7 @@ var passport = require('passport');
 
 var auth = require('../src/auth');
 var config = require('../config/config');
+var db = require('../src/db');
 
 /**
  * Serves the index page.
@@ -27,11 +28,41 @@ exports.index = function (req, res) {
  */
 exports.payments = function (req, res) {
   if (!req.user) {
-    req.session.loginRedirect = config.uriPathPrefix + '/member/dues';
+    req.session.loginRedirect = config.uriPathPrefix + '/member/payments';
     res.redirect('/member/login');
     return;
   }
-  res.render('member/payments', { member: req.user });
+
+  // Nested eager-loads
+  db.Member.find({where: { id: req.user.id}, include: [
+    {
+      model: db.Dues,
+      include: [ db.Payment ]
+    },
+    {
+      model: db.Security,
+      include: [ db.Payment ]
+    },
+    {
+      model: db.Donation,
+      include: [ db.Payment ]
+    }
+  ],
+    order: [
+      [ db.Dues, 'period_start', 'desc' ],
+      [ db.Security, 'created_at', 'desc' ],
+      [ db.Donation, 'created_at', 'desc' ]
+    ]
+  })
+    .then(function (member) {
+
+      // Set the associations on the existing request user so we still have its loaded associations
+      req.user.dues = member.dues;
+      req.user.securities = member.securities;
+      req.user.donations = member.donations;
+
+      res.render('member/payments', { member: req.user });
+    });
 };
 
 /**

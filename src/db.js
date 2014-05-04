@@ -29,13 +29,17 @@ function associate() {
   // Some payments are for dues (and linked to a member)
   Member.hasMany(Dues);
   Payment.hasMany(Dues);
+  Dues.belongsTo(Payment);
 
   // Some payments are security deposits (and linked to a member)
   Member.hasMany(Security);
   Payment.hasMany(Security);
+  Security.belongsTo(Payment);
 
   // Some payments are donations
+  Member.hasMany(Donation);
   Payment.hasMany(Donation);
+  Donation.belongsTo(Payment);
 
   // Members can belong to many roles
   Role.hasMany(Member, {through: 'members_roles'});

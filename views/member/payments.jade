@@ -8,13 +8,36 @@ block content
   include _top
   div(class='container-fluid')
     div(class='row')
-      div(class='col-sm-4')
+      div(class='col-md-4')
         div(class='panel panel-default')
-          div(class='panel-heading') Payment History
+          div(class='panel-heading') Dues Payments
           table(class='table')
-            tr
-              th When
-              th Thing
-            tr
-              td Last May
-              td Some bucks
+            if member.dues.length == 0
+              tr
+                td None
+            else
+              each dues in member.dues
+                tr
+                  td #{dues.payment.amount}
+      div(class='col-md-4')
+        div(class='panel panel-default')
+          div(class='panel-heading') Security Deposits
+          table(class='table')
+            if member.securities.length == 0
+              tr
+                td None
+            else
+              each payment in member.securities
+                tr
+                  td #{payment.amount}
+      div(class='col-md-4')
+        div(class='panel panel-default')
+          div(class='panel-heading') Donations
+          table(class='table')
+            if member.donations.length == 0
+              tr
+                td None
+            else
+              each payment in member.donations
+                tr
+                  td #{payment.amount}

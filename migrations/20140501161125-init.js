@@ -110,6 +110,12 @@ function createDonations(migration, DataTypes) {
       type: DataTypes.DATE,
       allowNull: false
     },
+    member_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: 'members',
+      referencesKey: 'id'
+    },
     payment_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
