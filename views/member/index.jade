@@ -14,7 +14,7 @@ block content
           table(class='table')
             tr
               td Joined
-              td #{member.membership_start.toLocaleDateString()}
+              td #{toShortDateString(member.membership_start)}
             tr
               td Status
               td #{ucfirst(member.membership_status)}

@@ -10,6 +10,7 @@ var config = require('./config/config');
 var db = require('./src/db');
 var jobs = require('./src/jobs');
 var auth = require('./src/auth');
+var viewHelpers = require('./src/viewHelpers');
 
 Q.longStackSupport = true;
 
@@ -37,11 +38,7 @@ if ('development' == app.get('env')) {
 }
 
 // Settings for all views
-
-app.locals.uriPathPrefix = config.uriPathPrefix;
-app.locals.ucfirst = function (value) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
-};
+viewHelpers.register(app.locals);
 
 // This is nasty, but there's no easy way to call setMaxListeners on the actual EventEmitter
 // instance (the restler request) inside restler-q, so we set it globally.
