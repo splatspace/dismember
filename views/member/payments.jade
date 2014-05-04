@@ -8,7 +8,32 @@ block content
   include _top
   div(class='container-fluid')
     div(class='row')
-      div(class='col-md-4')
+      div(class='col-lg-12')
+        div(class='panel panel-default')
+          div(class='panel-heading') Security Deposits
+          table(class='table')
+            if member.securities.length == 0
+              tr
+                td None
+            else
+              tr
+                th Date
+                th Item
+                th Amount
+                th Status
+              each security in member.securities
+                tr
+                  td #{toShortDateString(security.created_at)}
+                  td #{security.item}
+                  td $#{security.payment.amount}
+                  if security.refunded_at === null
+                    td
+                      label(class='label label-info') Held
+                  else
+                    td
+                      label(class='label label-success') Returned #{toShortDateString(security.refunded_at)}
+    div(class='row')
+      div(class='col-md-6')
         div(class='panel panel-default')
           div(class='panel-heading') Dues Payments
           table(class='table')
@@ -17,26 +42,15 @@ block content
                 td None
             else
               tr
-                th Start
-                th End
+                th Period Start
+                th Period End
                 th Amount
               each dues in member.dues
                 tr
                   td #{toShortDateString(dues.period_start)}
                   td #{toShortDateString(dues.period_end)}
                   td $#{dues.payment.amount}
-      div(class='col-md-4')
-        div(class='panel panel-default')
-          div(class='panel-heading') Security Deposits
-          table(class='table')
-            if member.securities.length == 0
-              tr
-                td None
-            else
-              each payment in member.securities
-                tr
-                  td #{payment.amount}
-      div(class='col-md-4')
+      div(class='col-md-6')
         div(class='panel panel-default')
           div(class='panel-heading') Donations
           table(class='table')
@@ -44,6 +58,10 @@ block content
               tr
                 td None
             else
-              each payment in member.donations
+              tr
+                th Date
+                th Amount
+              each donation in member.donations
                 tr
-                  td #{payment.amount}
+                  td #{toShortDateString(donation.payment.created_at)}
+                  td $#{donation.payment.amount}
