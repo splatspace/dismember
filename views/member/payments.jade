@@ -1,0 +1,20 @@
+extends ../common/layout
+
+block title
+  title Payments
+
+block content
+  - var activeTab = 'payments';
+  include _top
+  div(class='container-fluid')
+    div(class='row')
+      div(class='col-sm-4')
+        div(class='panel panel-default')
+          div(class='panel-heading') Payment History
+          table(class='table')
+            tr
+              th When
+              th Thing
+            tr
+              td Last May
+              td Some bucks

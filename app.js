@@ -58,6 +58,7 @@ app.post('/wepay/ipn', wePayRoute.ipn);
 
 var memberRoute = require('./routes/member');
 app.get('/member', memberRoute.index);
+app.get('/member/payments', memberRoute.payments);
 app.get('/member/login', memberRoute.login);
 app.post('/member/authenticate', passport.authenticate('local', { successRedirect: '/member/loginSuccess', failureRedirect: '/member/login', failureFlash: "Login failed." }));
 app.get('/member/loginSuccess', memberRoute.loginSuccess);

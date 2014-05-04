@@ -12,10 +12,26 @@ var config = require('../config/config');
  */
 exports.index = function (req, res) {
   if (!req.user) {
+    req.session.loginRedirect = config.uriPathPrefix + '/member';
     res.redirect('/member/login');
     return;
   }
-  res.render('member/index', { title: 'Member', member: req.user });
+  res.render('member/index', { member: req.user });
+};
+
+/**
+ * Serves the payments page.
+ *
+ * @param req
+ * @param res
+ */
+exports.payments = function (req, res) {
+  if (!req.user) {
+    req.session.loginRedirect = config.uriPathPrefix + '/member/dues';
+    res.redirect('/member/login');
+    return;
+  }
+  res.render('member/payments', { member: req.user });
 };
 
 /**
@@ -26,7 +42,6 @@ exports.index = function (req, res) {
  */
 exports.login = function (req, res) {
   res.render('member/login', {
-    title: 'Member Login',
     flash: req.flash()
   });
 };

@@ -20,7 +20,7 @@ exports.index = function (req, res) {
   req.user.roleEnabled('admin')
     .then(function(enabled) {
       if (enabled) {
-        res.render('admin/index', { title: 'Admin' });
+        res.render('admin/index', { });
       } else {
         res.send(403);
       }

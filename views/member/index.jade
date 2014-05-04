@@ -1,6 +1,10 @@
 extends ../common/layout
 
+block title
+  title My Membership
+
 block content
+  - var activeTab = 'index';
   include _top
   div(class='container-fluid')
     div(class='row')

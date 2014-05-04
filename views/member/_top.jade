@@ -1,13 +1,13 @@
 div(class='container-fluid' style='padding-bottom: 1.5em;')
   // Nav bar
   div(class='row')
-    div(class='col-sm-12')
+    div(class='col-sm-6')
       ul(class='nav nav-tabs')
-        li(class='active')
+        li(class=(activeTab == "index") ? "active" : "")
           a(href='#{uriPathPrefix}/member') My Membership
-        li
-          a(href='#{uriPathPrefix}/member/dues') Dues
-        li
+        li(class=(activeTab == "payments") ? "active" : "")
+          a(href='#{uriPathPrefix}/member/payments') Payments
+        li(class=(activeTab == "logout") ? "active" : "")
           a(href='#{uriPathPrefix}/member/logout') Log Out
   // Member name and roles
   div(class='row')
