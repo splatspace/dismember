@@ -4,11 +4,18 @@ div(class='container-fluid' style='padding-bottom: 1.5em;')
     div(class='col-sm-9')
       ul(class='nav nav-tabs')
         li(class=(activeTab == "index") ? "active" : "")
-          a(href='#{uriPathPrefix}/member') My Membership
+          a(href='#{uriPathPrefix}/member')
+            span(class='glyphicon glyphicon-user')
+            span &nbsp;My Membership
         li(class=(activeTab == "payments") ? "active" : "")
-          a(href='#{uriPathPrefix}/member/payments') Payments
+          a(href='#{uriPathPrefix}/member/payments')
+            span(class='glyphicon glyphicon-usd')
+            span &nbsp;Payments
         li(class=(activeTab == "logout") ? "active" : "")
-          a(href='#{uriPathPrefix}/member/logout') Log Out
+          a(href='#{uriPathPrefix}/member/logout')
+            span(class='glyphicon glyphicon-log-out')
+            span &nbsp;Log Out
+
     // Member name and roles
     div(class='col-sm-3 text-right')
       h5 #{member.name}
