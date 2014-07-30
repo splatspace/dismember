@@ -70,7 +70,7 @@ block content
     }
 
     function authorize(amount, description, purpose) {
-      var payFee = false;
+      var payFee = $('#pay_fee').prop('checked');
       window.location.href = '#{uriPathPrefix}/wepay/authorize?amount=' + encodeURIComponent(amount)
       + '&description=' + encodeURIComponent(description)
       + '&purpose=' + encodeURIComponent(purpose)
