@@ -6,7 +6,7 @@ from flask.ext.peewee.auth import BaseUser
 from peewee import PrimaryKeyField, TextField, BooleanField, ForeignKeyField, DateTimeField
 from dismember.models.member_status import MemberStatus
 from dismember.models.member_type import MemberType
-from dismember.service import db, admin
+from dismember.service import db
 
 
 class User(db.Model, BaseUser):
