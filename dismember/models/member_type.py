@@ -1,8 +1,8 @@
 import datetime
 
 from peewee import PrimaryKeyField, TextField
-from remember.custom_fields import DateTimeWithTimeZoneField
-from remember.service import db
+from dismember.custom_fields import DateTimeWithTimeZoneField
+from dismember.service import db
 
 
 class MemberType(db.Model):

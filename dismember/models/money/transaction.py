@@ -4,8 +4,8 @@ from sqlalchemy.sql.functions import now
 from sqlalchemy.types import *
 from sqlalchemy.orm import *
 
-from remember.service import db, cookie_serializer, config
-from remember.models.money.account import Account
+from dismember.service import db, cookie_serializer, config
+from dismember.models.money.account import Account
 
 
 class Transaction(db.Model):

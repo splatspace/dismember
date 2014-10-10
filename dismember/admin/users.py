@@ -1,8 +1,8 @@
 from flask.ext.peewee.admin import ModelAdmin, AdminModelConverter, AdminFilterModelConverter
 from flask.ext.peewee.filters import FilterMapping
-from remember.custom_fields import DateTimeWithTimeZoneField
-from remember.service import admin
-from remember.models.user import User
+from dismember.custom_fields import DateTimeWithTimeZoneField
+from dismember.service import admin
+from dismember.models.user import User
 
 # class MembersModelView(ModelView):
 # column_labels = dict(

@@ -35,9 +35,9 @@ cookie_serializer = None
 def create_builtins():
     global config, db, user_datastore
 
-    from remember.models.user import User
-    from remember.models.role import Role
-    from remember.models.user_role import UserRole
+    from dismember.models.user import User
+    from dismember.models.role import Role
+    from dismember.models.user_role import UserRole
 
     # Create builtin roles
     for builtin_role in config['builtins']['roles']:
@@ -74,17 +74,17 @@ def run(the_config):
     cookie_serializer = URLSafeTimedSerializer(app.secret_key)
 
     # Must register custom fields before using flask_peewee.db.Database
-    import remember.custom_fields
-    remember.custom_fields.register_postgresql_fields()
+    import dismember.custom_fields
+    dismember.custom_fields.register_postgresql_fields()
 
     # Flask-Peewee
     app.config['DATABASE'] = config['db']
     db = Database(app)
     # Import all models (creates required tables if needed)
-    import remember.models
-    auth = Auth(app, db, user_model=remember.models.user.User)
+    import dismember.models
+    auth = Auth(app, db, user_model=dismember.models.user.User)
     admin = Admin(app, auth)
-    import remember.admin
+    import dismember.admin
     admin.setup()
 
     # Configure Flask-Mail
@@ -114,7 +114,7 @@ def run(the_config):
     #app.config['MAIL_PASSWORD'] = 'password'
 
     # Flask-Security Core
-    #user_datastore = SQLAlchemyUserDatastore(db, remember.models.user.User, remember.models.role.Role)
+    #user_datastore = SQLAlchemyUserDatastore(db, dismember.models.user.User, dismember.models.role.Role)
     #security = Security(app, user_datastore)
 
     # Flask-Admin
@@ -127,6 +127,6 @@ def run(the_config):
         os.mkdir(assets_output_dir)
 
     # Import the views to enable Flask handlers
-    import remember.views
+    import dismember.views
 
     app.run(host=config['flask']['bind'], debug=config['flask']['debug'])

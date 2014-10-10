@@ -1,6 +1,6 @@
 from flask.ext.peewee.admin import AdminModelConverter
-from remember.custom_fields import DateTimeWithTimeZoneField
-from remember.service import admin
+from dismember.custom_fields import DateTimeWithTimeZoneField
+from dismember.service import admin
 
 # Replace the form converter with one that can handle our custom field types
 from wtforms import DateTimeField

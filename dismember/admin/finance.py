@@ -2,10 +2,10 @@ from flask.ext.admin.contrib.sqla.filters import *
 from flask.ext.admin.contrib.sqla import ModelView
 from flask.ext.superadmin.model.base import prettify
 
-from remember.models.money.transaction import Transaction
+from dismember.models.money.transaction import Transaction
 
-from remember.service import admin, db
-from remember.models.money.account import Account
+from dismember.service import admin, db
+from dismember.models.money.account import Account
 
 
 class AccountsModelView(ModelView):

@@ -1,9 +1,9 @@
 from flask.ext.admin.contrib.sqla import ModelView
 from wtforms import ValidationError
 
-from remember.models.role import Role
+from dismember.models.role import Role
 
-from remember.service import admin, db, config
+from dismember.service import admin, db, config
 
 
 class RolesModelView(ModelView):

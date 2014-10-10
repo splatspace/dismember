@@ -3,7 +3,7 @@ from sqlalchemy.schema import *
 from sqlalchemy.types import *
 from sqlalchemy.orm import *
 
-from remember.service import db, cookie_serializer, config
+from dismember.service import db, cookie_serializer, config
 
 
 class Account(db.Model):

@@ -1,8 +1,8 @@
 from peewee import ForeignKeyField, CompositeKey
-from remember.models.role import Role
-from remember.models.user import User
+from dismember.models.role import Role
+from dismember.models.user import User
 
-from remember.service import db
+from dismember.service import db
 
 
 class UserRole(db.Model):

@@ -1,6 +1,6 @@
 from flask import render_template
 
-from remember.service import app, auth
+from dismember.service import app, auth
 
 @app.route('/')
 @auth.login_required

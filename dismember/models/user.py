@@ -2,10 +2,10 @@ import datetime
 
 from flask.ext.peewee.auth import BaseUser
 from peewee import PrimaryKeyField, TextField, BooleanField, ForeignKeyField, DateTimeField
-from remember.custom_fields import DateTimeWithTimeZoneField
-from remember.models.member_status import MemberStatus
-from remember.models.member_type import MemberType
-from remember.service import db
+from dismember.custom_fields import DateTimeWithTimeZoneField
+from dismember.models.member_status import MemberStatus
+from dismember.models.member_type import MemberType
+from dismember.service import db
 
 
 class User(db.Model, BaseUser):
