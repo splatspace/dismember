@@ -1,5 +1,5 @@
-# Settings for dismember.  During development, don't edit this file; instead
-# create ../instance/settings.py and override values there.
+# Configuration defaults for dismember.  During development, don't edit this file;
+# instead create ../instance/config.py and override values there.
 
 # ######################################################################
 # Flask

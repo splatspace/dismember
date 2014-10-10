@@ -12,9 +12,9 @@ from flask_peewee.db import Database
 # import and use models freely.
 
 app = Flask(__name__, instance_relative_config=True)
-app.config.from_object('dismember.settings')
-# Read the local "./instance/settings.py" if it exists
-app.config.from_pyfile('settings.py', silent=True)
+app.config.from_object('dismember.config')
+# Read the local "./instance/config.py" if it exists
+app.config.from_pyfile('config.py', silent=True)
 
 # Initialized by run
 db = None
@@ -45,6 +45,11 @@ def run():
 
 
 def create_builtins():
+    """
+    Creates the built-in resources (users, roles, etc.) that were defined in the
+    config file.
+    """
+
     from dismember.models.user import User
     from dismember.models.role import Role
     from dismember.models.user_role import UserRole
