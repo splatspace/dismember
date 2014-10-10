@@ -45,7 +45,7 @@ def run():
 
     # Limit API access to admins
     api = RestAPI(app, default_auth=AdminAuthentication(
-        auth, protected_methods=['HEAD', 'GET', 'POST', 'PUT', 'DELETE']))
+        auth, protected_methods=['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT', 'PATCH']))
     api.register(User)
     api.setup()
 
