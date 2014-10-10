@@ -45,21 +45,13 @@ DISMEMBER_SITE_NAME = 'Dismembership System'
 DISMEMBER_BUILTINS = {
     'users': [
         {
-            # The administrator account.  You can rename it, but don't delete it remove the
-            # "Administrator" role mapping.
+            # The administrator account.  You can rename it, but don't delete it or
+            # set the "admin" property to False (that would be very silly).
             'username': 'admin',
             'password': 'admin',
             'full_name': 'Dismember Administrator',
-            'email': 'admin@splatspace.org',
-
-            'role_names': ['Administrator']
+            'email': 'admin@example.org',
+            'admin': True
         }
-    ],
-    'roles': [
-        {
-            # The full administrator role.  Don't rename or delete this one.
-            'name': 'Administrator',
-            'description': 'Full Administrator',
-        }
-    ],
+    ]
 }

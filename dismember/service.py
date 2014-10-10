@@ -1,4 +1,6 @@
 from flask import Flask
+from flask.ext.peewee.admin import Admin
+from flask.ext.peewee.auth import Auth
 from flask.ext.peewee.rest import RestAPI, AdminAuthentication
 from flask_peewee.db import Database
 
@@ -30,18 +32,15 @@ def run():
     import dismember.models
 
     # Flask-Peewee
-    from dismember.peewee_support import DismemberAuth, DismemberAdmin
     from dismember.models.user import User, UserAdmin
     from dismember.models.member_status import MemberStatus, MemberStatusAdmin
     from dismember.models.member_type import MemberType, MemberTypeAdmin
-    from dismember.models.role import Role, RoleAdmin
 
-    auth = DismemberAuth(app, db, user_model=dismember.models.user.User)
-    admin = DismemberAdmin(app, auth, branding=app.config['DISMEMBER_SITE_NAME'])
+    auth = Auth(app, db, user_model=dismember.models.user.User)
+    admin = Admin(app, auth, branding=app.config['DISMEMBER_SITE_NAME'])
     admin.register(User, UserAdmin)
     admin.register(MemberStatus, MemberStatusAdmin)
     admin.register(MemberType, MemberTypeAdmin)
-    admin.register(Role, RoleAdmin)
     admin.setup()
 
     # Limit API access to admins
@@ -59,34 +58,16 @@ def run():
 
 def create_builtins():
     """
-    Creates the built-in resources (users, roles, etc.) that were defined in the
+    Creates the built-in resources (users, etc.) that are defined in the
     config file.
     """
 
     from dismember.models.user import User
-    from dismember.models.role import Role
-    from dismember.models.user_role import UserRole
 
-    # Create builtin roles
-    for builtin_role in app.config['DISMEMBER_BUILTINS']['roles']:
-        if not Role.select(Role.name == builtin_role['name']).exists():
-            Role.create(**builtin_role)
-
-    # Create builtin users (and find related roles)
-    user_role = []
+    # Create builtin users
     for builtin_user in app.config['DISMEMBER_BUILTINS']['users']:
         if not User.select(User.username == builtin_user['username']).exists():
             user = User(**builtin_user)
             user.set_password(user.password)
             user.enabled = True
-
-            # Remember ther user ID and each role assigned
-            for role_name in builtin_user['role_names']:
-                role = Role.get(Role.name == role_name)
-                user_role.append((user, role))
-
             user.save()
-
-    # Map users to roles
-    for (user, role) in user_role:
-        UserRole.create(user=user, role=role)

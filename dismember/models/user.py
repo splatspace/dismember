@@ -41,18 +41,6 @@ class User(db.Model, BaseUser):
     def __str__(self):
         return '%s (%s)' % (self.username, self.full_name)
 
-    @property
-    def roles(self):
-        return [ur.role for ur in self.user_roles]
-
-    def has_role(self, role_name):
-        return role_name in [r.name for r in self.roles]
-
-    @property
-    def admin(self):
-        """Required by AdminAuthentication"""
-        return self.has_role('Administrator')
-
 
 class UserAdmin(ModelAdmin):
     def get_display_name(self):
