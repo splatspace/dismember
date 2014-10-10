@@ -31,12 +31,17 @@ def run():
 
     # Flask-Peewee
     from dismember.peewee_support import DismemberAuth, DismemberAdmin
-    from dismember.models.user import User
-    from dismember.models.user import UserAdmin
+    from dismember.models.user import User, UserAdmin
+    from dismember.models.member_status import MemberStatus, MemberStatusAdmin
+    from dismember.models.member_type import MemberType, MemberTypeAdmin
+    from dismember.models.role import Role, RoleAdmin
 
     auth = DismemberAuth(app, db, user_model=dismember.models.user.User)
     admin = DismemberAdmin(app, auth, branding=app.config['DISMEMBER_SITE_NAME'])
     admin.register(User, UserAdmin)
+    admin.register(MemberStatus, MemberStatusAdmin)
+    admin.register(MemberType, MemberTypeAdmin)
+    admin.register(Role, RoleAdmin)
     admin.setup()
 
     # Limit API access to admins

@@ -1,5 +1,7 @@
 import datetime
 
+from flask.ext.peewee.admin import ModelAdmin
+
 from peewee import PrimaryKeyField, TextField, DateTimeField
 from dismember.service import db
 
@@ -17,6 +19,14 @@ class Role(db.Model):
 
     def __str__(self):
         return self.name
+
+
+class RoleAdmin(ModelAdmin):
+    def get_display_name(self):
+        return 'Roles'
+
+    def get_admin_name(self):
+        return 'roles'
 
 
 Role.create_table(fail_silently=True)

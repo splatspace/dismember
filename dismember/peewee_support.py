@@ -16,6 +16,3 @@ class DismemberAuth(Auth):
 
     def get_user_model(self):
         return User
-
-    def get_model_admin(self):
-        return UserAdmin

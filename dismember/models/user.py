@@ -53,8 +53,13 @@ class User(db.Model, BaseUser):
         """Required by AdminAuthentication"""
         return self.has_role('Administrator')
 
+
 class UserAdmin(ModelAdmin):
-    # columns = ('username', 'email', 'is_superuser',)
+    def get_display_name(self):
+        return 'Users'
+
+    def get_admin_name(self):
+        return 'users'
 
     def save_model(self, instance, form, adding=False):
         # Ensure the password gets hashed correctly before it is stored in the database.
