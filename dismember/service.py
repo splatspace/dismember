@@ -33,7 +33,7 @@ def run():
 
     # Flask-Peewee
     auth = Auth(app, db, user_model=dismember.models.user.User)
-    admin = Admin(app, auth)
+    admin = Admin(app, auth, branding=app.config['DISMEMBER_SITE_NAME'])
     import dismember.admin
     admin.setup()
 

@@ -13,7 +13,7 @@ class User(db.Model, BaseUser):
     class Meta:
         db_table = 'users'
 
-    # Fields required for Flask-Peewee's admin features
+    # Fields required for Flask-Peewee's auth and admin features
     id = PrimaryKeyField()
     username = TextField(unique=True)
     email = TextField(unique=True, index=True)
@@ -21,6 +21,7 @@ class User(db.Model, BaseUser):
     active = BooleanField(default=True)
     admin = BooleanField(default=True)
 
+    # Our user properties
     full_name = TextField()
     created = DateTimeField(default=datetime.datetime.now)
 
