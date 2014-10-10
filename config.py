@@ -18,10 +18,11 @@ config = {
         # Enables the Flask debugger (never enable this in production)
         'debug': True,
 
-        # Secret key for signing session cookies
+        # Secret key for signing session cookies.  Each installation should use a
+        # different key.
         'session_secret_key': '9fb732e3fb1b54ff79a22b8b7efc8cc0b57d7a653e690339710a94acb87ce173',
 
-        # Salt for PBKDF2 function
+        # Salt for PBKDF2 function.  Each installation should use a different salt.
         'password_salt': '266f06d86484d7eccdadbeee6d6652e44d9eb1be75c8e285d5263539b6cfcf40',
 
         # How long the "remember me" cookies stay valid
