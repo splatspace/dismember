@@ -1,10 +1,12 @@
 import datetime
 
+from flask.ext.peewee.admin import ModelAdmin
+
 from flask.ext.peewee.auth import BaseUser
 from peewee import PrimaryKeyField, TextField, BooleanField, ForeignKeyField, DateTimeField
 from dismember.models.member_status import MemberStatus
 from dismember.models.member_type import MemberType
-from dismember.service import db
+from dismember.service import db, admin
 
 
 class User(db.Model, BaseUser):
@@ -47,5 +49,20 @@ class User(db.Model, BaseUser):
         return role_name in [r.name for r in self.roles]
 
 
-User.create_table(fail_silently=True)
+class UserAdmin(ModelAdmin):
+    # columns = ('username', 'email', 'is_superuser',)
 
+    def save_model(self, instance, form, adding=False):
+        # Ensure the password gets hashed correctly before it is stored in the database.
+        orig_password = instance.password
+
+        user = super(UserAdmin, self).save_model(instance, form, adding)
+
+        if orig_password != form.password.data:
+            user.set_password(form.password.data)
+            user.save()
+
+        return user
+
+
+User.create_table(fail_silently=True)

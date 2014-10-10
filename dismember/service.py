@@ -1,9 +1,5 @@
-from flask.ext.peewee.admin import Admin
-from flask.ext.peewee.auth import Auth
-
 from flask import Flask
 from flask_peewee.db import Database
-
 
 # Don't import any modules that use DB models up here, because they need to
 # import and use the "db" object from this module (which would not be initialized
@@ -32,9 +28,13 @@ def run():
     import dismember.models
 
     # Flask-Peewee
-    auth = Auth(app, db, user_model=dismember.models.user.User)
-    admin = Admin(app, auth, branding=app.config['DISMEMBER_SITE_NAME'])
-    import dismember.admin
+    from dismember.peewee_support import DismemberAuth, DismemberAdmin
+    from dismember.models.user import User
+    from dismember.models.user import UserAdmin
+
+    auth = DismemberAuth(app, db, user_model=dismember.models.user.User)
+    admin = DismemberAdmin(app, auth, branding=app.config['DISMEMBER_SITE_NAME'])
+    admin.register(User, UserAdmin)
     admin.setup()
 
     # Importing vies registers endpoints with Flask
