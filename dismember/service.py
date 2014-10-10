@@ -1,13 +1,9 @@
 from flask.ext.peewee.admin import Admin
 from flask.ext.peewee.auth import Auth
 
-import os
 from flask import Flask
-from itsdangerous import URLSafeTimedSerializer
 from flask_peewee.db import Database
 
-
-FLASK_APP_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Don't import any modules that use DB models up here, because they need to
 # import and use the "db" object from this module (which would not be initialized
@@ -15,34 +11,33 @@ FLASK_APP_DIR = os.path.dirname(os.path.abspath(__file__))
 # file is the only file that requires this special treatment.  Other files can
 # import and use models freely.
 
-app = Flask(__name__)
+app = Flask(__name__, instance_relative_config=True)
+app.config.from_object('dismember.settings')
+# Read the local "./instance/settings.py" if it exists
+app.config.from_pyfile('settings.py', silent=True)
 
-# Loaded by run
-base = None
-config = None
+# Initialized by run
 db = None
-user_datastore = None
 auth = None
 admin = None
-cookie_serializer = None
 
 
-@app.before_first_request
+#@app.before_first_request
 def create_builtins():
-    global config, db, user_datastore
+    global db
 
     from dismember.models.user import User
     from dismember.models.role import Role
     from dismember.models.user_role import UserRole
 
     # Create builtin roles
-    for builtin_role in config['builtins']['roles']:
+    for builtin_role in app.config['DISMEMBER_BUILTINS']['roles']:
         if not Role.select(Role.name == builtin_role['name']).exists():
             Role.create(**builtin_role)
 
     # Create builtin users (and find related roles)
     user_role = []
-    for builtin_user in config['builtins']['users']:
+    for builtin_user in app.config['DISMEMBER_BUILTINS']['users']:
         if not User.select(User.username == builtin_user['username']).exists():
             user = User(**builtin_user)
             user.set_password(user.password)
@@ -60,21 +55,16 @@ def create_builtins():
         UserRole.create(user=user, role=role)
 
 
-def run(the_config):
-    global base, app, config, db, admin, user_datastore, auth, cookie_serializer
-    config = the_config
-
-    app.secret_key = config['flask']['session_secret_key']
-
-    # Cookie serializer
-    cookie_serializer = URLSafeTimedSerializer(app.secret_key)
+def run():
+    global app, db, admin, auth
 
     # Flask-Peewee
-    app.config['DATABASE'] = config['db']
     db = Database(app)
-    # Import all models (creates required tables if needed)
+
+    # Importing models creates tables (if required)
     import dismember.models
 
+    # Flask-Peewee
     auth = Auth(app, db, user_model=dismember.models.user.User)
     admin = Admin(app, auth)
     import dismember.admin
@@ -84,4 +74,7 @@ def run(the_config):
     # Import the views to enable Flask handlers
     import dismember.views
 
-    app.run(host=config['flask']['bind'], debug=config['flask']['debug'])
+    app.logger.debug('Creating built-in resources')
+    create_builtins()
+
+    app.run(host=app.config['DISMEMBER_HOST'])
