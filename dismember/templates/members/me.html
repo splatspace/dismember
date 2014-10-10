@@ -1,0 +1,13 @@
+{% extends "_common/base.html" %}
+{% block head %}
+<title>My Membership</title>
+{% endblock %}
+
+{% block body %}
+<ul>
+    <li>Name: {{current_user.name}}</li>
+    <li>Member Since: {{current_user.membership_start}}</li>
+    <li>Membership Type: {{current_user.membership_type}}</li>
+    <li>Membership Status: {{current_user.membership_status}}</li>
+</ul>
+{% endblock %}

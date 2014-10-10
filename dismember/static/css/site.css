@@ -1,0 +1,22 @@
+body {
+    margin: 20px;
+}
+
+.center-table {
+    margin: 0 auto !important;
+    float: none !important;
+}
+
+.fat-cell {
+    padding: 1em;
+}
+
+.input-group-addon {
+    background-color:#FFF;
+}
+
+#userinfo {
+    text-align: right;
+    padding: 10px;
+    border: 2px dashed blue;
+}

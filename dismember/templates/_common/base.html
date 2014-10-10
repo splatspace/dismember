@@ -1,0 +1,22 @@
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-3.2.0-dist/css/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-3.2.0-dist/css/bootstrap-theme.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div id="userinfo">
+        {% if user %}
+        You are logged in as {{user.username}} (<a href="/accounts/logout">log out</a>)
+        {% else %}
+        You are not logged in (<a href="/accounts/login">log in</a>)
+        {% endif %}
+    </div>
+
+    {% block body %}{% endblock %}
+    {# <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script> #}
+    <script src="{{ url_for('static', filename='bootstrap-3.2.0-dist/js/bootstrap.min.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+#!/bin/sh
+# 
+# Configures dependencies in a virtual environment.  Run this
+# to prepare a clean repo working copy or whenever you add
+# a dependency.
+
+set -e
+BASE=$(dirname "$0")
+
+if [ ! -d "$BASE/venv" ] ; then
+  virtualenv "$BASE/venv"
+fi
+
+. "$BASE/venv/bin/activate"
+
+echo "Installing requirements..."
+pip -q install -r "$BASE"/requirements.txt
+
+echo "Virtual environment configured at '$BASE/venv'"
+echo
+echo "Run '. $BASE/venv/bin/activate' before starting server."

@@ -1,0 +1,23 @@
+{% extends "_common/base.html" %}
+{% block head %}
+<title>Membership System</title>
+{% endblock %}
+
+{% block body %}
+
+<h1>The Membership System</h1>
+
+<h2>Things members can do:</h2>
+<ul>
+    <li><a href="/dues/pay">Pay Dues</a></li>
+    <li><a href="/members/me">View Membership Details</a></li>
+</ul>
+
+{% if user and user.has_role('Administrator') %}
+<h2>Things administrators can do:</h2>
+<ul>
+    <li><a href="/members">Manage Members</a></li>
+</ul>
+{% endif %}
+
+{% endblock %}
