@@ -21,8 +21,10 @@ SECRET_KEY = 'f99b15e00bc813d5a027e902d177c56fcba1a5027bff1b0a54b8c7338dbead29'
 # ######################################################################
 # Flask-Peewee
 #
-# See http://flask-peewee.readthedocs.org/en/latest/database.html
+# As of 2014-10-10 "DATABASE" is the only config property Flask-Peewee
+# uses.
 
+# http://flask-peewee.readthedocs.org/en/latest/database.html
 DATABASE = {
     'engine': 'peewee.PostgresqlDatabase',
     'name': 'dismember'

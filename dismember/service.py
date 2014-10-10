@@ -22,10 +22,29 @@ auth = None
 admin = None
 
 
-#@app.before_first_request
-def create_builtins():
-    global db
+def run():
+    global app, db, admin, auth
 
+    # Flask-Peewee
+    db = Database(app)
+
+    # Importing models creates tables (if required)
+    import dismember.models
+
+    # Flask-Peewee
+    auth = Auth(app, db, user_model=dismember.models.user.User)
+    admin = Admin(app, auth)
+    import dismember.admin
+    admin.setup()
+
+    # Importing vies registers endpoints with Flask
+    import dismember.views
+
+    create_builtins()
+    app.run(host=app.config['DISMEMBER_HOST'])
+
+
+def create_builtins():
     from dismember.models.user import User
     from dismember.models.role import Role
     from dismember.models.user_role import UserRole
@@ -53,28 +72,3 @@ def create_builtins():
     # Map users to roles
     for (user, role) in user_role:
         UserRole.create(user=user, role=role)
-
-
-def run():
-    global app, db, admin, auth
-
-    # Flask-Peewee
-    db = Database(app)
-
-    # Importing models creates tables (if required)
-    import dismember.models
-
-    # Flask-Peewee
-    auth = Auth(app, db, user_model=dismember.models.user.User)
-    admin = Admin(app, auth)
-    import dismember.admin
-
-    admin.setup()
-
-    # Import the views to enable Flask handlers
-    import dismember.views
-
-    app.logger.debug('Creating built-in resources')
-    create_builtins()
-
-    app.run(host=app.config['DISMEMBER_HOST'])
