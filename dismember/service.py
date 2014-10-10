@@ -2,6 +2,7 @@ from flask import Flask
 from flask.ext.peewee.admin import Admin
 from flask.ext.peewee.auth import Auth
 from flask.ext.peewee.rest import RestAPI, AdminAuthentication
+from flask.ext.security import PeeweeUserDatastore, Security
 from flask_peewee.db import Database
 
 # Don't import any modules that use DB models up here, because they need to
@@ -30,12 +31,17 @@ def run():
 
     # Importing models creates tables (if required)
     import dismember.models
-
-    # Flask-Peewee
     from dismember.models.user import User, UserAdmin
+    from dismember.models.role import Role
+    from dismember.models.user_role import UserRole
     from dismember.models.member_status import MemberStatus, MemberStatusAdmin
     from dismember.models.member_type import MemberType, MemberTypeAdmin
 
+    # Setup Flask-Security
+    user_datastore = PeeweeUserDatastore(db, User, Role, UserRole)
+    security = Security(app, user_datastore)
+
+    # Flask-Peewee
     auth = Auth(app, db, user_model=dismember.models.user.User)
     admin = Admin(app, auth, branding=app.config['DISMEMBER_SITE_NAME'])
     admin.register(User, UserAdmin)
@@ -52,11 +58,11 @@ def run():
     # Importing views registers endpoints with Flask
     import dismember.views
 
-    create_builtins()
+    create_builtins(user_datastore)
     app.run(host=app.config['DISMEMBER_HOST'])
 
 
-def create_builtins():
+def create_builtins(user_datastore):
     """
     Creates the built-in resources (users, etc.) that are defined in the
     config file.
@@ -64,10 +70,18 @@ def create_builtins():
 
     from dismember.models.user import User
 
-    # Create builtin users
+    for builtin_role in app.config['DISMEMBER_BUILTINS']['roles']:
+        name = builtin_role['name']
+        builtin_role.pop('name')
+        user_datastore.find_or_create_role(name, **builtin_role)
+
+    # user_datastore.add_role_to_user('hello', "admin")
+
     for builtin_user in app.config['DISMEMBER_BUILTINS']['users']:
-        if not User.select(User.username == builtin_user['username']).exists():
-            user = User(**builtin_user)
-            user.set_password(user.password)
-            user.enabled = True
-            user.save()
+        if not user_datastore.find_user(username=builtin_user['username']):
+            user_datastore.create_user(**builtin_user)
+        # if not User.select(User.username == builtin_user['username']).exists():
+        #     user = User(**builtin_user)
+        #     user.set_password(user.password)
+        #     user.enabled = True
+        #     user.save()

@@ -45,13 +45,21 @@ DISMEMBER_SITE_NAME = 'Dismembership System'
 DISMEMBER_BUILTINS = {
     'users': [
         {
-            # The administrator account.  You can rename it, but don't delete it or
-            # set the "admin" property to False (that would be very silly).
+            # The administrator account.  You can change these properties:
             'username': 'admin',
             'password': 'admin',
             'full_name': 'Dismember Administrator',
             'email': 'admin@example.org',
-            'admin': True
+
+            # Don't remove the 'Administrator' role
+            'roles': ['Administrator']
         }
-    ]
+    ],
+    'roles': [
+        {
+            # The full administrator role.  Don't rename or delete this one.
+            'name': 'Administrator',
+            'description': 'Full Administrator',
+        }
+    ],
 }

@@ -3,13 +3,16 @@ import datetime
 from flask.ext.peewee.admin import ModelAdmin
 
 from flask.ext.peewee.auth import BaseUser
+from flask.ext.security import UserMixin
 from peewee import PrimaryKeyField, TextField, BooleanField, ForeignKeyField, DateTimeField
 from dismember.models.member_status import MemberStatus
 from dismember.models.member_type import MemberType
 from dismember.service import db
 
 
-class User(db.Model, BaseUser):
+# BaseUser supports Flask-Peewee
+# UserMixin supports Flask-Security
+class User(db.Model, BaseUser, UserMixin):
     """A human or other being authorized to use this application."""
 
     class Meta:
@@ -21,7 +24,7 @@ class User(db.Model, BaseUser):
     email = TextField(unique=True, index=True)
     password = TextField()
     active = BooleanField(default=True)
-    admin = BooleanField(default=True)
+    # admin = BooleanField(default=True)
 
     # Our user properties
     full_name = TextField()
@@ -40,6 +43,19 @@ class User(db.Model, BaseUser):
 
     def __str__(self):
         return '%s (%s)' % (self.username, self.full_name)
+
+    # @property
+    # def roles(self):
+    #     return [ur.role for ur in self.user_roles]
+
+    # def has_role(self, role_name):
+    #     return role_name in [r.name for r in self.roles]
+
+    @property
+    def admin(self):
+        """Test whether this user is an admin.  Supports Flask-Peewee's auth and admin features"""
+        # Use Flask-Security roles to detect admin-ness
+        return self.has_role('Administrator')
 
 
 class UserAdmin(ModelAdmin):
