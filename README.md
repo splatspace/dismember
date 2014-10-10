@@ -31,7 +31,14 @@ Then install the dependencies into the current directory:
 You might need the PostgreSQL development packages installed to complete
 the installation of the PostgreSQL driver.
 
-Once the dependencies are installed, edit config.py to suit your needs.
+## Configuration
+
+First create a configuration file in the instance directory:
+
+    cp ./dismember/config.py ./instance/config.py
+     
+Then edit ./instance/config.py to suit your needs.  Settings in this file
+override settings in the default config.py (the file you made a copy of).
 
 ## Starting the Application
 
