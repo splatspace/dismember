@@ -57,6 +57,14 @@ class User(db.Model, BaseUser, UserMixin):
         # Use Flask-Security roles to detect admin-ness
         return self.has_role('Administrator')
 
+    # Overrides Flask-Peewee's implementation to do it the Flask-Security way
+    def set_password(self, password):
+        self.password = password
+
+    # Overrides Flask-Peewee's implementation to do it the Flask-Security way
+    def check_password(self, password):
+        return password == self.password
+
 
 class UserAdmin(ModelAdmin):
     def get_display_name(self):
