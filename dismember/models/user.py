@@ -48,6 +48,10 @@ class User(db.Model, BaseUser):
     def has_role(self, role_name):
         return role_name in [r.name for r in self.roles]
 
+    @property
+    def admin(self):
+        """Required by AdminAuthentication"""
+        return self.has_role('Administrator')
 
 class UserAdmin(ModelAdmin):
     # columns = ('username', 'email', 'is_superuser',)

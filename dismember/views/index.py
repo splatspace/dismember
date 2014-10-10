@@ -1,6 +1,7 @@
 from flask import render_template
 
-from dismember.service import app, auth
+from dismember.service import app
+
 
 @app.route('/')
 def index():

@@ -1,4 +1,5 @@
 from flask import Flask
+from flask.ext.peewee.rest import RestAPI, AdminAuthentication
 from flask_peewee.db import Database
 
 # Don't import any modules that use DB models up here, because they need to
@@ -16,10 +17,11 @@ app.config.from_pyfile('config.py', silent=True)
 db = None
 auth = None
 admin = None
+api = None
 
 
 def run():
-    global app, db, admin, auth
+    global app, db, admin, auth, api
 
     # Flask-Peewee
     db = Database(app)
@@ -37,7 +39,13 @@ def run():
     admin.register(User, UserAdmin)
     admin.setup()
 
-    # Importing vies registers endpoints with Flask
+    # Limit API access to admins
+    api = RestAPI(app, default_auth=AdminAuthentication(
+        auth, protected_methods=['HEAD', 'GET', 'POST', 'PUT', 'DELETE']))
+    api.register(User)
+    api.setup()
+
+    # Importing views registers endpoints with Flask
     import dismember.views
 
     create_builtins()
