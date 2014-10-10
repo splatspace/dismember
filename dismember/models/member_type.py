@@ -1,7 +1,6 @@
 import datetime
 
-from peewee import PrimaryKeyField, TextField
-from dismember.custom_fields import DateTimeWithTimeZoneField
+from peewee import PrimaryKeyField, TextField, DateTimeField
 from dismember.service import db
 
 
@@ -14,7 +13,7 @@ class MemberType(db.Model):
     id = PrimaryKeyField()
     name = TextField(unique=True)
     description = TextField(null=True)
-    created = DateTimeWithTimeZoneField(default=datetime.datetime.now)
+    created = DateTimeField(default=datetime.datetime.now)
 
     def __str__(self):
         return self.name

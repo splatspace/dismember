@@ -1,6 +1,3 @@
-from flask.ext.peewee.admin import ModelAdmin, AdminModelConverter, AdminFilterModelConverter
-from flask.ext.peewee.filters import FilterMapping
-from dismember.custom_fields import DateTimeWithTimeZoneField
 from dismember.service import admin
 from dismember.models.user import User
 
@@ -11,7 +8,7 @@ from dismember.models.user import User
 # active='Login Enabled')
 #
 # column_list = ('email', 'name', 'roles')
-#     column_searchable_list = ('email', 'name')
+# column_searchable_list = ('email', 'name')
 #
 #     # Don't show "password" (it would be encrypted); show the new_password* fields intead.
 #     form_columns = (
@@ -50,43 +47,4 @@ from dismember.models.user import User
 # # Add in the order they should appear
 # admin.add_view(MembersModelView(name='Members'))
 
-from wtfpeewee.fields import WPDateTimeField
-from wtfpeewee.orm import FieldInfo
-
-
-def shit(model, field, **kwargs):
-    kwargs.pop('filters')
-    return FieldInfo(field.name, WPDateTimeField(**kwargs))
-
-
-class FooModelConverter(AdminModelConverter):
-    def __init__(self, model_admin, **kwargs):
-        kwargs['additional'] = {
-            DateTimeWithTimeZoneField: shit
-        }
-        super(FooModelConverter, self).__init__(model_admin, **kwargs)
-
-
-class FooFilterConverter(AdminFilterModelConverter):
-    def __init__(self, model_admin, **kwargs):
-        kwargs['additional'] = {
-            DateTimeWithTimeZoneField: shit
-        }
-        super(FooFilterConverter, self).__init__(model_admin, **kwargs)
-
-
-class FooFilterMapping(FilterMapping):
-    def get_field_types(self):
-        types = super(FooFilterMapping, self).get_field_types()
-        types[DateTimeWithTimeZoneField] = 'datetime_date'
-        return types
-
-
-class FooAdmin(ModelAdmin):
-    form_converter = FooModelConverter
-    filter_converter = FooFilterConverter
-    filter_mapping = FooFilterMapping
-
-
-admin.register(User, admin_class=FooAdmin)
-# admin.register(User)
+admin.register(User)

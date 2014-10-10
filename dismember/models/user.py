@@ -2,7 +2,6 @@ import datetime
 
 from flask.ext.peewee.auth import BaseUser
 from peewee import PrimaryKeyField, TextField, BooleanField, ForeignKeyField, DateTimeField
-from dismember.custom_fields import DateTimeWithTimeZoneField
 from dismember.models.member_status import MemberStatus
 from dismember.models.member_type import MemberType
 from dismember.service import db
@@ -26,7 +25,7 @@ class User(db.Model, BaseUser):
     created = DateTimeField(default=datetime.datetime.now)
 
     # Membership information
-    member_signup = DateTimeWithTimeZoneField(null=True)
+    member_signup = DateTimeField(null=True)
     member_type = ForeignKeyField(MemberType, null=True)
     member_status = ForeignKeyField(MemberStatus, null=True)
     address = TextField(null=True)

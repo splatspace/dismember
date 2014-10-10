@@ -9,7 +9,7 @@ class UserRole(db.Model):
     """Joins Users to Roles"""
 
     class Meta:
-        db_table = 'user_roles'
+        db_table = 'users_roles'
         primary_key = CompositeKey('user', 'role')
 
     user = ForeignKeyField(User, related_name='user_roles')

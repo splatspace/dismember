@@ -3,7 +3,6 @@ from flask.ext.peewee.auth import Auth
 
 import os
 from flask import Flask
-from flask.ext.login import LoginManager
 from flask.ext.assets import Environment
 from itsdangerous import URLSafeTimedSerializer
 from flask_peewee.db import Database
@@ -73,18 +72,16 @@ def run(the_config):
     # Cookie serializer
     cookie_serializer = URLSafeTimedSerializer(app.secret_key)
 
-    # Must register custom fields before using flask_peewee.db.Database
-    import dismember.custom_fields
-    dismember.custom_fields.register_postgresql_fields()
-
     # Flask-Peewee
     app.config['DATABASE'] = config['db']
     db = Database(app)
     # Import all models (creates required tables if needed)
     import dismember.models
+
     auth = Auth(app, db, user_model=dismember.models.user.User)
     admin = Admin(app, auth)
     import dismember.admin
+
     admin.setup()
 
     # Configure Flask-Mail
@@ -110,8 +107,8 @@ def run(the_config):
     # app.config['MAIL_SERVER'] = 'localhost'
     # app.config['MAIL_PORT'] = 25
     # app.config['MAIL_USE_SSL'] = True
-    #app.config['MAIL_USERNAME'] = 'username'
-    #app.config['MAIL_PASSWORD'] = 'password'
+    # app.config['MAIL_USERNAME'] = 'username'
+    # app.config['MAIL_PASSWORD'] = 'password'
 
     # Flask-Security Core
     #user_datastore = SQLAlchemyUserDatastore(db, dismember.models.user.User, dismember.models.role.Role)
