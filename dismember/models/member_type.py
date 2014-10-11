@@ -1,24 +1,13 @@
-import datetime
-
 from flask.ext.peewee.admin import ModelAdmin
 
-from peewee import PrimaryKeyField, TextField, DateTimeField
-from dismember.service import db
+from dismember.models.enum import Enum
 
 
-class MemberType(db.Model):
+class MemberType(Enum):
     """A membership type or level (none, full, associate, etc.)"""
 
     class Meta:
         db_table = 'member_types'
-
-    id = PrimaryKeyField()
-    name = TextField(unique=True)
-    description = TextField(null=True)
-    created = DateTimeField(default=datetime.datetime.now)
-
-    def __str__(self):
-        return self.name
 
 
 class MemberTypeAdmin(ModelAdmin):

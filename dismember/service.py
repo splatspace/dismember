@@ -32,15 +32,24 @@ def run():
     import dismember.models
 
     # Flask-Peewee
-    from dismember.models.user import User, UserAdmin
     from dismember.models.member_status import MemberStatus, MemberStatusAdmin
     from dismember.models.member_type import MemberType, MemberTypeAdmin
+    from dismember.models.payment import Payment, PaymentAdmin
+    from dismember.models.payment_currency import PaymentCurrency, PaymentCurrencyAdmin
+    from dismember.models.payment_method import PaymentMethod, PaymentMethodAdmin
+    from dismember.models.payment_type import PaymentType, PaymentTypeAdmin
+    from dismember.models.user import User, UserAdmin
 
     auth = Auth(app, db, user_model=dismember.models.user.User)
     admin = Admin(app, auth, branding=app.config['DISMEMBER_SITE_NAME'])
     admin.register(User, UserAdmin)
     admin.register(MemberStatus, MemberStatusAdmin)
     admin.register(MemberType, MemberTypeAdmin)
+    admin.register(Payment, PaymentAdmin)
+    admin.register(PaymentCurrency, PaymentCurrencyAdmin)
+    admin.register(PaymentMethod, PaymentMethodAdmin)
+    admin.register(PaymentType, PaymentTypeAdmin)
+
     admin.setup()
 
     # Limit API access to admins

@@ -1,7 +1,6 @@
 import datetime
 
 from flask.ext.peewee.admin import ModelAdmin
-
 from flask.ext.peewee.auth import BaseUser
 from peewee import PrimaryKeyField, TextField, BooleanField, ForeignKeyField, DateTimeField
 from dismember.models.member_status import MemberStatus
