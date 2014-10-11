@@ -1,6 +1,6 @@
 from flask.ext.peewee.admin import ModelAdmin
 from dismember.service import db
-from peewee import PrimaryKeyField, TextField
+from peewee import PrimaryKeyField, TextField, IntegerField, DecimalField, Check, BooleanField
 
 
 class WePayCheckout(db.Model):
@@ -18,15 +18,39 @@ class WePayCheckout(db.Model):
     PaymentMethodName = 'WePay'
 
     id = PrimaryKeyField()
-    foo = TextField()
-    # method = ForeignKeyField(PaymentMethod)
-    # type = ForeignKeyField(PaymentType)
-    # currency = ForeignKeyField(PaymentCurrency)
-    # amount = DecimalField(max_digits=11, decimal_places=2)
-    # created = DateTimeField(default=datetime.datetime.now)
+
+    # WePay (required for create)
+    uuid = TextField(unique=True, index=True)
+    account_id = IntegerField()
+    short_description = TextField()
+    type = TextField(constraints=[Check("type in ('GOODS', 'SERVICE', 'DONATION', 'EVENT', 'PERSONAL')")])
+    amount = DecimalField(max_digits=10, decimal_places=2)
+
+    # WePay (optional for create)
+    currency = TextField(null=True)
+    long_description = TextField(null=True)
+    payer_email_message = TextField(null=True)
+    payee_email_message = TextField(null=True)
+    reference_id = TextField(null=True)
+    app_fee = DecimalField(null=True, max_digits=10, decimal_places=2)
+    fee_payer = TextField(null=True, constraints=[Check("type in (null, 'payer', 'payee')")])
+    redirect_uri = TextField(null=True)
+    callback_uri = TextField(null=True)
+    auto_capture = BooleanField(null=True)
+
+    # WePay (updated by callbacks)
+    wepay_checkout_id = IntegerField(null=True)
+    payer_name = TextField(null=True)
+    payer_email = TextField(null=True)
+    state = TextField(null=True)
+    gross = DecimalField(null=True, max_digits=10, decimal_places=2)
+    fee = DecimalField(null=True, max_digits=10, decimal_places=2)
+    amount_refunded = DecimalField(null=True, max_digits=10, decimal_places=2)
+    amount_charged_back = DecimalField(null=True, max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return '#%s (%s)' % (self.id, self.foo)
+        # Hard-code dollars for WePay
+        return '$%s (%s <%s>)' % (self.amount, self.payer_name, self.payer_email)
 
 
 class WePayCheckoutAdmin(ModelAdmin):
