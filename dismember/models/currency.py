@@ -4,11 +4,11 @@ from dismember.models.enum import Enum
 from peewee import TextField
 
 
-class PaymentCurrency(Enum):
+class Currency(Enum):
     """The currency used to make a payment (US Dollars, Bitcoin, etc.)"""
 
     class Meta:
-        db_table = 'payment_currencies'
+        db_table = 'currencies'
 
     symbol = TextField()
 
@@ -19,12 +19,12 @@ class PaymentCurrency(Enum):
         return '%s%s' % (self.symbol, amount)
 
 
-class PaymentCurrencyAdmin(ModelAdmin):
+class CurrencyAdmin(ModelAdmin):
     def get_display_name(self):
-        return 'Payment Currencies'
+        return 'Currencies'
 
     def get_admin_name(self):
-        return 'payment_currencies'
+        return 'currencies'
 
 
-PaymentCurrency.create_table(fail_silently=True)
+Currency.create_table(fail_silently=True)

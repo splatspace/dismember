@@ -32,24 +32,27 @@ def run():
     import dismember.models
 
     # Flask-Peewee
+    from dismember.models.currency import Currency, CurrencyAdmin
     from dismember.models.member_status import MemberStatus, MemberStatusAdmin
     from dismember.models.member_type import MemberType, MemberTypeAdmin
     from dismember.models.payment import Payment, PaymentAdmin
-    from dismember.models.payment_currency import PaymentCurrency, PaymentCurrencyAdmin
     from dismember.models.payment_method import PaymentMethod, PaymentMethodAdmin
     from dismember.models.payment_type import PaymentType, PaymentTypeAdmin
     from dismember.models.user import User, UserAdmin
+    from dismember.models.wepay_checkout import WePayCheckout, WePayCheckoutAdmin
+    from dismember.models.wepay_payment import WePayPayment, WePayPaymentAdmin
 
     auth = Auth(app, db, user_model=dismember.models.user.User)
     admin = Admin(app, auth, branding=app.config['DISMEMBER_SITE_NAME'])
-    admin.register(User, UserAdmin)
+    admin.register(Currency, CurrencyAdmin)
     admin.register(MemberStatus, MemberStatusAdmin)
     admin.register(MemberType, MemberTypeAdmin)
     admin.register(Payment, PaymentAdmin)
-    admin.register(PaymentCurrency, PaymentCurrencyAdmin)
     admin.register(PaymentMethod, PaymentMethodAdmin)
     admin.register(PaymentType, PaymentTypeAdmin)
-
+    admin.register(User, UserAdmin)
+    admin.register(WePayCheckout, WePayCheckoutAdmin)
+    admin.register(WePayPayment, WePayPaymentAdmin)
     admin.setup()
 
     # Limit API access to admins
@@ -71,12 +74,33 @@ def create_builtins():
     config file.
     """
 
+    # Users
     from dismember.models.user import User
+    for builtin in app.config['DISMEMBER_BUILTINS']['users']:
+        if not User.select().where(User.username == builtin['username']).exists():
+            item = User(**builtin)
+            item.set_password(item.password)
+            item.enabled = True
+            item.save()
 
-    # Create builtin users
-    for builtin_user in app.config['DISMEMBER_BUILTINS']['users']:
-        if not User.select(User.username == builtin_user['username']).exists():
-            user = User(**builtin_user)
-            user.set_password(user.password)
-            user.enabled = True
-            user.save()
+    # Payment methods
+    from dismember.models.payment_method import PaymentMethod
+    for builtin in app.config['DISMEMBER_BUILTINS']['payment_methods']:
+        if not PaymentMethod.select().where(PaymentMethod.name == builtin['name']).exists():
+            item = PaymentMethod(**builtin)
+            item.save()
+
+    # Payment types
+    from dismember.models.payment_type import PaymentType
+    for builtin in app.config['DISMEMBER_BUILTINS']['payment_types']:
+        if not PaymentType.select().where(PaymentType.name == builtin['name']).exists():
+            item = PaymentType(**builtin)
+            item.save()
+
+    # Currencies
+    from dismember.models.currency import Currency
+    for builtin in app.config['DISMEMBER_BUILTINS']['currencies']:
+        if not Currency.select().where(Currency.name == builtin['name']).exists():
+            item = Currency(**builtin)
+            item.save()
+

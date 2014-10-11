@@ -2,7 +2,7 @@ import datetime
 
 from flask.ext.peewee.admin import ModelAdmin
 from peewee import PrimaryKeyField, ForeignKeyField, DateTimeField, DecimalField
-from dismember.models.payment_currency import PaymentCurrency
+from dismember.models.currency import Currency
 from dismember.models.payment_method import PaymentMethod
 from dismember.models.payment_type import PaymentType
 from dismember.service import db
@@ -17,12 +17,12 @@ class Payment(db.Model):
     id = PrimaryKeyField()
     method = ForeignKeyField(PaymentMethod)
     type = ForeignKeyField(PaymentType)
-    currency = ForeignKeyField(PaymentCurrency)
+    currency = ForeignKeyField(Currency)
     amount = DecimalField(max_digits=11, decimal_places=2)
     created = DateTimeField(default=datetime.datetime.now)
 
     def __str__(self):
-        return self.currency.format(self.amount)
+        return '#%s (%s)' % (self.id, self.currency.format(self.amount))
 
 
 class PaymentAdmin(ModelAdmin):

@@ -53,5 +53,39 @@ DISMEMBER_BUILTINS = {
             'email': 'admin@example.org',
             'admin': True
         }
+    ],
+    'payment_methods': [
+        {
+            'name': 'Cash',
+            'description': 'A payment made with cash',
+        },
+        {
+            'name': 'Check',
+            'description': 'A payment made with a paper check',
+        },
+        {
+            'name': 'WePay',
+            'description': 'A payment made through the WebPay API',
+        }
+    ],
+    'payment_types': [
+        {
+            'name': 'Dues',
+            'description': 'Money for membership dues'
+        },
+        {
+            'name': 'Key Deposit',
+            'description': 'Money to secure a loaned key'
+        },
+        {
+            'name': 'Donation',
+            'description': 'A monetary gift to the organization'
+        }
+    ],
+    'currencies': [
+        {
+            'name': 'US Dollars',
+            'symbol': '$'
+        }
     ]
 }
