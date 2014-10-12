@@ -2,7 +2,7 @@ from flask.ext.peewee.admin import ModelAdmin
 
 from peewee import PrimaryKeyField, TextField, IntegerField, DecimalField, Check, BooleanField
 
-from dismember.models import to_dict
+from dismember.models.utils import to_dict
 from dismember.service import db
 
 
