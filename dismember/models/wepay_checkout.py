@@ -29,7 +29,7 @@ class WePayCheckout(db.Model):
     short_description = TextField()
     type = TextField(constraints=[Check("type in ('GOODS', 'SERVICE', 'DONATION', 'EVENT', 'PERSONAL')")])
     amount = DecimalField(max_digits=10, decimal_places=2)
-    
+
     # WePay (optional for create)
     currency = TextField(null=True)
     long_description = TextField(null=True)
