@@ -10,6 +10,8 @@ class WePayCheckout(db.Model):
     This object essentially mirrors the state from the WePay service.  A checkout
     is recognized as a payment by creating a Payment object, then linking it to the
     WePayCheckout through a WePayPayment.
+
+    https://www.wepay.com/developer/reference/checkout
     """
 
     class Meta:
@@ -19,13 +21,15 @@ class WePayCheckout(db.Model):
 
     id = PrimaryKeyField()
 
+    # Not all of the WePay API Checkout properties are present in this class.  We just
+    # track the ones we might want to query on locally.
+
     # WePay (required for create)
-    uuid = TextField(unique=True, index=True)
     account_id = IntegerField()
     short_description = TextField()
     type = TextField(constraints=[Check("type in ('GOODS', 'SERVICE', 'DONATION', 'EVENT', 'PERSONAL')")])
     amount = DecimalField(max_digits=10, decimal_places=2)
-
+    
     # WePay (optional for create)
     currency = TextField(null=True)
     long_description = TextField(null=True)
@@ -33,13 +37,14 @@ class WePayCheckout(db.Model):
     payee_email_message = TextField(null=True)
     reference_id = TextField(null=True)
     app_fee = DecimalField(null=True, max_digits=10, decimal_places=2)
-    fee_payer = TextField(null=True, constraints=[Check("type in (null, 'payer', 'payee')")])
+    fee_payer = TextField(null=True,
+                          constraints=[Check("type in (null, 'payer', 'payee', 'payer_from_app', 'payee_from_app')")])
     redirect_uri = TextField(null=True)
     callback_uri = TextField(null=True)
     auto_capture = BooleanField(null=True)
 
     # WePay (updated by callbacks)
-    wepay_checkout_id = IntegerField(null=True)
+    checkout_id = IntegerField(null=True)
     payer_name = TextField(null=True)
     payer_email = TextField(null=True)
     state = TextField(null=True)
