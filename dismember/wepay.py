@@ -3,19 +3,11 @@ import urllib2
 import uuid
 import json
 
+from dismember.models import to_dict
+
 from dismember.service import app
 
 from dismember.models.wepay_checkout import WePayCheckout
-
-
-def to_sparse_dict(o, property_names):
-    d = {}
-    for name in property_names:
-        if hasattr(o, name):
-            v = getattr(o, name, None)
-            if v is not None:
-                d[name] = v
-    return d
 
 
 class WePayApi(object):
@@ -163,7 +155,7 @@ class WePayService(object):
         token = self._wepay_api.get_access_token(submit_uri, authorization_code)
 
         # Submit only the values that are valid for 'create' to WePay
-        checkout_values = json.dumps(to_sparse_dict(checkout, [
+        checkout_values = json.dumps(to_dict(checkout, [
             'account_id',
             'short_description',
             'type',
@@ -186,7 +178,7 @@ class WePayService(object):
             'prefill_info',
             'funding_sources',
             'payment_method_id',
-            'payment_method_type']))
+            'payment_method_type'], include_none_values=False))
         checkout_response = self._wepay_api.call(token, '/checkout/create', checkout_values)
 
         # Update the DB object with server-side WePay checkout ID
