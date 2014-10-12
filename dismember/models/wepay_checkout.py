@@ -3,6 +3,12 @@ from dismember.service import db
 from peewee import PrimaryKeyField, TextField, IntegerField, DecimalField, Check, BooleanField
 
 
+def money_field(null=False, **kwargs):
+    # 10 total digits, 2 digits to the right of the decimal point, lets us hold
+    # up to 99,999,999.99.
+    return DecimalField(null=null, max_digits=10, decimal_places=2, **kwargs)
+
+
 class WePayCheckout(db.Model):
     """
     A WePay checkout (the transaction type that gives us money), either in-progress or
@@ -24,34 +30,43 @@ class WePayCheckout(db.Model):
     # Not all of the WePay API Checkout properties are present in this class.  We just
     # track the ones we might want to query on locally.
 
-    # WePay (required for create)
+    # Fields required for /checkout/create
     account_id = IntegerField()
     short_description = TextField()
     type = TextField(constraints=[Check("type in ('GOODS', 'SERVICE', 'DONATION', 'EVENT', 'PERSONAL')")])
-    amount = DecimalField(max_digits=10, decimal_places=2)
+    amount = money_field()
 
-    # WePay (optional for create)
+    # Fields optional for /checkout/create
     currency = TextField(null=True)
     long_description = TextField(null=True)
     payer_email_message = TextField(null=True)
     payee_email_message = TextField(null=True)
     reference_id = TextField(null=True)
-    app_fee = DecimalField(null=True, max_digits=10, decimal_places=2)
+    app_fee = money_field(null=True)
     fee_payer = TextField(null=True,
                           constraints=[Check("type in (null, 'payer', 'payee', 'payer_from_app', 'payee_from_app')")])
     redirect_uri = TextField(null=True)
     callback_uri = TextField(null=True)
+    fallback_uri = TextField(null=True)
     auto_capture = BooleanField(null=True)
+    require_shipping = BooleanField(null=True)
+    shipping_fee = money_field(null=True)
+    mode = TextField(null=True)
+    preapproval_id = IntegerField(null=True)
+    # prefill_info = foreign key to a prefill table?
+    funding_sources = TextField(null=True)
+    payment_method_id = IntegerField(null=True)
+    payment_method_type = TextField(null=True)
 
-    # WePay (updated by callbacks)
+    # Fields updated from return values or by callbacks
     checkout_id = IntegerField(null=True)
     payer_name = TextField(null=True)
     payer_email = TextField(null=True)
     state = TextField(null=True)
-    gross = DecimalField(null=True, max_digits=10, decimal_places=2)
-    fee = DecimalField(null=True, max_digits=10, decimal_places=2)
-    amount_refunded = DecimalField(null=True, max_digits=10, decimal_places=2)
-    amount_charged_back = DecimalField(null=True, max_digits=10, decimal_places=2)
+    gross = money_field(null=True)
+    fee = money_field(null=True)
+    amount_refunded = money_field(null=True)
+    amount_charged_back = money_field(null=True)
 
     def __str__(self):
         # Hard-code dollars for WePay

@@ -1,8 +1,10 @@
 import urllib
 import urllib2
 import uuid
+import json
 
 from dismember.service import app
+
 from dismember.models.wepay_checkout import WePayCheckout
 
 
@@ -160,27 +162,8 @@ class WePayService(object):
         # Get an access token for this request for this user
         token = self._wepay_api.get_access_token(submit_uri, authorization_code)
 
-        # Submit the checkout to WePay
-        checkout_values = self.to_api(checkout)
-        checkout_response = self._wepay_api.call(token, '/checkout/create', checkout_values)
-
-        # Update the DB object with server-side WePay checkout ID
-        checkout.checkout_id = checkout_response['checkout_id']
-        checkout.save()
-
-        return checkout_response['checkout_uri']
-
-
-    def _checkout_submit_data(self, checkout):
-        """
-        Get the checkout submission data, a JSON string that includes the WePayCheckout values appropriate
-        for submission.
-
-        :param checkout: a WePayCheckout object being submitted
-        :return: a JSON string
-        """
-        assert checkout
-        return to_sparse_dict(checkout, [
+        # Submit only the values that are valid for 'create' to WePay
+        checkout_values = json.dumps(to_sparse_dict(checkout, [
             'account_id',
             'short_description',
             'type',
@@ -203,7 +186,14 @@ class WePayService(object):
             'prefill_info',
             'funding_sources',
             'payment_method_id',
-            'payment_method_type'])
+            'payment_method_type']))
+        checkout_response = self._wepay_api.call(token, '/checkout/create', checkout_values)
+
+        # Update the DB object with server-side WePay checkout ID
+        checkout.checkout_id = checkout_response['checkout_id']
+        checkout.save()
+
+        return checkout_response['checkout_uri']
 
 
 wepay_api = WePayApi(app.config['WEPAY_ENVIRONMENT'],
