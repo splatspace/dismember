@@ -89,3 +89,19 @@ DISMEMBER_BUILTINS = {
         }
     ]
 }
+
+# 'prod' or 'stage'
+WEPAY_ENVIRONMENT = 'stage'
+
+# Your WePay account ID
+WEPAY_ACCOUNT_ID = '12345'
+
+# Your WePay access token
+WEPAY_ACCESS_TOKEN = 'STAGE_abc123def456'
+
+# Your WePay application's client ID
+WEPAY_CLIENT_ID = '67890'
+
+# Your WePay application's client secret
+WEPAY_CLIENT_SECRET = '123abc456xyz'
+
