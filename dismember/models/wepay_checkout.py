@@ -1,6 +1,9 @@
 from flask.ext.peewee.admin import ModelAdmin
-from dismember.service import db
+
 from peewee import PrimaryKeyField, TextField, IntegerField, DecimalField, Check, BooleanField
+
+from dismember.models import to_dict
+from dismember.service import db
 
 
 def money_field(null=False, **kwargs):
@@ -71,6 +74,33 @@ class WePayCheckout(db.Model):
     def __str__(self):
         # Hard-code dollars for WePay
         return '$%s (%s <%s>)' % (self.amount, self.payer_name, self.payer_email)
+
+    def to_create_dict(self):
+        """Get a dictionary with only the values that are valid for /checkout/create"""
+        return to_dict(self, [
+            'account_id',
+            'short_description',
+            'type',
+            'amount',
+            'currency',
+            'long_description',
+            'payer_email_message',
+            'payee_email_message',
+            'reference_id',
+            'app_fee',
+            'fee_payer',
+            'redirect_uri',
+            'callback_uri',
+            'fallback_uri',
+            'auto_capture',
+            'require_shipping',
+            'shipping_fee',
+            'mode',
+            'preapproval_id',
+            'prefill_info',
+            'funding_sources',
+            'payment_method_id',
+            'payment_method_type'], include_none_values=False)
 
 
 class WePayCheckoutAdmin(ModelAdmin):

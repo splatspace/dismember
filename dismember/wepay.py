@@ -155,31 +155,7 @@ class WePayService(object):
         token = self._wepay_api.get_access_token(submit_uri, authorization_code)
 
         # Submit only the values that are valid for 'create' to WePay
-        checkout_values = json.dumps(to_dict(checkout, [
-            'account_id',
-            'short_description',
-            'type',
-            'amount',
-            'currency',
-            'long_description',
-            'payer_email_message',
-            'payee_email_message',
-            'reference_id',
-            'app_fee',
-            'fee_payer',
-            'redirect_uri',
-            'callback_uri',
-            'fallback_uri',
-            'auto_capture',
-            'require_shipping',
-            'shipping_fee',
-            'mode',
-            'preapproval_id',
-            'prefill_info',
-            'funding_sources',
-            'payment_method_id',
-            'payment_method_type'], include_none_values=False))
-        checkout_response = self._wepay_api.call(token, '/checkout/create', checkout_values)
+        checkout_response = self._wepay_api.call(token, '/checkout/create', checkout.to_create_dict())
 
         # Update the DB object with server-side WePay checkout ID
         checkout.checkout_id = checkout_response['checkout_id']
