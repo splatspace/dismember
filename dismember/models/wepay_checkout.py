@@ -1,6 +1,7 @@
 import datetime
 from flask.ext.peewee.admin import ModelAdmin
-from peewee import PrimaryKeyField, TextField, IntegerField, DecimalField, Check, BooleanField, DateTimeField
+from peewee import PrimaryKeyField, TextField, IntegerField, DecimalField, Check, BooleanField, DateTimeField, \
+    BigIntegerField
 from dismember.models.utils import to_dict
 from dismember.service import db
 
@@ -63,7 +64,7 @@ class WePayCheckout(db.Model):
     # Fields updated from return values or by callbacks
     cancel_reason = TextField(null=True)
     checkout_id = IntegerField(null=True)
-    create_time = DateTimeField(null=True)
+    create_time = BigIntegerField(null=True)
     dispute_uri = TextField(null=True)
     payer_name = TextField(null=True)
     payer_email = TextField(null=True)
@@ -122,8 +123,6 @@ class WePayCheckout(db.Model):
         self.account_id = checkout.get('account_id', None)
         self.preapproval_id = checkout.get('preapproval_id', None)
         self.create_time = checkout.get('create_time', None)
-        if self.create_time is not None:
-            self.create_time = datetime.datetime.fromtimestamp(self.create_time)
         self.state = checkout.get('state', None)
         self.soft_descriptor = checkout.get('soft_descriptor', None)
         self.short_description = checkout.get('short_description', None)

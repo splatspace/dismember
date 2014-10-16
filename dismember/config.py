@@ -83,15 +83,15 @@ DISMEMBER_BUILTINS = {
 # 'prod' or 'stage'
 WEPAY_ENVIRONMENT = 'stage'
 
-# Your WePay account ID
+# Your WePay account ID.  You can find this in the API Keys web page at WePay.
 WEPAY_ACCOUNT_ID = '12345'
 
-# Your WePay access token.  Used with API methods that don't require a dynamic per-user token.
-WEPAY_DEFAULT_ACCESS_TOKEN = 'STAGE_abc123def456'
+# The WePay access token for your account.  You can find this in the API Keys web page at WePay.
+WEPAY_ACCESS_TOKEN = 'STAGE_abc123def456'
 
-# Your WePay application's client ID
+# Your WePay application's client ID.  You can find this in the API Keys web page at WePay.
 WEPAY_CLIENT_ID = '67890'
 
-# Your WePay application's client secret
+# Your WePay application's client secret.  You can find this in the API Keys web page at WePay.
 WEPAY_CLIENT_SECRET = '123abc456xyz'
 

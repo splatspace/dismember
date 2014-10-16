@@ -194,5 +194,5 @@ class WePayService(object):
 wepay_api = WePayApi(app.config['WEPAY_ENVIRONMENT'],
                      app.config['WEPAY_CLIENT_ID'],
                      app.config['WEPAY_CLIENT_SECRET'],
-                     app.config['WEPAY_DEFAULT_ACCESS_TOKEN'])
+                     app.config['WEPAY_ACCESS_TOKEN'])
 wepay_service = WePayService(wepay_api)
