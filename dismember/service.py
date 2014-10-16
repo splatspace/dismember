@@ -4,6 +4,8 @@ from flask.ext.peewee.auth import Auth
 from flask.ext.peewee.rest import RestAPI, AdminAuthentication
 from flask_peewee.db import Database
 
+from dismember.reverse_proxied import ReverseProxied
+
 # Don't import any modules that use DB models up here, because they need to
 # import and use the "db" object from this module (which would not be initialized
 # yet).  Instead, import them as requred after db has been initialized.  This
@@ -11,6 +13,7 @@ from flask_peewee.db import Database
 # import and use models freely.
 
 app = Flask(__name__, instance_relative_config=True)
+app.wsgi_app = ReverseProxied(app.wsgi_app)
 app.config.from_object('dismember.config')
 # Read the local "./instance/config.py" if it exists
 app.config.from_pyfile('config.py', silent=True)

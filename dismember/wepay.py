@@ -48,8 +48,8 @@ class WePayApi(object):
 
     def get_access_token(self, redirect_uri, code, callback_uri=None):
         """
-        Get an access token for making API requests. You must first call get_authorize_url to
-        obtain 'code'.
+        Get an access token for making API requests on behalf of a user who has authorized you
+        to do so (through the flow started by get_authorize_url).
 
         :param redirect_uri: the URI that you used for get_authorize_url
         :param code: the code you got back as a query param from get_authorize_url
@@ -76,13 +76,13 @@ class WePayApi(object):
         url = '%s?%s' % (base_url, urllib.urlencode(params))
         return urllib2.urlopen(url).read()
 
-    def call(self, method, access_token=None, request_data={}):
+    def call(self, method, request_data={}, access_token=None):
         """
         Call a WePay API method.
 
         :param method: the name of the method (like '/checkout/create')
-        :param access_token: an access token you got from get_access_token or None to use the default token
         :param request_data dict: the call request parameters
+        :param access_token: an access token you got from get_access_token or None to use the default token
         :return: the response data from the API
         """
         assert method
@@ -134,32 +134,26 @@ class WePayService(object):
         checkout.save()
         return self._wepay_api.get_authorize_url(submit_uri, 'collect_payments', state=checkout.reference_id)
 
-    def submit_checkout(self, submit_uri, authorization_code, checkout_reference_id):
+    def submit_checkout(self, submit_uri, checkout_reference_id):
         """
         Submits an authorized checkout to WePay for processing. This is the second step in the
         checkout process.
 
         :param submit_uri: the exact URI you used as submit_uri for the call to authorize_checkout
-        :param authorize_code: the URL query parameter 'code' that WePay included in the redirect back to
-            our service after finishing the authorization process initiated by authorize_checkout
         :param checkout_reference_id: the reference ID of the checkout that was previously authorized
         :return: the URI to send the user to to confirm and complete the checkout
         """
         assert submit_uri
-        assert authorization_code
         assert checkout_reference_id
 
         checkout = WePayCheckout.select().where(WePayCheckout.reference_id == checkout_reference_id).first()
         if not checkout:
             raise ValueError('WePayCheckout with reference ID %s not found' % checkout_reference_id)
 
-        # Get an access token for this request for this user
-        token_response = json.loads(self._wepay_api.get_access_token(submit_uri, authorization_code))
-
-        # Submit only the values that are valid for 'create' to WePay
+        # Submit only the values that are valid for 'create' to WePay.  Use the default access token
+        # since we're only accessing our account.
         checkout_response = json.loads(
-            self._wepay_api.call('/checkout/create', access_token=token_response['access_token'],
-                                 request_data=checkout.to_create_dict()))
+            self._wepay_api.call('/checkout/create', request_data=checkout.to_create_dict()))
 
         # Update the DB object with server-side WePay checkout ID
         checkout.update_from_dict(checkout_response)
@@ -167,32 +161,26 @@ class WePayService(object):
 
         return checkout_response['checkout_uri']
 
-    def refresh_checkout(self, find_params={}):
+    def refresh_checkout(self, checkout_id):
         """
         Refresh local information about a checkout from the WePay API.  This method is primary
         for callback handlers.
 
-        :param find_params: the properties to send to /checkout/find
+        :param checkout_id: the ID WePay assigned to the checkout after it was created
         :return: the refreshed WePayCheckout object
         """
-        assert find_params
+        assert checkout_id
 
         # Use the default access token.
-        checkout_response = self._wepay_api.call('/checkout/find', request_data=find_params)
+        checkout_response = json.loads(self._wepay_api.call('/checkout', request_data=dict(checkout_id=checkout_id)))
 
-        # It should return an array of length 1 since our reference IDs are unique.
         if not checkout_response:
-            raise ValueError('No checkouts matching %r were found' % find_params)
-
-        if len(checkout_response) > 1:
-            raise ValueError('The server returned more than one checkout matching %s' % find_params)
-
-        checkout_response = checkout_response[0]
+            raise ValueError('No checkout with ID %s was found' % checkout_id)
 
         # We generate the reference ID, and they're unique, so they are the best key in this situation
-        checkout = WePayCheckout.select().where(WePayCheckout.reference_id == checkout_response.reference_id).first()
+        checkout = WePayCheckout.select().where(WePayCheckout.reference_id == checkout_response['reference_id']).first()
         if not checkout:
-            raise ValueError('WePayCheckout with reference ID %s not found' % checkout_response.reference_id)
+            raise ValueError('WePayCheckout with reference ID %s not found' % checkout_response['reference_id'])
 
         # Save the old state for comparison purposes
         old_state = checkout.state
