@@ -57,20 +57,6 @@ DISMEMBER_BUILTINS = {
             'admin': True
         }
     ],
-    'payment_methods': [
-        {
-            'name': 'Cash',
-            'description': 'A payment made with cash',
-        },
-        {
-            'name': 'Check',
-            'description': 'A payment made with a paper check',
-        },
-        {
-            'name': 'WePay',
-            'description': 'A payment made through the WebPay API',
-        }
-    ],
     # Currency names must be ISO 4217 codes
     'currencies': [
         {

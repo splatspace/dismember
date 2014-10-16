@@ -1,7 +1,5 @@
-import datetime
 from flask.ext.peewee.admin import ModelAdmin
-from peewee import PrimaryKeyField, TextField, IntegerField, DecimalField, Check, BooleanField, DateTimeField, \
-    BigIntegerField
+from peewee import PrimaryKeyField, TextField, IntegerField, DecimalField, Check, BooleanField, BigIntegerField
 from dismember.models.utils import to_dict
 from dismember.service import db
 
@@ -158,4 +156,3 @@ class WePayCheckoutAdmin(ModelAdmin):
 
 
 WePayCheckout.create_table(fail_silently=True)
-

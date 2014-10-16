@@ -167,7 +167,7 @@ class WePayService(object):
         for callback handlers.
 
         :param checkout_id: the ID WePay assigned to the checkout after it was created
-        :return: the refreshed WePayCheckout object
+        :return: the refreshed WePayCheckout object, the "state" property of the object before the refresh
         """
         assert checkout_id
 
@@ -182,13 +182,10 @@ class WePayService(object):
         if not checkout:
             raise ValueError('WePayCheckout with reference ID %s not found' % checkout_response['reference_id'])
 
-        # Save the old state for comparison purposes
-        old_state = checkout.state
+        previous_state = checkout.state
         checkout.update_from_dict(checkout_response)
         checkout.save()
-
-        # on_checkout_refreshed(old_state)
-        return checkout
+        return checkout, previous_state
 
 
 wepay_api = WePayApi(app.config['WEPAY_ENVIRONMENT'],

@@ -38,7 +38,6 @@ def run():
     from dismember.models.currency import Currency, CurrencyAdmin
     from dismember.models.dues_payment import DuesPayment, DuesPaymentAdmin
     from dismember.models.member_type import MemberType, MemberTypeAdmin
-    from dismember.models.payment_method import PaymentMethod, PaymentMethodAdmin
     from dismember.models.user import User, UserAdmin
     from dismember.models.wepay_checkout import WePayCheckout, WePayCheckoutAdmin
     from dismember.models.wepay_dues_payment import WePayDuesPayment, WePayDuesPaymentAdmin
@@ -48,7 +47,6 @@ def run():
     admin.register(Currency, CurrencyAdmin)
     admin.register(DuesPayment, DuesPaymentAdmin)
     admin.register(MemberType, MemberTypeAdmin)
-    admin.register(PaymentMethod, PaymentMethodAdmin)
     admin.register(User, UserAdmin)
     admin.register(WePayCheckout, WePayCheckoutAdmin)
     admin.register(WePayDuesPayment, WePayDuesPaymentAdmin)
@@ -80,13 +78,6 @@ def create_builtins():
             item = User(**builtin)
             item.set_password(item.password)
             item.enabled = True
-            item.save()
-
-    # Payment methods
-    from dismember.models.payment_method import PaymentMethod
-    for builtin in app.config['DISMEMBER_BUILTINS']['payment_methods']:
-        if not PaymentMethod.select().where(PaymentMethod.name == builtin['name']).exists():
-            item = PaymentMethod(**builtin)
             item.save()
 
     # Currencies
