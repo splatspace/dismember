@@ -38,7 +38,10 @@
             </p>
         {% endif %}
 
-        <p>Pay here...</p>
+        <p>
+            <a href="{{ url_for('users_wepay_dues_authorize') }}">Pay
+                {{ user.member_type.currency.format(user.member_type.monthly_dues) }} with WePay</a>
+        </p>
     {% endif %}
 
 {% endblock %}

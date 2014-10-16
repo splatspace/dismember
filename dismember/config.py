@@ -71,9 +71,10 @@ DISMEMBER_BUILTINS = {
             'description': 'A payment made through the WebPay API',
         }
     ],
+    # Currency names must be ISO 4217 codes
     'currencies': [
         {
-            'name': 'US Dollars',
+            'name': 'USD',
             'symbol': '$'
         }
     ]

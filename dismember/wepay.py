@@ -166,33 +166,32 @@ class WePayService(object):
 
         return checkout_response['checkout_uri']
 
-    def refresh_checkout(self, checkout_reference_id):
+    def refresh_checkout(self, find_params={}):
         """
         Refresh local information about a checkout from the WePay API.  This method is primary
         for callback handlers.
 
-        :param checkout_reference_id: the reference ID of the checkout that was previously authorized
+        :param find_params: the properties to send to /checkout/find
         :return: the refreshed WePayCheckout object
         """
-        assert checkout_reference_id
-
-        checkout = WePayCheckout.select().where(WePayCheckout.reference_id == checkout_reference_id).first()
-        if not checkout:
-            raise ValueError('WePayCheckout with reference ID %s not found' % checkout_reference_id)
-
-        find_data = dict(
-            account_id=checkout.account_id,
-            reference_id=checkout_reference_id
-        )
+        assert find_params
 
         # Use the default access token.
-        checkout_response = self._wepay_api.call('/checkout/find', request_data=find_data)
+        checkout_response = self._wepay_api.call('/checkout/find', request_data=find_params)
 
         # It should return an array of length 1 since our reference IDs are unique.
-        if not checkout_response or len(checkout_response) != 1:
-            raise ValueError('The server did not return information about the WePayCheckout with reference ID %s' %
-                             checkout_reference_id)
+        if not checkout_response:
+            raise ValueError('No checkouts matching %r were found' % find_params)
+
+        if len(checkout_response) > 1:
+            raise ValueError('The server returned more than one checkout matching %s' % find_params)
+
         checkout_response = checkout_response[0]
+
+        # We generate the reference ID, and they're unique, so they are the best key in this situation
+        checkout = WePayCheckout.select().where(WePayCheckout.reference_id == checkout_response.reference_id).first()
+        if not checkout:
+            raise ValueError('WePayCheckout with reference ID %s not found' % checkout_response.reference_id)
 
         # Save the old state for comparison purposes
         old_state = checkout.state
