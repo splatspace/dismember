@@ -1,6 +1,6 @@
 from flask.ext.peewee.admin import ModelAdmin
 
-from peewee import PrimaryKeyField, TextField, IntegerField, DecimalField, Check, BooleanField
+from peewee import PrimaryKeyField, TextField, IntegerField, DecimalField, Check, BooleanField, DateTimeField
 
 from dismember.models.utils import to_dict
 from dismember.service import db
@@ -62,14 +62,20 @@ class WePayCheckout(db.Model):
     payment_method_type = TextField(null=True)
 
     # Fields updated from return values or by callbacks
+    cancel_reason = TextField(null=True)
     checkout_id = IntegerField(null=True)
+    create_time = DateTimeField(null=True)
+    dispute_uri = TextField(null=True)
     payer_name = TextField(null=True)
     payer_email = TextField(null=True)
+    soft_descriptor = TextField(null=True)
     state = TextField(null=True)
     gross = money_field(null=True)
     fee = money_field(null=True)
     amount_refunded = money_field(null=True)
     amount_charged_back = money_field(null=True)
+    refund_reason = TextField(null=True)
+    shipping_address = TextField(null=True)
 
     def __str__(self):
         # Hard-code dollars for WePay
@@ -101,6 +107,41 @@ class WePayCheckout(db.Model):
             'funding_sources',
             'payment_method_id',
             'payment_method_type'], include_none_values=False)
+
+    def update(self, checkout):
+        """Update the model from a dictionary of WePay API properties"""
+
+        if self.reference_id != checkout['reference_id']:
+            raise ValueError('The reference ID cannot be changed; possible object mismatch')
+
+        self.checkout_id = checkout['checkout_id']
+        self.account_id = checkout['account_id']
+        self.preapproval_id = checkout['preapproval_id']
+        self.create_time = checkout['create_time']
+        self.state = checkout['state']
+        self.soft_descriptor = checkout['soft_descriptor']
+        self.short_description = checkout['short_description']
+        self.long_description = checkout['long_description']
+        self.currency = checkout['currency']
+        self.amount = checkout['amount']
+        self.shipping_fee = checkout['shipping_fee']
+        self.fee = checkout['fee']
+        self.gross = checkout['gross']
+        self.app_fee = checkout['app_fee']
+        self.amount_refunded = checkout['amount_refunded']
+        self.amount_charged_back = checkout['amount_charged_back']
+        self.fee_payer = checkout['fee_payer']
+        self.redirect_uri = checkout['redirect_uri']
+        self.callback_uri = checkout['callback_uri']
+        self.dispute_uri = checkout['dispute_uri']
+        self.payer_email = checkout['payer_email']
+        self.payer_name = checkout['payer_name']
+        self.cancel_reason = checkout['cancel_reason']
+        self.refund_reason = checkout['refund_reason']
+        self.auto_capture = checkout['auto_capture']
+        self.require_shipping = checkout['require_shipping']
+        self.shipping_address = checkout['shipping_address']
+        self.mode = checkout['mode']
 
 
 class WePayCheckoutAdmin(ModelAdmin):

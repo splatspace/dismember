@@ -85,8 +85,8 @@ WEPAY_ENVIRONMENT = 'stage'
 # Your WePay account ID
 WEPAY_ACCOUNT_ID = '12345'
 
-# Your WePay access token
-WEPAY_ACCESS_TOKEN = 'STAGE_abc123def456'
+# Your WePay access token.  Used with API methods that don't require a dynamic per-user token.
+WEPAY_DEFAULT_ACCESS_TOKEN = 'STAGE_abc123def456'
 
 # Your WePay application's client ID
 WEPAY_CLIENT_ID = '67890'

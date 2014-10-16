@@ -1,20 +1,18 @@
 import urllib
 import urllib2
-import uuid
 import json
-
-from dismember.models import to_dict
+import uuid
 
 from dismember.service import app
-
 from dismember.models.wepay_checkout import WePayCheckout
 
 
 class WePayApi(object):
-    def __init__(self, environment, client_id, client_secret):
+    def __init__(self, environment, client_id, client_secret, default_access_token):
         self._environment = environment
         self._client_id = client_id
         self._client_secret = client_secret
+        self._default_access_token = default_access_token
 
     def get_authorize_url(self, redirect_uri, scope, state=None):
         """
@@ -78,25 +76,29 @@ class WePayApi(object):
         url = '%s?%s' % (base_url, urllib.urlencode(params))
         return urllib2.open(url).read()
 
-    def call(self, access_token, method, request_data):
+    def call(self, method, access_token=None, request_data={}):
         """
         Call a WePay API method.
 
-        :param access_token: an access token you got from get_access_token
         :param method: the name of the method (like '/checkout/create')
-        :param request_data: the parameters for the call
+        :param access_token: an access token you got from get_access_token or None to use the default token
+        :param request_data dict: the call request parameters
         :return: the response data from the API
         """
-        assert access_token
         assert method
+
+        if access_token is None:
+            access_token = self._default_access_token
+
         if self._environment == 'prod':
             base_url = 'https://wepayapi.com/v2'
         elif self._environment == 'stage':
             base_url = 'https://stage.wepayapi.com/v2'
 
         url = base_url + method
-        request = urllib2.Request(url, request_data)
+        request = urllib2.Request(url, data=json.dumps(request_data))
         request.add_header('Authorization', 'Bearer ' + access_token)
+        request.add_header('Content-Type' 'application/json')
         return urllib2.urlopen(request).read()
 
 
@@ -155,7 +157,8 @@ class WePayService(object):
         token = self._wepay_api.get_access_token(submit_uri, authorization_code)
 
         # Submit only the values that are valid for 'create' to WePay
-        checkout_response = self._wepay_api.call(token, '/checkout/create', checkout.to_create_dict())
+        checkout_response = self._wepay_api.call('/checkout/create', access_token=token,
+                                                 request_data=checkout.to_create_dict())
 
         # Update the DB object with server-side WePay checkout ID
         checkout.checkout_id = checkout_response['checkout_id']
@@ -163,8 +166,44 @@ class WePayService(object):
 
         return checkout_response['checkout_uri']
 
+    def refresh_checkout(self, checkout_reference_id):
+        """
+        Refresh local information about a checkout from the WePay API.  This method is primary
+        for callback handlers.
+
+        :param checkout_reference_id: the reference ID of the checkout that was previously authorized
+        :return: the refreshed WePayCheckout object
+        """
+        assert checkout_reference_id
+
+        checkout = WePayCheckout.select().where(WePayCheckout.reference_id == checkout_reference_id).first()
+        if not checkout:
+            raise ValueError('WePayCheckout with reference ID %s not found' % checkout_reference_id)
+
+        find_data = dict(
+            account_id=checkout.account_id,
+            reference_id=checkout_reference_id
+        )
+
+        # Use the default access token.
+        checkout_response = self._wepay_api.call('/checkout/find', request_data=find_data)
+
+        # It should return an array of length 1 since our reference IDs are unique.
+        if not checkout_response or len(checkout_response) != 1:
+            raise ValueError('The server did not return information about the WePayCheckout with reference ID %s' %
+                             checkout_reference_id)
+        checkout_response = checkout_response[0]
+
+        # Save the old state for comparison purposes
+        old_state = checkout.state
+        checkout.update(checkout_response)
+        checkout.save()
+
+        #on_checkout_refreshed(old_state)
+        return checkout
 
 wepay_api = WePayApi(app.config['WEPAY_ENVIRONMENT'],
                      app.config['WEPAY_CLIENT_ID'],
-                     app.config['WEPAY_CLIENT_SECRET'])
+                     app.config['WEPAY_CLIENT_SECRET'],
+                     app.config['WEPAY_DEFAULT_ACCESS_TOKEN'])
 wepay_service = WePayService(wepay_api)
