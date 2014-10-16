@@ -1,27 +1,20 @@
-from flask.ext.peewee.admin import ModelAdmin
+from sqlalchemy import Numeric, Column, Integer, Text
+from sqlalchemy.orm import relationship
 
-from dismember.models.enum import Enum
-from dismember.models.currency import Currency
-from peewee import DecimalField, ForeignKeyField
+from dismember.service import db
 
 
-class MemberType(Enum):
+class MemberType(db.Model):
     """A membership type or level (none, full, associate, etc.)"""
+    __tablename__ = 'member_types'
 
-    class Meta:
-        db_table = 'member_types'
+    id = Column(Integer, primary_key=True)
+    name = Column(Text, unique=True, nullable=False)
+    description = Column(Text)
 
-    # Support more currencies?
-    monthly_dues = DecimalField(max_digits=11, decimal_places=2)
-    currency = ForeignKeyField(Currency)
+    # Support more than a single currency?
+    monthly_dues = Column(Numeric(precision=10, scale=2), nullable=False)
+    currency = Column(Text, nullable=False)
 
-
-class MemberTypeAdmin(ModelAdmin):
-    def get_display_name(self):
-        return 'Member Types'
-
-    def get_admin_name(self):
-        return 'member_types'
-
-
-MemberType.create_table(fail_silently=True)
+    def __str__(self):
+        return self.name

@@ -1,62 +1,50 @@
-import datetime
-
-from flask.ext.peewee.admin import ModelAdmin
-from flask.ext.peewee.auth import BaseUser
-from peewee import PrimaryKeyField, TextField, BooleanField, ForeignKeyField, DateTimeField
 from dismember.models.member_type import MemberType
 from dismember.service import db
+from flask.ext.security import UserMixin
+from dismember.models.role import Role
+from sqlalchemy import Column, Integer, Text, Boolean, DateTime, Table
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql.schema import ForeignKey
+
+users_roles = Table(
+    'users_roles',
+    db.Model.metadata,
+    Column('user_id', Integer, ForeignKey('users.id', onupdate='cascade', ondelete='cascade')),
+    Column('role_id', Integer, ForeignKey('roles.id', onupdate='cascade', ondelete='cascade'))
+)
 
 
-class User(db.Model, BaseUser):
+class User(db.Model, UserMixin):
     """A human or other being authorized to use this application."""
+    __tablename__ = 'users'
 
-    class Meta:
-        db_table = 'users'
+    # Flask-Security required
+    id = Column(Integer, primary_key=True)
+    email = Column(Text, unique=True, index=True, nullable=False)
+    password = Column(Text, nullable=False)
+    active = Column(Boolean, nullable=False, default=True)
+    roles = relationship(Role, secondary=users_roles)
 
-    # Fields required for Flask-Peewee's auth and admin features
-    id = PrimaryKeyField()
-    username = TextField(unique=True)
-    email = TextField(unique=True, index=True)
-    password = TextField()
-    active = BooleanField(default=True)
-    admin = BooleanField(default=True)
+    # Flask-Security optional
+    confirmed_at = Column(DateTime(timezone=True))
+    last_login_at = Column(DateTime(timezone=True))
+    current_login_at = Column(DateTime(timezone=True))
+    last_login_ip = Column(Text)
+    current_login_ip = Column(Text)
+    login_count = Column(Integer)
 
-    # Our user properties
-    full_name = TextField()
-    created = DateTimeField(default=datetime.datetime.now)
+    # Our fields
+    full_name = Column(Text, nullable=False)
 
     # Membership information
-    member_signup = DateTimeField(null=True)
-    member_type = ForeignKeyField(MemberType, null=True)
-    address = TextField(null=True)
-    phone = TextField(null=True)
-    emergency_contact = TextField(null=True)
+    member_signup = Column(DateTime(timezone=True))
+    member_type_id = Column(Integer, ForeignKey(MemberType.id))
+    address = Column(Text)
+    phone = Column(Text)
+    emergency_contact = Column(Text)
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
 
     def __str__(self):
-        return '%s (%s)' % (self.username, self.full_name)
-
-
-class UserAdmin(ModelAdmin):
-    def get_display_name(self):
-        return 'Users'
-
-    def get_admin_name(self):
-        return 'users'
-
-    def save_model(self, instance, form, adding=False):
-        # Ensure the password gets hashed correctly before it is stored in the database.
-        orig_password = instance.password
-
-        user = super(UserAdmin, self).save_model(instance, form, adding)
-
-        if orig_password != form.password.data:
-            user.set_password(form.password.data)
-            user.save()
-
-        return user
-
-
-User.create_table(fail_silently=True)
+        return '%s (%s)' % (self.email, self.full_name)

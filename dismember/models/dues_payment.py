@@ -1,7 +1,5 @@
-from dismember.models.payment import Payment
-from flask.ext.peewee.admin import ModelAdmin
+#from dismember.models.payment import Payment
 from dismember.models.user import User
-from peewee import DateField, ForeignKeyField
 
 
 class DuesPayment(Payment):

@@ -1,5 +1,6 @@
 # Configuration defaults for dismember.  During development, don't edit this file;
 # instead create ../instance/config.py and override values there.
+import datetime
 
 # ######################################################################
 # Flask
@@ -14,22 +15,46 @@ DEBUG = False
 # Every installation should use a different value for the secret key.
 # Get a good value with:
 #
-# head -c 1000 /dev/urandom | sha256sum | cut -f 1 -d " "
+# head -c 100 /dev/urandom | sha256sum | cut -f 1 -d " "
 #
 SECRET_KEY = 'f99b15e00bc813d5a027e902d177c56fcba1a5027bff1b0a54b8c7338dbead29'
 
 # ######################################################################
-# Flask-Peewee
+# Flask-SQLAlchemy
 #
-# As of 2014-10-10 "DATABASE" is the only config property Flask-Peewee
-# uses.
 
-# http://flask-peewee.readthedocs.org/en/latest/database.html
-DATABASE = {
-    'engine': 'peewee.PostgresqlDatabase',
-    'name': 'dismember'
-    # Any driver keyword arguments (username, password, etc.) as additional properties
-}
+SQLALCHEMY_DATABASE_URI = 'postgresql:///dismember'
+SQLALCHEMY_ECHO = False
+
+# ######################################################################
+# Flask-Security
+#
+
+SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
+
+# Every installation should use a different value for the salt.
+# Get a good value with:
+#
+# head -c 100 /dev/urandom | sha256sum | cut -f 1 -d " "
+#
+SECURITY_PASSWORD_SALT = '3307b48c305151a73a7d4a0100b670adda9858d8f09057591089c93dfdbc0e90'
+
+# ######################################################################
+# Flask-Login
+#
+
+REMEMBER_COOKIE_DURATION = datetime.timedelta(days=45)
+
+# ######################################################################
+# Flask-Email
+#
+
+MAIL_SERVER = 'localhost'
+MAIL_PORT = 25
+# MAIL_USE_SSL = True
+# MAIL_USERNAME = 'username'
+# MAIL_PASSWORD = 'password'
+
 
 # ######################################################################
 # Dismember
@@ -46,22 +71,23 @@ DISMEMBER_SITE_NAME = 'Dismembership System'
 
 # Resources that will be created each time the service is started, if they do not exist.
 DISMEMBER_BUILTINS = {
-    'users': [
+    'roles': [
         {
-            # The administrator account.  You can rename it, but don't delete it or
-            # set the "admin" property to False (that would be very silly).
-            'username': 'admin',
-            'password': 'admin',
-            'full_name': 'Dismember Administrator',
-            'email': 'admin@example.org',
-            'admin': True
+            # The administrator role.  Don't rename or delete this role.
+            'name': 'admin',
+            'description': 'Organization administrator with full access'
         }
     ],
-    # Currency names must be ISO 4217 codes
-    'currencies': [
+    'users': [
         {
-            'name': 'USD',
-            'symbol': '$'
+            # The administrator account.  Change the email and password before running
+            # the software for the first time.  You can change the full name at any time.
+            #
+            # Don't delete this user or remove the "admin" role (that would be silly).
+            'email': 'admin@example.org',
+            'password': 'admin',
+            'full_name': 'Site Administrator',
+            'roles': ['admin']
         }
     ]
 }

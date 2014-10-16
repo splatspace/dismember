@@ -1,7 +1,7 @@
-# Import all models
-import currency
-import dues_payment
+# Import all concrete models
+# import dues_payment
 import member_type
 import user
-import wepay_checkout
-import wepay_dues_payment
+import role
+# import wepay_checkout
+# import wepay_dues_payment

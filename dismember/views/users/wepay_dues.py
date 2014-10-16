@@ -1,16 +1,16 @@
 import datetime
 
 from flask import render_template, redirect, url_for, request
-from dismember.service import app, auth
-from dismember.models.dues_payment import DuesPayment
+from dismember.service import app
+#from dismember.models.dues_payment import DuesPayment
 from dismember.wepay import wepay_service
-from dismember.models.wepay_checkout import WePayCheckout
+#from dismember.models.wepay_checkout import WePayCheckout
 
 
 @app.route('/users/wepay_dues')
-@auth.login_required
+#@auth.login_required
 def users_wepay_dues():
-    user = auth.get_logged_in_user()
+    #user = auth.get_logged_in_user()
     if user:
         last_dues_payment = DuesPayment \
             .select() \
@@ -22,10 +22,10 @@ def users_wepay_dues():
 
 
 @app.route('/users/wepay_dues_authorize')
-@auth.login_required
+#@auth.login_required
 def users_wepay_dues_authorize():
     """Handle the HTTP GET that authorizes a payment and starts the flow through WePay."""
-    user = auth.get_logged_in_user()
+    #user = auth.get_logged_in_user()
     if not user:
         return 'No current user', 403
     if not user.member_type:
@@ -53,7 +53,7 @@ def users_wepay_dues_authorize():
 
 
 @app.route('/users/wepay_dues_submit')
-@auth.login_required
+#@auth.login_required
 def users_wepay_dues_submit():
     """
     Handle the second part of the WePay payment flow. This is where the user ends up after WePay finishes

@@ -4,7 +4,7 @@ import json
 import uuid
 
 from dismember.service import app
-from dismember.models.wepay_checkout import WePayCheckout
+#from dismember.models.wepay_checkout import WePayCheckout
 
 
 class WePayApi(object):
