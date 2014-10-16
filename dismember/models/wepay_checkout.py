@@ -1,7 +1,6 @@
+import datetime
 from flask.ext.peewee.admin import ModelAdmin
-
 from peewee import PrimaryKeyField, TextField, IntegerField, DecimalField, Check, BooleanField, DateTimeField
-
 from dismember.models.utils import to_dict
 from dismember.service import db
 
@@ -106,42 +105,49 @@ class WePayCheckout(db.Model):
             'prefill_info',
             'funding_sources',
             'payment_method_id',
-            'payment_method_type'], include_none_values=False)
+            'payment_method_type'], include_none_values=False, stringify=['amount', 'app_fee', 'shipping_fee'])
 
-    def update(self, checkout):
-        """Update the model from a dictionary of WePay API properties"""
+    def update_from_dict(self, checkout):
+        """
+        Update the model from a dictionary of WePay API properties.
+
+        This object's properties will be set to None if the dictionary either contains a value
+        of None for that property or does not contain the property at all.
+        """
 
         if self.reference_id != checkout['reference_id']:
             raise ValueError('The reference ID cannot be changed; possible object mismatch')
 
-        self.checkout_id = checkout['checkout_id']
-        self.account_id = checkout['account_id']
-        self.preapproval_id = checkout['preapproval_id']
-        self.create_time = checkout['create_time']
-        self.state = checkout['state']
-        self.soft_descriptor = checkout['soft_descriptor']
-        self.short_description = checkout['short_description']
-        self.long_description = checkout['long_description']
-        self.currency = checkout['currency']
-        self.amount = checkout['amount']
-        self.shipping_fee = checkout['shipping_fee']
-        self.fee = checkout['fee']
-        self.gross = checkout['gross']
-        self.app_fee = checkout['app_fee']
-        self.amount_refunded = checkout['amount_refunded']
-        self.amount_charged_back = checkout['amount_charged_back']
-        self.fee_payer = checkout['fee_payer']
-        self.redirect_uri = checkout['redirect_uri']
-        self.callback_uri = checkout['callback_uri']
-        self.dispute_uri = checkout['dispute_uri']
-        self.payer_email = checkout['payer_email']
-        self.payer_name = checkout['payer_name']
-        self.cancel_reason = checkout['cancel_reason']
-        self.refund_reason = checkout['refund_reason']
-        self.auto_capture = checkout['auto_capture']
-        self.require_shipping = checkout['require_shipping']
-        self.shipping_address = checkout['shipping_address']
-        self.mode = checkout['mode']
+        self.checkout_id = checkout.get('checkout_id', None)
+        self.account_id = checkout.get('account_id', None)
+        self.preapproval_id = checkout.get('preapproval_id', None)
+        self.create_time = checkout.get('create_time', None)
+        if self.create_time is not None:
+            self.create_time = datetime.datetime.fromtimestamp(self.create_time)
+        self.state = checkout.get('state', None)
+        self.soft_descriptor = checkout.get('soft_descriptor', None)
+        self.short_description = checkout.get('short_description', None)
+        self.long_description = checkout.get('long_description', None)
+        self.currency = checkout.get('currency', None)
+        self.amount = checkout.get('amount', None)
+        self.shipping_fee = checkout.get('shipping_fee', None)
+        self.fee = checkout.get('fee', None)
+        self.gross = checkout.get('gross', None)
+        self.app_fee = checkout.get('app_fee', None)
+        self.amount_refunded = checkout.get('amount_refunded', None)
+        self.amount_charged_back = checkout.get('amount_charged_back', None)
+        self.fee_payer = checkout.get('fee_payer', None)
+        self.redirect_uri = checkout.get('redirect_uri', None)
+        self.callback_uri = checkout.get('callback_uri', None)
+        self.dispute_uri = checkout.get('dispute_uri', None)
+        self.payer_email = checkout.get('payer_email', None)
+        self.payer_name = checkout.get('payer_name', None)
+        self.cancel_reason = checkout.get('cancel_reason', None)
+        self.refund_reason = checkout.get('refund_reason', None)
+        self.auto_capture = checkout.get('auto_capture', None)
+        self.require_shipping = checkout.get('require_shipping', None)
+        self.shipping_address = checkout.get('shipping_address', None)
+        self.mode = checkout.get('mode', None)
 
 
 class WePayCheckoutAdmin(ModelAdmin):

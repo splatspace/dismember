@@ -18,6 +18,20 @@ DEBUG = False
 #
 SECRET_KEY = 'f99b15e00bc813d5a027e902d177c56fcba1a5027bff1b0a54b8c7338dbead29'
 
+# Sets the host name to respond to requests at, and for use in absolute URLs that
+# reference this server.  If you're getting 404s for every page, make sure this setting
+# matches the host:port that your user agent (browser) is requesting from.
+#
+# This does set the interface or port that Flask binds to.  It only defines
+# the host and port part of URLs that it will respond to.
+SERVER_NAME = 'localhost:5000'
+
+# Sets the scheme to use in absolute URLs that reference this server.
+#
+# This does not set the protocol that Flask speaks.  It only defines the scheme
+# to use in generated URLs.
+PREFERRED_URL_SCHEME = 'http'
+
 # ######################################################################
 # Flask-Peewee
 #

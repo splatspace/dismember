@@ -74,7 +74,7 @@ class WePayApi(object):
             params['callback_uri'] = callback_uri
 
         url = '%s?%s' % (base_url, urllib.urlencode(params))
-        return urllib2.open(url).read()
+        return urllib2.urlopen(url).read()
 
     def call(self, method, access_token=None, request_data={}):
         """
@@ -98,7 +98,7 @@ class WePayApi(object):
         url = base_url + method
         request = urllib2.Request(url, data=json.dumps(request_data))
         request.add_header('Authorization', 'Bearer ' + access_token)
-        request.add_header('Content-Type' 'application/json')
+        request.add_header('Content-Type', 'application/json')
         return urllib2.urlopen(request).read()
 
 
@@ -128,7 +128,7 @@ class WePayService(object):
         # Sequential integer IDs are bad to pass in redirects to other sites, where
         # they are visible to the user and the user's agent, because they are guessable.
         # Use an unguessable UUID for this purpose.
-        checkout.reference_id = uuid.uuid4()
+        checkout.reference_id = str(uuid.uuid4())
 
         # Create it in the database and return the auth URL
         checkout.save()
@@ -154,14 +154,15 @@ class WePayService(object):
             raise ValueError('WePayCheckout with reference ID %s not found' % checkout_reference_id)
 
         # Get an access token for this request for this user
-        token = self._wepay_api.get_access_token(submit_uri, authorization_code)
+        token_response = json.loads(self._wepay_api.get_access_token(submit_uri, authorization_code))
 
         # Submit only the values that are valid for 'create' to WePay
-        checkout_response = self._wepay_api.call('/checkout/create', access_token=token,
-                                                 request_data=checkout.to_create_dict())
+        checkout_response = json.loads(
+            self._wepay_api.call('/checkout/create', access_token=token_response['access_token'],
+                                 request_data=checkout.to_create_dict()))
 
         # Update the DB object with server-side WePay checkout ID
-        checkout.checkout_id = checkout_response['checkout_id']
+        checkout.update_from_dict(checkout_response)
         checkout.save()
 
         return checkout_response['checkout_uri']
@@ -195,11 +196,12 @@ class WePayService(object):
 
         # Save the old state for comparison purposes
         old_state = checkout.state
-        checkout.update(checkout_response)
+        checkout.update_from_dict(checkout_response)
         checkout.save()
 
-        #on_checkout_refreshed(old_state)
+        # on_checkout_refreshed(old_state)
         return checkout
+
 
 wepay_api = WePayApi(app.config['WEPAY_ENVIRONMENT'],
                      app.config['WEPAY_CLIENT_ID'],
