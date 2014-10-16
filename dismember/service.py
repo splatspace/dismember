@@ -33,26 +33,22 @@ def run():
 
     # Flask-Peewee
     from dismember.models.currency import Currency, CurrencyAdmin
-    from dismember.models.member_status import MemberStatus, MemberStatusAdmin
+    from dismember.models.dues_payment import DuesPayment, DuesPaymentAdmin
     from dismember.models.member_type import MemberType, MemberTypeAdmin
-    from dismember.models.payment import Payment, PaymentAdmin
     from dismember.models.payment_method import PaymentMethod, PaymentMethodAdmin
-    from dismember.models.payment_type import PaymentType, PaymentTypeAdmin
     from dismember.models.user import User, UserAdmin
     from dismember.models.wepay_checkout import WePayCheckout, WePayCheckoutAdmin
-    from dismember.models.wepay_payment import WePayPayment, WePayPaymentAdmin
+    from dismember.models.wepay_dues_payment import WePayDuesPayment, WePayDuesPaymentAdmin
 
     auth = Auth(app, db, user_model=dismember.models.user.User)
     admin = Admin(app, auth, branding=app.config['DISMEMBER_SITE_NAME'])
     admin.register(Currency, CurrencyAdmin)
-    admin.register(MemberStatus, MemberStatusAdmin)
+    admin.register(DuesPayment, DuesPaymentAdmin)
     admin.register(MemberType, MemberTypeAdmin)
-    admin.register(Payment, PaymentAdmin)
     admin.register(PaymentMethod, PaymentMethodAdmin)
-    admin.register(PaymentType, PaymentTypeAdmin)
     admin.register(User, UserAdmin)
     admin.register(WePayCheckout, WePayCheckoutAdmin)
-    admin.register(WePayPayment, WePayPaymentAdmin)
+    admin.register(WePayDuesPayment, WePayDuesPaymentAdmin)
     admin.setup()
 
     # Limit API access to admins
@@ -88,13 +84,6 @@ def create_builtins():
     for builtin in app.config['DISMEMBER_BUILTINS']['payment_methods']:
         if not PaymentMethod.select().where(PaymentMethod.name == builtin['name']).exists():
             item = PaymentMethod(**builtin)
-            item.save()
-
-    # Payment types
-    from dismember.models.payment_type import PaymentType
-    for builtin in app.config['DISMEMBER_BUILTINS']['payment_types']:
-        if not PaymentType.select().where(PaymentType.name == builtin['name']).exists():
-            item = PaymentType(**builtin)
             item.save()
 
     # Currencies

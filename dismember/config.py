@@ -38,6 +38,9 @@ DATABASE = {
 # Host or IP to bind to
 DISMEMBER_HOST = '0.0.0.0'
 
+# The name of the organization that will appear in web page titles and e-mails
+DISMEMBER_ORG_NAME = 'Splat Space'
+
 # Name that will appear in web page titles and e-mails
 DISMEMBER_SITE_NAME = 'Dismembership System'
 
@@ -66,20 +69,6 @@ DISMEMBER_BUILTINS = {
         {
             'name': 'WePay',
             'description': 'A payment made through the WebPay API',
-        }
-    ],
-    'payment_types': [
-        {
-            'name': 'Dues',
-            'description': 'Money for membership dues'
-        },
-        {
-            'name': 'Key Deposit',
-            'description': 'Money to secure a loaned key'
-        },
-        {
-            'name': 'Donation',
-            'description': 'A monetary gift to the organization'
         }
     ],
     'currencies': [

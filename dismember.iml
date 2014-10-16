@@ -8,5 +8,8 @@
     <orderEntry type="jdk" jdkName="Python 2.7.6 virtualenv at ~/src/dismember/venv" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="TemplatesService">
+    <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
+  </component>
 </module>
 

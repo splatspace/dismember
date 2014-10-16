@@ -1,6 +1,8 @@
 from flask.ext.peewee.admin import ModelAdmin
 
 from dismember.models.enum import Enum
+from dismember.models.currency import Currency
+from peewee import DecimalField, ForeignKeyField
 
 
 class MemberType(Enum):
@@ -8,6 +10,10 @@ class MemberType(Enum):
 
     class Meta:
         db_table = 'member_types'
+
+    # Support more currencies?
+    monthly_dues = DecimalField(max_digits=11, decimal_places=2)
+    currency = ForeignKeyField(Currency)
 
 
 class MemberTypeAdmin(ModelAdmin):

@@ -1,0 +1,44 @@
+{% extends "_common/base.html" %}
+{% block head %}
+    <title>Pay Dues with WePay</title>
+{% endblock %}
+
+{% block body %}
+
+    <h1>Pay Dues with WePay</h1>
+
+    {% if not user.member_type %}
+        <p>
+            You don't appear to be an active member of {{ config['DISMEMBER_ORG_NAME'] }}, so there are no dues to
+            pay!
+        </p>
+    {% else %}
+        <p>
+            Your membership type is {{ user.member_type }}, which requires a monthly dues payment
+            of {{ user.member_type.currency.format(user.member_type.monthly_dues) }}.
+        </p>
+        {% if not last_dues_payment or last_dues_payment.period_end <= now.date() %}
+            <p>
+                It's time to pay your dues!
+            </p>
+            <p>
+                Your most recent dues payment was on {{ last_dues_payment.created.date() }}, which
+                paid for your membership through {{ last_dues_payment.period_end }}. Please pay
+                {{ user.member_type.currency.format(user.member_type.monthly_dues) }} today
+                to remain an active member.
+            </p>
+        {% else %}
+            <p>
+                You're all paid-up, thanks!
+            </p>
+            <p>
+                Your most recent dues payment was on {{ last_dues_payment.created.date() }}. This
+                means you're covered through {{ last_dues_payment.period_end }}. If you make a dues payment
+                now it will pay for the next unpaid membership period.
+            </p>
+        {% endif %}
+
+        <p>Pay here...</p>
+    {% endif %}
+
+{% endblock %}
