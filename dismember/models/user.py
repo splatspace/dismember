@@ -2,6 +2,7 @@ from dismember.models.member_type import MemberType
 from dismember.service import db
 from flask.ext.security import UserMixin
 from dismember.models.role import Role
+from dismember.models.utils import *
 from sqlalchemy import Column, Integer, Text, Boolean, DateTime, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
@@ -34,6 +35,7 @@ class User(db.Model, UserMixin):
     login_count = Column(Integer)
 
     # Our fields
+    created = datetime_tz_default_now()
     full_name = Column(Text, nullable=False)
 
     # Membership information

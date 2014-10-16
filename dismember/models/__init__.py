@@ -3,5 +3,5 @@
 import member_type
 import user
 import role
-# import wepay_checkout
-# import wepay_dues_payment
+import wepay_checkout
+import wepay_payment

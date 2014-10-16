@@ -86,7 +86,7 @@ def create_builtins(db, user_datastore):
     config file.
     """
 
-    # Use an application context so we can use flask utils that require one
+    # Some flask utils like encrypt_password require an application context
     with app.app_context():
         # Roles
         for builtin in app.config['DISMEMBER_BUILTINS']['roles']:

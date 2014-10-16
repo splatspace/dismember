@@ -1,11 +1,7 @@
-from dismember.models.utils import to_dict
+from sqlalchemy import Column, Text, Integer, Enum, Boolean, BigInteger
+
 from dismember.service import db
-
-
-def money_field(null=False, **kwargs):
-    # 10 total digits, 2 digits to the right of the decimal point, lets us hold
-    # up to 99,999,999.99.
-    return DecimalField(null=null, max_digits=10, decimal_places=2, **kwargs)
+from dismember.models.utils import *
 
 
 class WePayCheckout(db.Model):
@@ -19,59 +15,56 @@ class WePayCheckout(db.Model):
     https://www.wepay.com/developer/reference/checkout
     """
 
-    class Meta:
-        db_table = 'wepay_checkouts'
+    __tablename__ = 'wepay_checkouts'
 
-    PaymentMethodName = 'WePay'
-
-    id = PrimaryKeyField()
+    id = Column(Integer, primary_key=True)
 
     # Not all of the WePay API Checkout properties are present in this class.  We just
     # track the ones we might want to query on locally.
 
     # Fields required for /checkout/create
-    account_id = IntegerField()
-    short_description = TextField()
-    type = TextField(constraints=[Check("type in ('GOODS', 'SERVICE', 'DONATION', 'EVENT', 'PERSONAL')")])
-    amount = money_field()
+    account_id = Column(Integer, nullable=False)
+    short_description = Column(Integer, nullable=False)
+    type = Column(Enum('GOODS', 'SERVICE', 'DONATION', 'EVENT', 'PERSONAL', name='wepay_checkout_type'))
+    amount = money_column()
 
     # Fields optional for /checkout/create
-    currency = TextField(null=True)
-    long_description = TextField(null=True)
-    payer_email_message = TextField(null=True)
-    payee_email_message = TextField(null=True)
-    reference_id = TextField(null=True)
-    app_fee = money_field(null=True)
-    fee_payer = TextField(null=True,
-                          constraints=[Check("type in (null, 'payer', 'payee', 'payer_from_app', 'payee_from_app')")])
-    redirect_uri = TextField(null=True)
-    callback_uri = TextField(null=True)
-    fallback_uri = TextField(null=True)
-    auto_capture = BooleanField(null=True)
-    require_shipping = BooleanField(null=True)
-    shipping_fee = money_field(null=True)
-    mode = TextField(null=True)
-    preapproval_id = IntegerField(null=True)
+    currency = Column(Text)
+    long_description = Column(Text)
+    payer_email_message = Column(Text)
+    payee_email_message = Column(Text)
+    reference_id = Column(Text)
+    app_fee = money_column(nullable=True)
+    fee_payer = Column(Enum('payer', 'payee', 'payer_from_app', 'payee_from_app', name='wepay_checkout_fee_payer'),
+                       nullable=True)
+    redirect_uri = Column(Text)
+    callback_uri = Column(Text)
+    fallback_uri = Column(Text)
+    auto_capture = Column(Boolean)
+    require_shipping = Column(Boolean)
+    shipping_fee = money_column(nullable=True)
+    mode = Column(Text)
+    preapproval_id = Column(Integer)
     # prefill_info = foreign key to a prefill table?
-    funding_sources = TextField(null=True)
-    payment_method_id = IntegerField(null=True)
-    payment_method_type = TextField(null=True)
+    funding_sources = Column(Text)
+    payment_method_id = Column(Integer)
+    payment_method_type = Column(Text)
 
     # Fields updated from return values or by callbacks
-    cancel_reason = TextField(null=True)
-    checkout_id = IntegerField(null=True)
-    create_time = BigIntegerField(null=True)
-    dispute_uri = TextField(null=True)
-    payer_name = TextField(null=True)
-    payer_email = TextField(null=True)
-    soft_descriptor = TextField(null=True)
-    state = TextField(null=True)
-    gross = money_field(null=True)
-    fee = money_field(null=True)
-    amount_refunded = money_field(null=True)
-    amount_charged_back = money_field(null=True)
-    refund_reason = TextField(null=True)
-    shipping_address = TextField(null=True)
+    cancel_reason = Column(Text)
+    checkout_id = Column(Integer)
+    create_time = Column(BigInteger)
+    dispute_uri = Column(Text)
+    payer_name = Column(Text)
+    payer_email = Column(Text)
+    soft_descriptor = Column(Text)
+    state = Column(Text)
+    gross = money_column(nullable=True)
+    fee = money_column(nullable=True)
+    amount_refunded = money_column(nullable=True)
+    amount_charged_back = money_column(nullable=True)
+    refund_reason = Column(Text)
+    shipping_address = Column(Text)
 
     def __str__(self):
         # Hard-code dollars for WePay
@@ -144,13 +137,3 @@ class WePayCheckout(db.Model):
         self.shipping_address = checkout.get('shipping_address', None)
         self.mode = checkout.get('mode', None)
 
-
-class WePayCheckoutAdmin(ModelAdmin):
-    def get_display_name(self):
-        return 'WePay Checkouts'
-
-    def get_admin_name(self):
-        return 'wepay_checkouts'
-
-
-WePayCheckout.create_table(fail_silently=True)
