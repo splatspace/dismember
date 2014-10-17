@@ -8,7 +8,7 @@ class DuesPayment(Payment):
 
     __tablename__ = 'dues_payments'
 
-    id = Column(Integer, ForeignKey(Payment.id), primary_key=True)
+    id = Column(Integer, ForeignKey('payments.id'), primary_key=True)
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
     period_year = Column(Integer, nullable=False)
     period_month = Column(Integer, nullable=False)

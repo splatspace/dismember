@@ -91,7 +91,7 @@ def users_wepay_dues_authorize():
 
     checkout = WePayCheckout()
     checkout.account_id = app.config['WEPAY_ACCOUNT_ID']
-    checkout.short_description = '%s dues payment (%d months)' % (app.config['DISMEMBER_ORG_NAME'], months)
+    checkout.short_description = '%s dues (%d months)' % (app.config['DISMEMBER_ORG_NAME'], months)
     checkout.type = 'SERVICE'
     checkout.amount = str(amount)
     checkout.fee_payer = fee_payer
