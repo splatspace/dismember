@@ -35,7 +35,7 @@ class User(db.Model, UserMixin):
 
     # Our fields
     created = Column(DateTime, nullable=False, server_default=text('now()'))
-    full_name = Column(Text, nullable=False)
+    full_name = Column(Text)
 
     # Membership information
     member_signup = Column(DateTime)

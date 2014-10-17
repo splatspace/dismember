@@ -4,6 +4,7 @@ from dismember.reverse_proxied import ReverseProxied
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqla import ModelView
 from flask.ext.security import Security
+from flask.ext.security.confirmable import confirm_user
 from flask.ext.security.datastore import SQLAlchemyUserDatastore
 
 # Don't import any modules that use DB models up here, because they need to
@@ -84,6 +85,7 @@ def create_builtins(db, user_datastore):
                 # Hash the password
                 builtin['password'] = encrypt_password(builtin.pop('password', ''))
                 user = user_datastore.create_user(**builtin)
+            confirm_user(user)
             for role_name in builtin['roles']:
                 user_datastore.add_role_to_user(user, role_name)
 
