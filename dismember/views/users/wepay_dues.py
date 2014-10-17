@@ -52,7 +52,10 @@ def generate_payable_months(subsequent_months):
     # Retain only those without exceptions
     user_dues_payments = filter(lambda p: p.exception is None, user_dues_payments)
 
-    payable_months = []
+    # Extract (year, month) tuples for easy searching
+    paid_year_months = set([(p.period_year, p.period_month) for p in user_dues_payments])
+
+    # Determine where to start generating the list of months
     if user_dues_payments:
         # Start one past the last payment
         start_month = user_dues_payments[-1].period_date + relativedelta.relativedelta(months=1)
@@ -60,9 +63,16 @@ def generate_payable_months(subsequent_months):
         # Start now
         start_month = datetime.datetime.utcnow()
 
-    for i in range(0, subsequent_months):
+    # Generate the number required, skipping paid months
+    i = 0
+    payable_months = []
+    while len(payable_months) < subsequent_months:
         future_month = start_month + relativedelta.relativedelta(months=i)
-        payable_months.append(future_month.strftime('%Y-%m'))
+        i += 1
+
+        if (future_month.year, future_month.month) not in paid_year_months:
+            payable_months.append(future_month.strftime('%Y-%m'))
+
     return payable_months
 
 
