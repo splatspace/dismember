@@ -1,5 +1,6 @@
 # Import all concrete models
 import dues_payment
+import dues_payment_period
 import member_type
 import payment
 import role

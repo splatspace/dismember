@@ -1,6 +1,7 @@
 import datetime
 
 from dateutil import relativedelta
+from dismember.models.dues_payment_period import DuesPaymentPeriod
 from flask import render_template, redirect, url_for, request
 from flask.ext.login import login_required, current_user
 from dismember.service import app, db
@@ -11,20 +12,26 @@ from dismember.models.wepay_dues_payment import WePayDuesPayment
 from dismember.views.template_helpers import format_currency
 
 
-def create_dues_payments_for_checkout(checkout, month_tuples):
+def create_dues_payment(checkout, month_tuples):
     """
-    Create a WePayDuesPayment for each month tuple specified.
+    Create a WePayDuesPayment with periods for the specified months.
 
-    :param checkout: the WePayCheckout to link the payments to
+    :param checkout: the WePayCheckout to link the payment to
     :param month_tuples: iterable of integer (year, month) tuples
-    :return: a list of WePayDuesPayments
+    :return: the created WePayDuesPayment
     """
-    wepay_dues_payments = []
+    pmt = WePayDuesPayment()
+    pmt.user_id = current_user.id
+    pmt.wepay_checkout = checkout
+    db.session.add(pmt)
+
     for (year, month) in month_tuples:
         # Check for non-void payments of any type that conflict with the year and month
-        existing_payment = DuesPayment.query.filter_by(user_id=current_user.id, void=False,
-                                                       period_year=year,
-                                                       period_month=month).first()
+        existing_payment = DuesPayment.query \
+            .filter_by(user_id=current_user.id, void=False) \
+            .join(DuesPayment.periods) \
+            .filter_by(year=year, month=month) \
+            .first()
 
         # Ignore payments in "exception" (we'll assume a manual approval was given to re-pay for that period).
         if existing_payment and existing_payment.exception is None:
@@ -33,32 +40,41 @@ def create_dues_payments_for_checkout(checkout, month_tuples):
                 'Adjust the start month and number of months so this month is not included.'.format(
                     year, month))
 
-        pmt = WePayDuesPayment()
-        pmt.user_id = current_user.id
-        pmt.period_year = year
-        pmt.period_month = month
-        pmt.wepay_checkout_id = checkout.id
-        wepay_dues_payments.append(pmt)
-    return wepay_dues_payments
+        period = DuesPaymentPeriod()
+        period.dues_payment_id = pmt.id
+        period.year = year
+        period.month = month
+        db.session.add(period)
+
+    return pmt
 
 
-def generate_payable_months(subsequent_months):
-    # Order these from most recent to oldest
-    user_dues_payments = DuesPayment.query \
+def get_successful_dues_payments():
+    # Find all of this user's non-void dues payments
+    dues_payments = DuesPayment.query \
         .filter_by(user_id=current_user.id, void=False) \
-        .order_by(DuesPayment.period_year.desc(), DuesPayment.period_month.desc()) \
         .all()
 
     # Retain only those without exceptions
-    user_dues_payments = filter(lambda p: p.exception is None, user_dues_payments)
+    dues_payments = filter(lambda p: p.exception is None, dues_payments)
 
     # Extract (year, month) tuples for easy searching
-    paid_year_months = set([(p.period_year, p.period_month) for p in user_dues_payments])
+    year_month_tuples = set()
+    for pmt in dues_payments:
+        for period in pmt.periods:
+            year_month_tuples.add((period.year, period.month))
+
+    return dues_payments, year_month_tuples
+
+
+def generate_payable_months(subsequent_months):
+    user_dues_payments, year_month_tuples = get_successful_dues_payments()
 
     # Determine where to start generating the list of months
     if user_dues_payments:
         # Start one past the last payment
-        start_month = user_dues_payments[-1].period_date + relativedelta.relativedelta(months=1)
+        last_year, last_month = sorted(year_month_tuples, reverse=True)[0]
+        start_month = datetime.datetime(last_year, last_month, 1) + relativedelta.relativedelta(months=1)
     else:
         # Start now
         start_month = datetime.datetime.utcnow()
@@ -70,7 +86,7 @@ def generate_payable_months(subsequent_months):
         future_month = start_month + relativedelta.relativedelta(months=i)
         i += 1
 
-        if (future_month.year, future_month.month) not in paid_year_months:
+        if (future_month.year, future_month.month) not in year_month_tuples:
             payable_months.append(future_month.strftime('%Y-%m'))
 
     return payable_months
@@ -79,17 +95,16 @@ def generate_payable_months(subsequent_months):
 @app.route('/users/wepay_dues')
 @login_required
 def users_wepay_dues():
-    # Get some recent dues payments
-    recent_dues_payments = DuesPayment.query \
+    paid_periods = DuesPaymentPeriod.query \
+        .join(DuesPayment) \
         .filter_by(user_id=current_user.id, void=False) \
-        .order_by(DuesPayment.period_year, DuesPayment.period_month) \
         .all()
 
-    # Retain only those without exceptions, and just take the last few
-    recent_dues_payments = filter(lambda p: p.exception is None, recent_dues_payments)
+    # Retain only those without exceptions
+    paid_periods = filter(lambda p: p.dues_payment.exception is None, paid_periods)
 
-    # And just take the most recent ones (at the end)
-    recent_dues_payments = recent_dues_payments[-6:]
+    # Take just the most recent ones (at the end)
+    recent_paid_periods = sorted(paid_periods, key=lambda p: (p.year, p.month))[-6:]
 
     if current_user.member_type:
         monthly_dues = format_currency(current_user.member_type.currency, current_user.member_type.monthly_dues)
@@ -100,7 +115,7 @@ def users_wepay_dues():
 
     return render_template('/users/wepay_dues.html',
                            monthly_dues=monthly_dues,
-                           recent_dues_payments=recent_dues_payments,
+                           recent_paid_periods=recent_paid_periods,
                            payable_months=payable_months,
                            utcnow=datetime.datetime.utcnow())
 
@@ -152,9 +167,10 @@ def users_wepay_dues_authorize():
 
     # Create WePayDuesPayments for each dues period
     try:
-        [db.session.add(p) for p in create_dues_payments_for_checkout(checkout, month_tuples)]
+        wepay_dues_payment = create_dues_payment(checkout, month_tuples)
     except ValueError as err:
         return str(err), 403
+    db.session.commit()
 
     authorize_url = wepay_service.authorize_checkout(checkout, url_for('users_wepay_dues_submit', _external=True))
     db.session.commit()

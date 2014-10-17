@@ -16,7 +16,7 @@
         <p>
             Your membership type is {{ current_user.member_type }}, at {{ monthly_dues }} per month.
         </p>
-        {% if not recent_dues_payments %}
+        {% if not recent_paid_periods %}
             <p>
                 It doesn't look like you've made any dues payments yet. You'll need to make one soon to keep your
                 membership active.
@@ -26,8 +26,12 @@
                 Your recent dues payments:
             </p>
             <ul>
-                {% for payment in recent_dues_payments %}
-                    <li>{{ payment.period_str }} {{ payment.paid_str }}</li>
+                {% for dues_payment_period in recent_paid_periods %}
+                    <li>{{ dues_payment_period }}
+                        ({{ dues_payment_period.dues_payment.payment_type }}
+                        {{ dues_payment_period.dues_payment.payer_reference }},
+                        {{ dues_payment_period.dues_payment.paid_amount_str }})
+                    </li>
                 {% endfor %}
             </ul>
         {% endif %}

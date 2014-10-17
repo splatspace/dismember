@@ -45,8 +45,16 @@ class WePayDuesPayment(DuesPayment):
         return self.wepay_checkout.currency
 
     @property
-    def paid_str(self):
+    def paid_amount_str(self):
         return format_currency(self.paid_currency, self.paid_amount)
+
+    @property
+    def payment_type(self):
+        return 'WePay'
+
+    @property
+    def payer_reference(self):
+        return self.wepay_checkout.checkout_id
 
     @property
     def exception(self):

@@ -27,12 +27,22 @@ class Payment(db.Model):
 
     @property
     def paid_currency(self):
-        """Get the currency used for the payment."""
+        """Get the currency abbreviation used for the payment."""
         return None
 
     @property
-    def paid_str(self):
+    def paid_amount_str(self):
         """Get a formatted string describing the paid amount in the paid currency."""
+        return None
+
+    @property
+    def payment_type(self):
+        """Get a user-friendly string that describes the payment type (cash, check, WePay, etc.)"""
+        return None
+
+    @property
+    def payer_reference(self):
+        """Get an ID that the payer can correlate with their method of payment (check number, CC transaction, cash receipt number, etc.)"""
         return None
 
     @property
