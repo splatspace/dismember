@@ -3,8 +3,8 @@ import urllib2
 import json
 import uuid
 
-from dismember.service import app
-#from dismember.models.wepay_checkout import WePayCheckout
+from dismember.service import app, db
+from dismember.models.wepay_checkout import WePayCheckout
 
 
 class WePayApi(object):
@@ -130,8 +130,9 @@ class WePayService(object):
         # Use an unguessable UUID for this purpose.
         checkout.reference_id = str(uuid.uuid4())
 
-        # Create it in the database and return the auth URL
-        checkout.save()
+        # Add it to the database and return the auth URL
+        db.session.add(checkout)
+        db.session.commit()
         return self._wepay_api.get_authorize_url(submit_uri, 'collect_payments', state=checkout.reference_id)
 
     def submit_checkout(self, submit_uri, checkout_reference_id):
@@ -146,8 +147,8 @@ class WePayService(object):
         assert submit_uri
         assert checkout_reference_id
 
-        checkout = WePayCheckout.select().where(WePayCheckout.reference_id == checkout_reference_id).first()
-        if not checkout:
+        checkout = WePayCheckout.query.filter_by(reference_id=checkout_reference_id).first()
+        if checkout is None:
             raise ValueError('WePayCheckout with reference ID %s not found' % checkout_reference_id)
 
         # Submit only the values that are valid for 'create' to WePay.  Use the default access token
@@ -157,7 +158,7 @@ class WePayService(object):
 
         # Update the DB object with server-side WePay checkout ID
         checkout.update_from_dict(checkout_response)
-        checkout.save()
+        db.session.commit()
 
         return checkout_response['checkout_uri']
 
@@ -178,13 +179,13 @@ class WePayService(object):
             raise ValueError('No checkout with ID %s was found' % checkout_id)
 
         # We generate the reference ID, and they're unique, so they are the best key in this situation
-        checkout = WePayCheckout.select().where(WePayCheckout.reference_id == checkout_response['reference_id']).first()
-        if not checkout:
+        checkout = WePayCheckout.query.filter_by(reference_id=checkout_response['reference_id']).first()
+        if checkout is None:
             raise ValueError('WePayCheckout with reference ID %s not found' % checkout_response['reference_id'])
 
         previous_state = checkout.state
         checkout.update_from_dict(checkout_response)
-        checkout.save()
+        db.session.commit()
         return checkout, previous_state
 
 

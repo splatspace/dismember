@@ -1,6 +1,6 @@
 from dismember.service import db
 from dismember.models.utils import *
-from sqlalchemy import Column, Integer, Text
+from sqlalchemy import Column, Integer, Text, DateTime, text
 
 
 class Payment(db.Model):
@@ -16,7 +16,7 @@ class Payment(db.Model):
 
     currency = Column(Text, nullable=False)
     amount = money_column()
-    created = datetime_tz_default_now()
+    created = Column(DateTime, nullable=False, server_default=text('now()'))
 
     __mapper_args__ = {
         'polymorphic_identity': 'payment',

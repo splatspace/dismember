@@ -2,6 +2,7 @@ from flask import Flask
 
 from dismember.reverse_proxied import ReverseProxied
 from flask.ext.admin import Admin
+from flask.ext.admin.contrib.sqla import ModelView
 from flask.ext.security import Security
 from flask.ext.security.datastore import SQLAlchemyUserDatastore
 
@@ -46,35 +47,13 @@ def run():
     user_datastore = SQLAlchemyUserDatastore(db, dismember.models.user.User, dismember.models.role.Role)
     security = Security(app, user_datastore)
 
+    # Import normal views so they can register endpoints with Flask
+    import dismember.views
+
     # Flask-Admin
     admin = Admin(app, name=app.config['DISMEMBER_SITE_NAME'])
-
-    # Flask-Admin
-    # from dismember.models.currency import Currency, CurrencyAdmin
-    # from dismember.models.dues_payment import DuesPayment, DuesPaymentAdmin
-    # from dismember.models.member_type import MemberType, MemberTypeAdmin
-    # from dismember.models.user import User, UserAdmin
-    # from dismember.models.wepay_checkout import WePayCheckout, WePayCheckoutAdmin
-    # from dismember.models.wepay_dues_payment import WePayDuesPayment, WePayDuesPaymentAdmin
-    #
-    # auth = Auth(app, db, user_model=dismember.models.user.User)
-    # admin = Admin(app, auth, branding=app.config['DISMEMBER_SITE_NAME'])
-    # admin.register(Currency, CurrencyAdmin)
-    # admin.register(DuesPayment, DuesPaymentAdmin)
-    # admin.register(MemberType, MemberTypeAdmin)
-    # admin.register(User, UserAdmin)
-    # admin.register(WePayCheckout, WePayCheckoutAdmin)
-    # admin.register(WePayDuesPayment, WePayDuesPaymentAdmin)
-    # admin.setup()
-
-    # Limit API access to admins
-    # api = RestAPI(app, default_auth=AdminAuthentication(
-    # auth, protected_methods=['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT', 'PATCH']))
-    # api.register(User)
-    # api.setup()
-
-    # Importing views registers endpoints with Flask
-    import dismember.views
+    # Import admin views so they can register endpoints on the "admin" object
+    import dismember.views.admin
 
     create_builtins(db, user_datastore)
     app.run(host=app.config['DISMEMBER_HOST'])

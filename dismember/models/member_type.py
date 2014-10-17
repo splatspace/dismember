@@ -16,5 +16,7 @@ class MemberType(db.Model):
     monthly_dues = Column(Numeric(precision=10, scale=2), nullable=False)
     currency = Column(Text, nullable=False)
 
+    users = relationship('User', backref='member_type')
+
     def __str__(self):
         return self.name

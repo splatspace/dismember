@@ -5,3 +5,4 @@ Flask-Mail==0.9.1
 Flask-Security==1.7.4
 itsdangerous==0.24
 psycopg2==2.5.3
+py-dateutil==2.2

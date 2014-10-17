@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Numeric, DateTime, text
+from sqlalchemy import Column, Numeric
 
 
 def to_dict(o, property_names, include_none_values=False, stringify=set()):
@@ -30,7 +30,3 @@ def money_column(nullable=False, **kwargs):
     # 10 total digits, 2 digits to the right of the decimal point, lets us hold
     # up to 99,999,999.99.
     return Column(Numeric(precision=10, scale=2), nullable=nullable, **kwargs)
-
-
-def datetime_tz_default_now(nullable=False):
-    return Column(DateTime(timezone=True), nullable=nullable, server_default=text('now()'))
