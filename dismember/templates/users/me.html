@@ -7,6 +7,19 @@
 
     <h1>My Details</h1>
 
-    {{ current_user.full_name }}
+    <h4>Contact Information</h4>
+    <ul>
+        <li>Email: {{ current_user.email }}</li>
+        <li>Full name: {{ current_user.full_name or '' }}</li>
+        <li>Phone: {{ current_user.phone or '' }}</li>
+        <li>Address: {{ current_user.address or '' }}</li>
+        <li>Emergency contact: {{ current_user.emergency_contact or '' }}</li>
+    </ul>
+
+    <h4>Membership</h4>
+    <ul>
+        <li>Signed up: {{ current_user.member_signup or 'Not yet' }}</li>
+        <li>Type: {{ current_user.member_type or 'Not a member' }}</li>
+    </ul>
 
 {% endblock %}

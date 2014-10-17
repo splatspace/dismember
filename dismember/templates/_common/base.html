@@ -12,9 +12,9 @@
         Logged in as {{ current_user.email }}
         (<a href="{{ url_for('security.logout') }}">log out</a>)
     {% else %}
-        You are not logged in.
+        Not logged in
         <ul>
-            <li><a href="{{ url_for('security.login') }}?next={{ request.path }}">login</a></li>
+            <li><a href="{{ url_for('security.login', next=request.path) }}">login</a></li>
             <li><a href="{{ url_for('security.register') }}">register</a></li>
         </ul>
     {% endif %}

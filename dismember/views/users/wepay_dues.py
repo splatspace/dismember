@@ -45,9 +45,13 @@ def users_wepay_dues():
         .order_by(DuesPayment.created.desc()) \
         .limit(12) \
         .all()
+    if current_user.member_type:
+        monthly_dues = format_currency(current_user.member_type.currency, current_user.member_type.monthly_dues)
+    else:
+        monthly_dues = None
+
     return render_template('/users/wepay_dues.html',
-                           monthly_dues=format_currency(current_user.member_type.currency,
-                                                        current_user.member_type.monthly_dues),
+                           monthly_dues=monthly_dues,
                            recent_payments=recent_payments,
                            utcnow=datetime.datetime.utcnow())
 
