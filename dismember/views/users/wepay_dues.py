@@ -1,19 +1,24 @@
 import datetime
 
+from dateutil import relativedelta
 from flask import render_template, redirect, url_for, request
-from dismember.service import app
+from flask.ext.login import login_required, current_user
+from dismember.service import app, db
 from dismember.models.dues_payment import DuesPayment
 from dismember.wepay import wepay_service
 from dismember.models.wepay_checkout import WePayCheckout
-from flask.ext.login import login_required, current_user
+from dismember.models.wepay_dues_payment import WePayDuesPayment
 from dismember.views.template_helpers import format_currency
+
+
+def get_recent_dues_payments(count):
+    return DuesPayment.query.filter_by(id=current_user.id).order_by(DuesPayment.created.desc()).limit(count).all()
 
 
 @app.route('/users/wepay_dues')
 @login_required
 def users_wepay_dues():
-    recent_payments = DuesPayment.query.filter_by(id=current_user.id).order_by(DuesPayment.created.desc()).limit(
-        12).all()
+    recent_payments = get_recent_dues_payments(12)
     return render_template('/users/wepay_dues.html',
                            monthly_dues=format_currency(current_user.member_type.currency,
                                                         current_user.member_type.monthly_dues),
@@ -34,20 +39,61 @@ def users_wepay_dues_authorize():
         return 'Monthly dues cannot be paid because the configured currency ' \
                'is "%s" but WePay only supports "USD"' % current_user.member_type.currency, 403
 
+    start_month = request.args.get('start_month', None)
+    if not start_month:
+        return 'Missing start_month parameter', 403
+    try:
+        start_month = datetime.datetime.strptime(start_month, '%Y-%m')
+    except ValueError as err:
+        return 'Error parsing start month', 403
+
+    months = request.args.get('months', 1)
+    if not months:
+        return 'Months not specified', 403
+    try:
+        months = int(months)
+    except ValueError as err:
+        return 'Error parsing month count', 403
+
     fee_payer = 'payee'
     if request.args.get('pay_fee', 'false') == 'true':
         fee_payer = 'payer'
 
+    amount = current_user.member_type.monthly_dues * months
+
     checkout = WePayCheckout()
     checkout.account_id = app.config['WEPAY_ACCOUNT_ID']
-    checkout.short_description = '%s dues payment' % (app.config['DISMEMBER_ORG_NAME'])
+    checkout.short_description = '%s dues payment (%d months)' % (app.config['DISMEMBER_ORG_NAME'], months)
     checkout.type = 'SERVICE'
-    checkout.amount = str(current_user.member_type.monthly_dues)
+    checkout.amount = str(amount)
     checkout.fee_payer = fee_payer
     checkout.callback_uri = url_for('users_wepay_dues_callback', _external=True)
     checkout.auto_capture = True
+    db.session.add(checkout)
 
-    return redirect(wepay_service.authorize_checkout(checkout, url_for('users_wepay_dues_submit', _external=True)))
+    # Create a WePayDuesPayment for each period (month) covered by this checkout
+    wepay_dues_payments = []
+    for i in range(0, months):
+        future_month = start_month + relativedelta.relativedelta(months=i)
+
+        # Check for any non-void dues payments that conflict
+        existing_payment = DuesPayment.query.filter_by(user_id=current_user.id, void=False, period_year=future_month.year,
+                                       period_month=future_month.month).first()
+
+        if existing_payment and existing_payment.exception is None:
+            return 'You have already made a dues payment for the month of {:04d}-{:02d}.  Pick a different ' \
+                   'start month or change the number of months.'.format(future_month.year, future_month.month), 403
+
+        wepay_dues_payment = WePayDuesPayment()
+        wepay_dues_payment.user_id = current_user.id
+        wepay_dues_payment.period_year = future_month.year
+        wepay_dues_payment.period_month = future_month.month
+        wepay_dues_payment.wepay_checkout_id = checkout.id
+        db.session.add(wepay_dues_payment)
+
+    authorize_url = wepay_service.authorize_checkout(checkout, url_for('users_wepay_dues_submit', _external=True))
+    db.session.commit()
+    return redirect(authorize_url)
 
 
 @app.route('/users/wepay_dues_submit')
@@ -61,7 +107,9 @@ def users_wepay_dues_submit():
     if not state:
         return 'The state parameter is missing', 403
 
-    return redirect(wepay_service.submit_checkout(url_for('users_wepay_dues_submit', _external=True), state))
+    submit_url = wepay_service.submit_checkout(url_for('users_wepay_dues_submit', _external=True), state)
+    db.session.commit()
+    return redirect(submit_url)
 
 
 @app.route('/users/wepay_dues_callback', methods=['POST'])
@@ -77,5 +125,6 @@ def users_wepay_dues_callback():
     if not checkout_id:
         return 'Missing checkout_id', 403
 
-    wepay_service.refresh_checkout(checkout_id)
+    checkout, previous_state = wepay_service.refresh_checkout(checkout_id)
+    db.session.commit()
     return 'OK', 200

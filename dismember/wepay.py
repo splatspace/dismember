@@ -131,10 +131,6 @@ class WePayService(object):
         # Use an unguessable UUID for this purpose.
         checkout.reference_id = str(uuid.uuid4())
 
-        # Add it to the database and return the auth URL
-        db.session.add(checkout)
-        db.session.commit()
-
         # Pack up some state information that we can use in the submit step
         state = checkout.reference_id
 
@@ -167,8 +163,6 @@ class WePayService(object):
 
         # Update the local model (we'll receive an IPN callback soon with even more info)
         checkout.update_from_dict(checkout_response)
-        db.session.commit()
-
         return checkout_response['checkout_uri']
 
     def refresh_checkout(self, checkout_id):
@@ -194,7 +188,6 @@ class WePayService(object):
 
         previous_state = checkout.state
         checkout.update_from_dict(checkout_response)
-        db.session.commit()
         return checkout, previous_state
 
 

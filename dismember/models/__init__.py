@@ -5,4 +5,4 @@ import payment
 import role
 import user
 import wepay_checkout
-import wepay_payment
+import wepay_dues_payment
