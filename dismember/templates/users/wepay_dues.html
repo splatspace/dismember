@@ -43,9 +43,8 @@
             <ul>
                 {% for month in payable_months %}
                     <li>
-                        <input type="checkbox" name="month" value="{{ month }}" {{ 'checked="checked"' if loop.first }}">
-                        {{ month }}
-                        </input>
+                        <input type="checkbox" name="month" value="{{ month[0] }}"
+                        {{ 'checked="checked"' if month[1] }}"> {{ month[0] }} </input>
                     </li>
                 {% endfor %}
             </ul>

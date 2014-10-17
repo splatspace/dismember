@@ -67,27 +67,37 @@ def get_successful_dues_payments():
     return dues_payments, year_month_tuples
 
 
-def generate_payable_months(subsequent_months):
+def generate_payable_months(catchup_months, subsequent_months):
+    """
+    Get the months the user can pay for.
+
+    :param catchup_months: how many unpaid months in the past to include in the results
+    :param subsequent_months: host many unpaid months in the future to include in the results
+    :return: a list of tuples like ('2014-10', True) where the second element is True if the month is overdue or due
+    """
     user_dues_payments, year_month_tuples = get_successful_dues_payments()
 
-    # Determine where to start generating the list of months
-    if user_dues_payments:
-        # Start one past the last payment
-        last_year, last_month = sorted(year_month_tuples, reverse=True)[0]
-        start_month = datetime.datetime(last_year, last_month, 1) + relativedelta.relativedelta(months=1)
-    else:
-        # Start now
-        start_month = datetime.datetime.utcnow()
+    this_month_date = datetime.datetime.utcnow().date()
+    this_month_date = datetime.date(year=this_month_date.year, month=this_month_date.month, day=1)
+
+    # Start generating from catchup_months ago
+    start_date = this_month_date - relativedelta.relativedelta(months=catchup_months)
+
+    # If the member signed up more recently than that, start at the signup month
+    signup_date = datetime.date(year=current_user.member_signup.year, month=current_user.member_signup.month, day=1)
+    if signup_date > start_date:
+        start_date = signup_date
 
     # Generate the number required, skipping paid months
     i = 0
     payable_months = []
     while len(payable_months) < subsequent_months:
-        future_month = start_month + relativedelta.relativedelta(months=i)
+        future_month = start_date + relativedelta.relativedelta(months=i)
         i += 1
 
         if (future_month.year, future_month.month) not in year_month_tuples:
-            payable_months.append(future_month.strftime('%Y-%m'))
+            due = True if future_month <= this_month_date else False
+            payable_months.append((future_month.strftime('%Y-%m'), due))
 
     return payable_months
 
@@ -108,7 +118,7 @@ def users_wepay_dues():
 
     if current_user.member_type:
         monthly_dues = format_currency(current_user.member_type.currency, current_user.member_type.monthly_dues)
-        payable_months = generate_payable_months(6)
+        payable_months = generate_payable_months(2, 6)
     else:
         monthly_dues = None
         payable_months = []
