@@ -11,10 +11,6 @@ from dismember.models.wepay_dues_payment import WePayDuesPayment
 from dismember.views.template_helpers import format_currency
 
 
-def get_recent_dues_payments(count):
-    return DuesPayment.query.filter_by(id=current_user.id).order_by(DuesPayment.created.desc()).limit(count).all()
-
-
 def create_dues_payments_for_checkout(checkout, start_month, months):
     wepay_dues_payments = []
     for i in range(0, months):
@@ -44,12 +40,16 @@ def create_dues_payments_for_checkout(checkout, start_month, months):
 @app.route('/users/wepay_dues')
 @login_required
 def users_wepay_dues():
-    recent_payments = get_recent_dues_payments(12)
+    recent_payments = DuesPayment.query \
+        .filter_by(id=current_user.id) \
+        .order_by(DuesPayment.created.desc()) \
+        .limit(12) \
+        .all()
     return render_template('/users/wepay_dues.html',
                            monthly_dues=format_currency(current_user.member_type.currency,
                                                         current_user.member_type.monthly_dues),
                            recent_payments=recent_payments,
-                           now=datetime.datetime.utcnow())
+                           utcnow=datetime.datetime.utcnow())
 
 
 @app.route('/users/wepay_dues_authorize')

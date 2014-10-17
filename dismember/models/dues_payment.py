@@ -9,7 +9,8 @@ class DuesPayment(Payment):
     __tablename__ = 'dues_payments'
 
     id = Column(Integer, ForeignKey('payments.id'), primary_key=True)
-    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    # user (backref)
     period_year = Column(Integer, nullable=False)
     period_month = Column(Integer, nullable=False)
 
@@ -18,4 +19,4 @@ class DuesPayment(Payment):
     }
 
     def __str__(self):
-        return '{} {:4d}-{:2d}'.format(self.user.full_name, self.period_year, self.period_month)
+        return '@{:04d}-{:02d}'.format(self.period_year, self.period_month)

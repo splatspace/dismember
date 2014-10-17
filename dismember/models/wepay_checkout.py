@@ -1,4 +1,5 @@
-from sqlalchemy import Text, Integer, Enum, Boolean, BigInteger
+from dismember.currency import money_column, format_currency
+from sqlalchemy import Text, Integer, Enum, Boolean, BigInteger, Column
 
 from dismember.service import db
 from dismember.models.utils import *
@@ -70,8 +71,7 @@ class WePayCheckout(db.Model):
     wepay_dues_payments = relationship('WePayDuesPayment', backref='wepay_checkout')
 
     def __str__(self):
-        # Hard-code dollars for WePay
-        return '$%s (%s <%s>)' % (self.amount, self.payer_name, self.payer_email)
+        return '%s (%s <%s>)' % (format_currency('USD', self.amount), self.payer_name, self.payer_email)
 
     def to_create_dict(self):
         """Get a dictionary with only the values that are valid for /checkout/create"""

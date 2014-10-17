@@ -19,7 +19,7 @@ class WePayDuesPayment(DuesPayment):
     }
 
     def __str__(self):
-        return '%s -> %s' % (self.wepay_checkout, self.dues_payment)
+        return '%s %s (WePay)' % (super(WePayDuesPayment, self).__str__(), self.wepay_checkout)
 
     @property
     def paid_amount(self):

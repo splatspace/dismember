@@ -5,49 +5,39 @@
 
 {% block body %}
 
-    <h1>Pay Dues with WePay</h1>
+<h1>Pay Dues with WePay</h1>
 
-    {% if not current_user.member_type %}
-        <p>
-            You don't appear to be an active member of {{ config['DISMEMBER_ORG_NAME'] }}, so there are no dues to
-            pay!
-        </p>
-    {% else %}
-        <p>
-            Your membership type is {{ current_user.member_type }}, which requires a monthly dues payment
-            of {{ monthly_dues }}.
-        </p>
-        {% if not last_dues_payment %}
-            <p>
-                You haven't made any dues payments yet. You'll need to make one soon to keep your
-                membership active.
-            </p>
-        {% elif last_dues_payment.period_end <= now.date() %}
-            <p>
-                It's time to pay your dues!
-            </p>
-            <p>
-                Your most recent dues payment was on {{ last_dues_payment.created.date() }}, which
-                paid for your membership through {{ last_dues_payment.period_end }}. Please pay
-                {{ monthly_dues }} today
-                to remain an active member.
-            </p>
-        {% else %}
-            <p>
-                You're all paid-up, thanks!
-            </p>
-            <p>
-                Your most recent dues payment was on {{ last_dues_payment.created.date() }}. This
-                means you're covered through {{ last_dues_payment.period_end }}. If you make a dues payment
-                now it will pay for the next unpaid membership period.
-            </p>
-        {% endif %}
+{% if not current_user.member_type %}
+<p>
+    You don't appear to be an active member of {{ config['DISMEMBER_ORG_NAME'] }}, so there are no dues to
+    pay!
+</p>
+{% else %}
+<p>
+    Your membership type is {{ current_user.member_type }}, which requires a monthly dues payment
+    of {{ monthly_dues }}.
+</p>
+{% if not recent_payments %}
+<p>
+    You haven't made any dues payments yet. You'll need to make one soon to keep your
+    membership active.
+</p>
+{% else %}
+<p>
+    Your recent dues payments:
+</p>
+<ul>
+    {% for payment in recent_payments %}
+    <li>{{ payment }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 
-        <p>
-            <a href="{{ url_for('users_wepay_dues_authorize') }}">Pay
-                {{ monthly_dues }} with
-                WePay</a>
-        </p>
-    {% endif %}
+<p>
+    <a href="{{ url_for('users_wepay_dues_authorize') }}">Pay
+        {{ monthly_dues }} with
+        WePay</a>
+</p>
+{% endif %}
 
 {% endblock %}

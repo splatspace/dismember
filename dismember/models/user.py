@@ -1,10 +1,7 @@
-import datetime
-
 from dismember.models.member_type import MemberType
 from dismember.service import db
 from flask.ext.security import UserMixin
 from dismember.models.role import Role
-from dismember.models.utils import *
 from sqlalchemy import Column, Integer, Text, Boolean, DateTime, Table, text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
@@ -47,6 +44,8 @@ class User(db.Model, UserMixin):
     address = Column(Text)
     phone = Column(Text)
     emergency_contact = Column(Text)
+
+    dues_payments = relationship('DuesPayment', backref='user')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
