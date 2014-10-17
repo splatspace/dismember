@@ -1,12 +1,12 @@
 {% extends "_common/base.html" %}
 {% block head %}
-<title>My Details</title>
+    <title>My Details</title>
 {% endblock %}
 
 {% block body %}
 
-<h1>My Details</h1>
+    <h1>My Details</h1>
 
-{{ user.full_name }}
+    {{ current_user.full_name }}
 
 {% endblock %}
