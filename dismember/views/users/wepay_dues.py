@@ -15,6 +15,32 @@ def get_recent_dues_payments(count):
     return DuesPayment.query.filter_by(id=current_user.id).order_by(DuesPayment.created.desc()).limit(count).all()
 
 
+def create_dues_payments_for_checkout(checkout, start_month, months):
+    wepay_dues_payments = []
+    for i in range(0, months):
+        future_month = start_month + relativedelta.relativedelta(months=i)
+
+        # Check for non-void payments of any type that conflict with the year and month
+        existing_payment = DuesPayment.query.filter_by(user_id=current_user.id, void=False,
+                                                       period_year=future_month.year,
+                                                       period_month=future_month.month).first()
+
+        # Ignore payments in "exception" (we'll assume a manual approval was given to re-pay for that period).
+        if existing_payment and existing_payment.exception is None:
+            raise ValueError(
+                'You have already made a dues payment for the month of {:04d}-{:02d}.  '
+                'Adjust the start month and number of months so this month is not included.'.format(
+                    future_month.year, future_month.month))
+
+        pmt = WePayDuesPayment()
+        pmt.user_id = current_user.id
+        pmt.period_year = future_month.year
+        pmt.period_month = future_month.month
+        pmt.wepay_checkout_id = checkout.id
+        wepay_dues_payments.append(pmt)
+    return wepay_dues_payments
+
+
 @app.route('/users/wepay_dues')
 @login_required
 def users_wepay_dues():
@@ -54,6 +80,8 @@ def users_wepay_dues_authorize():
         months = int(months)
     except ValueError as err:
         return 'Error parsing month count', 403
+    if months < 1:
+        return 'You have to pay for at least 1 month', 403
 
     fee_payer = 'payee'
     if request.args.get('pay_fee', 'false') == 'true':
@@ -71,25 +99,11 @@ def users_wepay_dues_authorize():
     checkout.auto_capture = True
     db.session.add(checkout)
 
-    # Create a WePayDuesPayment for each period (month) covered by this checkout
-    wepay_dues_payments = []
-    for i in range(0, months):
-        future_month = start_month + relativedelta.relativedelta(months=i)
-
-        # Check for any non-void dues payments that conflict
-        existing_payment = DuesPayment.query.filter_by(user_id=current_user.id, void=False, period_year=future_month.year,
-                                       period_month=future_month.month).first()
-
-        if existing_payment and existing_payment.exception is None:
-            return 'You have already made a dues payment for the month of {:04d}-{:02d}.  Pick a different ' \
-                   'start month or change the number of months.'.format(future_month.year, future_month.month), 403
-
-        wepay_dues_payment = WePayDuesPayment()
-        wepay_dues_payment.user_id = current_user.id
-        wepay_dues_payment.period_year = future_month.year
-        wepay_dues_payment.period_month = future_month.month
-        wepay_dues_payment.wepay_checkout_id = checkout.id
-        db.session.add(wepay_dues_payment)
+    # Create WePayDuesPayments for each dues period
+    try:
+        [db.session.add(p) for p in create_dues_payments_for_checkout(checkout, start_month, months)]
+    except ValueError as err:
+        return str(err), 403
 
     authorize_url = wepay_service.authorize_checkout(checkout, url_for('users_wepay_dues_submit', _external=True))
     db.session.commit()

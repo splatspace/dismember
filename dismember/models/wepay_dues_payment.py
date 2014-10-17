@@ -10,7 +10,9 @@ class WePayDuesPayment(DuesPayment):
     __tablename__ = 'wepay_dues_payments'
 
     id = Column(Integer, ForeignKey(DuesPayment.id), primary_key=True)
-    wepay_checkout_id = Column(Integer, ForeignKey(WePayCheckout.id), unique=True, index=True, nullable=False)
+
+    wepay_checkout_id = Column(Integer, ForeignKey(WePayCheckout.id), index=True, nullable=False)
+    # wepay_checkout (backref)
 
     __mapper_args__ = {
         'polymorphic_identity': 'wepay_dues_payment'

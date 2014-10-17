@@ -43,6 +43,7 @@ class User(db.Model, UserMixin):
     # Membership information
     member_signup = Column(DateTime)
     member_type_id = Column(Integer, ForeignKey(MemberType.id))
+    # member_type (backref)
     address = Column(Text)
     phone = Column(Text)
     emergency_contact = Column(Text)

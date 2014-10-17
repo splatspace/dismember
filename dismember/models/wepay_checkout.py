@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Text, Integer, Enum, Boolean, BigInteger
+from sqlalchemy import Text, Integer, Enum, Boolean, BigInteger
 
 from dismember.service import db
 from dismember.models.utils import *
+from sqlalchemy.orm import relationship
 
 
 class WePayCheckout(db.Model):
@@ -65,6 +66,8 @@ class WePayCheckout(db.Model):
     amount_charged_back = money_column(nullable=True)
     refund_reason = Column(Text)
     shipping_address = Column(Text)
+
+    wepay_dues_payments = relationship('WePayDuesPayment', backref='wepay_checkout')
 
     def __str__(self):
         # Hard-code dollars for WePay
