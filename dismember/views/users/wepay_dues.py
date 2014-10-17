@@ -6,13 +6,18 @@ from dismember.models.dues_payment import DuesPayment
 from dismember.wepay import wepay_service
 from dismember.models.wepay_checkout import WePayCheckout
 from flask.ext.login import login_required, current_user
+from dismember.views.template_helpers import format_currency
 
 
 @app.route('/users/wepay_dues')
 @login_required
 def users_wepay_dues():
-    last_dues_payment = DuesPayment.query.filter_by(id=current_user.id).order_by(DuesPayment.created.desc()).first()
-    return render_template('/users/wepay_dues.html', last_dues_payment=last_dues_payment or None,
+    recent_payments = DuesPayment.query.filter_by(id=current_user.id).order_by(DuesPayment.created.desc()).limit(
+        12).all()
+    return render_template('/users/wepay_dues.html',
+                           monthly_dues=format_currency(current_user.member_type.currency,
+                                                        current_user.member_type.monthly_dues),
+                           recent_payments=recent_payments,
                            now=datetime.datetime.utcnow())
 
 
@@ -52,12 +57,11 @@ def users_wepay_dues_submit():
     Handle the second part of the WePay payment flow. This is where the user ends up after WePay finishes
     the flow started by users_wepay_dues_authorize.
     """
-    checkout_reference_id = request.args['state']
-    if not checkout_reference_id:
-        return 'The state does not contain a checkout reference ID', 403
+    state = request.args['state']
+    if not state:
+        return 'The state parameter is missing', 403
 
-    return redirect(
-        wepay_service.submit_checkout(url_for('users_wepay_dues_submit', _external=True), checkout_reference_id))
+    return redirect(wepay_service.submit_checkout(url_for('users_wepay_dues_submit', _external=True), state))
 
 
 @app.route('/users/wepay_dues_callback', methods=['POST'])

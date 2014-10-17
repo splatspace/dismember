@@ -5,6 +5,7 @@ import uuid
 
 from dismember.service import app, db
 from dismember.models.wepay_checkout import WePayCheckout
+from dismember.models.dues_payment import DuesPayment
 
 
 class WePayApi(object):
@@ -133,19 +134,27 @@ class WePayService(object):
         # Add it to the database and return the auth URL
         db.session.add(checkout)
         db.session.commit()
-        return self._wepay_api.get_authorize_url(submit_uri, 'collect_payments', state=checkout.reference_id)
 
-    def submit_checkout(self, submit_uri, checkout_reference_id):
+        # Pack up some state information that we can use in the submit step
+        state = checkout.reference_id
+
+        return self._wepay_api.get_authorize_url(submit_uri, 'collect_payments', state)
+
+    def submit_checkout(self, submit_uri, state):
         """
         Submits an authorized checkout to WePay for processing. This is the second step in the
         checkout process.
 
         :param submit_uri: the exact URI you used as submit_uri for the call to authorize_checkout
-        :param checkout_reference_id: the reference ID of the checkout that was previously authorized
+        :param state: the "state" query argument value that was supplied when WePay redirected the user back after the
+            authorization
         :return: the URI to send the user to to confirm and complete the checkout
         """
         assert submit_uri
-        assert checkout_reference_id
+        assert state
+
+        # Unpack the state from the last authorize
+        checkout_reference_id = state
 
         checkout = WePayCheckout.query.filter_by(reference_id=checkout_reference_id).first()
         if checkout is None:
@@ -156,7 +165,7 @@ class WePayService(object):
         checkout_response = json.loads(
             self._wepay_api.call('/checkout/create', request_data=checkout.to_create_dict()))
 
-        # Update the DB object with server-side WePay checkout ID
+        # Update the local model (we'll receive an IPN callback soon with even more info)
         checkout.update_from_dict(checkout_response)
         db.session.commit()
 

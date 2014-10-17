@@ -15,7 +15,7 @@
     {% else %}
         <p>
             Your membership type is {{ current_user.member_type }}, which requires a monthly dues payment
-            of {{ current_user.member_type.currency.format(current_user.member_type.monthly_dues) }}.
+            of {{ monthly_dues }}.
         </p>
         {% if not last_dues_payment %}
             <p>
@@ -29,7 +29,7 @@
             <p>
                 Your most recent dues payment was on {{ last_dues_payment.created.date() }}, which
                 paid for your membership through {{ last_dues_payment.period_end }}. Please pay
-                {{ format_currency(current_user.member_type.currency, current_user.member_type.monthly_dues) }} today
+                {{ monthly_dues }} today
                 to remain an active member.
             </p>
         {% else %}
@@ -45,7 +45,7 @@
 
         <p>
             <a href="{{ url_for('users_wepay_dues_authorize') }}">Pay
-                {{ format_currency(current_user.member_type.currency, current_user.member_type.monthly_dues) }} with
+                {{ monthly_dues }} with
                 WePay</a>
         </p>
     {% endif %}
