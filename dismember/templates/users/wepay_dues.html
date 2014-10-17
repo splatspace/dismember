@@ -5,39 +5,38 @@
 
 {% block body %}
 
-<h1>Pay Dues with WePay</h1>
+    <h1>Pay Dues with WePay</h1>
 
-{% if not current_user.member_type %}
-<p>
-    You don't appear to be an active member of {{ config['DISMEMBER_ORG_NAME'] }}, so there are no dues to
-    pay!
-</p>
-{% else %}
-<p>
-    Your membership type is {{ current_user.member_type }}, which requires a monthly dues payment
-    of {{ monthly_dues }}.
-</p>
-{% if not recent_payments %}
-<p>
-    You haven't made any dues payments yet. You'll need to make one soon to keep your
-    membership active.
-</p>
-{% else %}
-<p>
-    Your recent dues payments:
-</p>
-<ul>
-    {% for payment in recent_payments %}
-    <li>{{ payment }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
+    {% if not current_user.member_type %}
+        <p>
+            You don't appear to be an active member of {{ config['DISMEMBER_ORG_NAME'] }}, so there are no dues to
+            pay!
+        </p>
+    {% else %}
+        <p>
+            Your membership type is {{ current_user.member_type }}, at {{ monthly_dues }} per month.
+        </p>
+        {% if not recent_payments %}
+            <p>
+                You haven't made any dues payments yet. You'll need to make one soon to keep your
+                membership active.
+            </p>
+        {% else %}
+            <p>
+                Your recent dues payments:
+            </p>
+            <ul>
+                {% for payment in recent_payments %}
+                    <li>{{ payment }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
-<p>
-    <a href="{{ url_for('users_wepay_dues_authorize') }}">Pay
-        {{ monthly_dues }} with
-        WePay</a>
-</p>
-{% endif %}
+        <p>
+            <a href="{{ url_for('users_wepay_dues_authorize') }}">Pay
+                {{ monthly_dues }} with
+                WePay</a>
+        </p>
+    {% endif %}
 
 {% endblock %}
