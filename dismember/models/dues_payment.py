@@ -1,5 +1,6 @@
+import datetime
+
 from dismember.models.payment import Payment
-from dismember.models.user import User
 from sqlalchemy import Integer, Column, ForeignKey
 
 
@@ -19,4 +20,13 @@ class DuesPayment(Payment):
     }
 
     def __str__(self):
-        return '@{:04d}-{:02d}'.format(self.period_year, self.period_month)
+        return self.period_str
+
+    @property
+    def period_str(self):
+        return '{:04d}-{:02d}'.format(self.period_year, self.period_month)
+
+    @property
+    def period_date(self):
+        """Get a datetime at the start of the period."""
+        return datetime.datetime.strptime('%d-%d' % (self.period_year, self.period_month), '%Y-%m')

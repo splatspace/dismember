@@ -11,48 +11,87 @@ from dismember.models.wepay_dues_payment import WePayDuesPayment
 from dismember.views.template_helpers import format_currency
 
 
-def create_dues_payments_for_checkout(checkout, start_month, months):
-    wepay_dues_payments = []
-    for i in range(0, months):
-        future_month = start_month + relativedelta.relativedelta(months=i)
+def create_dues_payments_for_checkout(checkout, month_tuples):
+    """
+    Create a WePayDuesPayment for each month tuple specified.
 
+    :param checkout: the WePayCheckout to link the payments to
+    :param month_tuples: iterable of integer (year, month) tuples
+    :return: a list of WePayDuesPayments
+    """
+    wepay_dues_payments = []
+    for (year, month) in month_tuples:
         # Check for non-void payments of any type that conflict with the year and month
         existing_payment = DuesPayment.query.filter_by(user_id=current_user.id, void=False,
-                                                       period_year=future_month.year,
-                                                       period_month=future_month.month).first()
+                                                       period_year=year,
+                                                       period_month=month).first()
 
         # Ignore payments in "exception" (we'll assume a manual approval was given to re-pay for that period).
         if existing_payment and existing_payment.exception is None:
             raise ValueError(
                 'You have already made a dues payment for the month of {:04d}-{:02d}.  '
                 'Adjust the start month and number of months so this month is not included.'.format(
-                    future_month.year, future_month.month))
+                    year, month))
 
         pmt = WePayDuesPayment()
         pmt.user_id = current_user.id
-        pmt.period_year = future_month.year
-        pmt.period_month = future_month.month
+        pmt.period_year = year
+        pmt.period_month = month
         pmt.wepay_checkout_id = checkout.id
         wepay_dues_payments.append(pmt)
     return wepay_dues_payments
 
 
+def generate_payable_months(subsequent_months):
+    # Order these from most recent to oldest
+    user_dues_payments = DuesPayment.query \
+        .filter_by(user_id=current_user.id, void=False) \
+        .order_by(DuesPayment.period_year.desc(), DuesPayment.period_month.desc()) \
+        .all()
+
+    # Retain only those without exceptions
+    user_dues_payments = filter(lambda p: p.exception is None, user_dues_payments)
+
+    payable_months = []
+    if user_dues_payments:
+        # Start one past the last payment
+        start_month = user_dues_payments[-1].period_date + relativedelta.relativedelta(months=1)
+    else:
+        # Start now
+        start_month = datetime.datetime.utcnow()
+
+    for i in range(0, subsequent_months):
+        future_month = start_month + relativedelta.relativedelta(months=i)
+        payable_months.append(future_month.strftime('%Y-%m'))
+    return payable_months
+
+
 @app.route('/users/wepay_dues')
 @login_required
 def users_wepay_dues():
-    recent_payments = DuesPayment.query \
-        .filter_by(id=current_user.id) \
-        .order_by(DuesPayment.created.desc()) \
-        .limit(12) \
+    # Get some recent dues payments
+    recent_dues_payments = DuesPayment.query \
+        .filter_by(user_id=current_user.id, void=False) \
+        .order_by(DuesPayment.period_year, DuesPayment.period_month) \
         .all()
+
+    # Retain only those without exceptions, and just take the last few
+    recent_dues_payments = filter(lambda p: p.exception is None, recent_dues_payments)
+
+    # And just take the most recent ones (at the end)
+    recent_dues_payments = recent_dues_payments[-6:]
+
     if current_user.member_type:
         monthly_dues = format_currency(current_user.member_type.currency, current_user.member_type.monthly_dues)
+        payable_months = generate_payable_months(6)
     else:
         monthly_dues = None
+        payable_months = []
 
     return render_template('/users/wepay_dues.html',
                            monthly_dues=monthly_dues,
-                           recent_payments=recent_payments,
+                           recent_dues_payments=recent_dues_payments,
+                           payable_months=payable_months,
                            utcnow=datetime.datetime.utcnow())
 
 
@@ -69,33 +108,31 @@ def users_wepay_dues_authorize():
         return 'Monthly dues cannot be paid because the configured currency ' \
                'is "%s" but WePay only supports "USD"' % current_user.member_type.currency, 403
 
-    start_month = request.args.get('start_month', None)
-    if not start_month:
-        return 'Missing start_month parameter', 403
-    try:
-        start_month = datetime.datetime.strptime(start_month, '%Y-%m')
-    except ValueError as err:
-        return 'Error parsing start month', 403
-
-    months = request.args.get('months', 1)
+    months = request.args.getlist('month', None)
     if not months:
-        return 'Months not specified', 403
+        return 'Missing month parameter(s)', 403
+
+    # Set of integer (year, month) tuples
+    month_tuples = set()
     try:
-        months = int(months)
+        month_datetimes = [datetime.datetime.strptime(m, '%Y-%m') for m in months]
+        month_tuples = [(dt.year, dt.month) for dt in month_datetimes]
     except ValueError as err:
-        return 'Error parsing month count', 403
-    if months < 1:
+        return 'Error parsing month: %s' % (str(err)), 403
+
+    num_months = len(month_tuples)
+    if num_months < 1:
         return 'You have to pay for at least 1 month', 403
 
     fee_payer = 'payee'
-    if request.args.get('pay_fee', 'false') == 'true':
+    if 'pay_fee' in request.args:
         fee_payer = 'payer'
 
-    amount = current_user.member_type.monthly_dues * months
+    amount = current_user.member_type.monthly_dues * num_months
 
     checkout = WePayCheckout()
     checkout.account_id = app.config['WEPAY_ACCOUNT_ID']
-    checkout.short_description = '%s dues (%d months)' % (app.config['DISMEMBER_ORG_NAME'], months)
+    checkout.short_description = '%s dues (%d months)' % (app.config['DISMEMBER_ORG_NAME'], num_months)
     checkout.type = 'SERVICE'
     checkout.amount = str(amount)
     checkout.fee_payer = fee_payer
@@ -105,7 +142,7 @@ def users_wepay_dues_authorize():
 
     # Create WePayDuesPayments for each dues period
     try:
-        [db.session.add(p) for p in create_dues_payments_for_checkout(checkout, start_month, months)]
+        [db.session.add(p) for p in create_dues_payments_for_checkout(checkout, month_tuples)]
     except ValueError as err:
         return str(err), 403
 

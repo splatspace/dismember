@@ -1,3 +1,4 @@
+from dismember.currency import format_currency
 from dismember.models.dues_payment import DuesPayment
 from dismember.models.wepay_checkout import WePayCheckout
 from sqlalchemy import Integer, Column
@@ -44,6 +45,10 @@ class WePayDuesPayment(DuesPayment):
         return self.wepay_checkout.currency
 
     @property
+    def paid_str(self):
+        return format_currency(self.paid_currency, self.paid_amount)
+
+    @property
     def exception(self):
         # Chargebacks are always exceptional
         if self.wepay_checkout.amount_charged_back > 0:
@@ -58,7 +63,7 @@ class WePayDuesPayment(DuesPayment):
                 self.wepay_checkout.amount)
 
         # These probably indicate a problem
-        if self.wepay_checkout.state in ['failed', 'cancelled', 'charged back', 'refunded', 'expired']:
+        if self.wepay_checkout.state in [None, 'new', 'failed', 'cancelled', 'charged back', 'refunded', 'expired']:
             return 'Checkout state is %s' % self.wepay_checkout.state
 
         return None

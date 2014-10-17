@@ -31,6 +31,11 @@ class Payment(db.Model):
         return None
 
     @property
+    def paid_str(self):
+        """Get a formatted string describing the paid amount in the paid currency."""
+        return None
+
+    @property
     def exception(self):
         """
         Get a string describing any exceptional conditions that apply to this payment.
