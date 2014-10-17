@@ -1,23 +1,23 @@
 {% extends "_common/base.html" %}
 {% block head %}
-<title>Membership System</title>
+    <title>Membership System</title>
 {% endblock %}
 
 {% block body %}
 
-<h1>{{config['DISMEMBER_SITE_NAME']}}</h1>
+    <h1>{{ config['DISMEMBER_SITE_NAME'] }}</h1>
 
-<h2>Things members can do:</h2>
-<ul>
-    <li><a href="/users/me">View My Details</a></li>
-    <li><a href="/users/wepay_dues">Pay Dues</a></li>
-</ul>
+    <h2>Things members can do:</h2>
+    <ul>
+        <li><a href="/users/me">View My Details</a></li>
+        <li><a href="/users/wepay_dues">Pay Dues</a></li>
+    </ul>
 
-{% if user and user.admin %}
-<h2>Things administrators can do:</h2>
-<ul>
-    <li><a href="/admin">Administration Dashboard</a></li>
-</ul>
-{% endif %}
+    {% if current_user.has_role('admin') %}
+        <h2>Things administrators can do:</h2>
+        <ul>
+            <li><a href="/admin">Administration Dashboard</a></li>
+        </ul>
+    {% endif %}
 
 {% endblock %}

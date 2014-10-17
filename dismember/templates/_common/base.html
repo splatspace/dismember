@@ -7,16 +7,17 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    <div id="userinfo">
-        {% if user %}
-        You are logged in as {{user.username}} ({{user.full_name}}) (<a href="/accounts/logout">log out</a>)
-        {% else %}
-        You are not logged in (<a href="/accounts/login?next={{request.path}}">log in</a>)
-        {% endif %}
-    </div>
+<div id="userinfo">
+    {% if current_user.is_authenticated() %}
+        You are logged in as {{ current_user.username }} ({{ current_user.full_name }}) (
+        <a href="{{ url_for('security.logout') }}">log out</a>)
+    {% else %}
+        You are not logged in (<a href="{{ url_for('security.login') }}?next={{ request.path }}">log in</a>)
+    {% endif %}
+</div>
 
-    {% block body %}{% endblock %}
-    {# <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script> #}
-    <script src="{{ url_for('static', filename='bootstrap-3.2.0-dist/js/bootstrap.min.js') }}"></script>
+{% block body %}{% endblock %}
+{# <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script> #}
+<script src="{{ url_for('static', filename='bootstrap-3.2.0-dist/js/bootstrap.min.js') }}"></script>
 </body>
 </html>

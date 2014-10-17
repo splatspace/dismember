@@ -24,7 +24,7 @@ class WePayCheckout(db.Model):
 
     # Fields required for /checkout/create
     account_id = Column(Integer, nullable=False)
-    short_description = Column(Integer, nullable=False)
+    short_description = Column(Text, nullable=False)
     type = Column(Enum('GOODS', 'SERVICE', 'DONATION', 'EVENT', 'PERSONAL', name='wepay_checkout_type'))
     amount = money_column()
 

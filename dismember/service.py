@@ -45,6 +45,7 @@ def run():
 
     # Flask-Security Core
     user_datastore = SQLAlchemyUserDatastore(db, dismember.models.user.User, dismember.models.role.Role)
+    app.config['SECURITY_URL_PREFIX'] = '/security'
     security = Security(app, user_datastore)
 
     # Import normal views so they can register endpoints with Flask
