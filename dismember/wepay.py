@@ -98,4 +98,4 @@ class WePayService(object):
         return checkout, previous_state
 
 
-wepay_service = WePayService(wepay_api)
+wepay_service = WePayService(wepay_api.wepay_api)

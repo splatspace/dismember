@@ -41,10 +41,15 @@
                 Choose the months to pay for:
             </p>
             <ul>
-                {% for month in payable_months %}
+                {% for period in past_payable_periods %}
                     <li>
-                        <input type="checkbox" name="month" value="{{ month[0] }}"
-                        {{ 'checked="checked"' if month[1] }}"> {{ month[0] }} </input>
+                        <input type="checkbox" name="month" value="{{ period.period_string }}"
+                               checked="checked"> {{ period.period_string }} (past due)</input>
+                    </li>
+                {% endfor %}
+                {% for period in future_payable_periods %}
+                    <li>
+                        <input type="checkbox" name="month" value="{{ period.period_string }}"> {{ period.period_string }} </input>
                     </li>
                 {% endfor %}
             </ul>

@@ -1,9 +1,7 @@
 import datetime
 
 from dismember.service import db
-from flask.ext.security import RoleMixin
 from sqlalchemy import Column, Integer, ForeignKey
-from sqlalchemy.orm import relationship
 
 
 class DuesPaymentPeriod(db.Model):
@@ -15,10 +13,36 @@ class DuesPaymentPeriod(db.Model):
     year = Column(Integer, nullable=False)
     month = Column(Integer, nullable=False)
 
+    PERIOD_STRING_FORMAT = '%Y-%m'
+
     def __str__(self):
-        return '{:04d}-{:02d}'.format(self.year, self.month)
+        return self.period_string
 
     @property
-    def date(self):
-        """Get a datetime at the start of the period."""
-        return datetime.datetime.strptime('%d-%d' % (self.year, self.month), '%Y-%m')
+    def period_string(self):
+        """Return a period string like '2014-10' for this object."""
+        return self.start_date.strftime(DuesPaymentPeriod.PERIOD_STRING_FORMAT)
+
+    @period_string.setter
+    def period_string(self, value):
+        """Set the year and month from a period string like '2014-10'"""
+        dt = datetime.datetime.strptime(value, DuesPaymentPeriod.PERIOD_STRING_FORMAT)
+        self.year = dt.year
+        self.month = dt.month
+
+    @staticmethod
+    def from_period_string(period_string):
+        """Create a new unmanaged DuesPaymentPeriod from a period string like '2014-10'"""
+        period = DuesPaymentPeriod()
+        period.period_string = period_string
+        return period
+
+    @staticmethod
+    def to_period_string(date):
+        """Format a date like '2014-10'"""
+        return date.strftime(DuesPaymentPeriod.PERIOD_STRING_FORMAT)
+
+    @property
+    def start_date(self):
+        """Get a date at the start of the period."""
+        return datetime.date(self.year, self.month, 1)
