@@ -113,7 +113,7 @@ def users_wepay_dues_authorize():
     checkout.type = 'SERVICE'
     checkout.amount = str(amount)
     checkout.fee_payer = fee_payer
-    checkout.callback_uri = url_for('users_wepay_dues_callback', _external=True)
+    checkout.callback_uri = url_for('wepay_checkout_callback', _external=True)
     checkout.auto_capture = True
     db.session.add(checkout)
 
@@ -124,40 +124,6 @@ def users_wepay_dues_authorize():
         return str(err), 403
     db.session.commit()
 
-    authorize_url = wepay_service.authorize_checkout(checkout, url_for('users_wepay_dues_submit', _external=True))
+    authorize_url = wepay_service.authorize_checkout(checkout, url_for('wepay_checkout_submit', _external=True))
     db.session.commit()
     return redirect(authorize_url)
-
-
-@app.route('/users/wepay_dues_submit')
-@login_required
-def users_wepay_dues_submit():
-    """
-    Handle the second part of the WePay payment flow. This is where the user ends up after WePay finishes
-    the flow started by users_wepay_dues_authorize.
-    """
-    state = request.args['state']
-    if not state:
-        return 'The state parameter is missing', 403
-
-    submit_url = wepay_service.submit_checkout(url_for('users_wepay_dues_submit', _external=True), state)
-    db.session.commit()
-    return redirect(submit_url)
-
-
-@app.route('/users/wepay_dues_callback', methods=['POST'])
-def users_wepay_dues_callback():
-    """
-    Handle an Instant Payment Notification: an asynchronous POST from WePay about a
-    checkout that has changed state (authorized, settled, etc.). Expects the parameters
-    that the WePay API docs state will be there.
-
-    This request will be form-encoded (not JSON).
-    """
-    checkout_id = request.values.get('checkout_id', None)
-    if not checkout_id:
-        return 'Missing checkout_id', 403
-
-    checkout, previous_state = wepay_service.refresh_checkout(checkout_id)
-    db.session.commit()
-    return 'OK', 200
