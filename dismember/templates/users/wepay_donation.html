@@ -36,7 +36,11 @@
             Amount (USD):
             <input type="text" name="amount" value="50.00"/>
         </p>
-
+        <p>
+            <input type="checkbox" name="pay_fee" value="true" checked="true">
+            Add the service fee to my total (saves {{ config['DISMEMBER_ORG_NAME'] }} money)
+            </input>
+        </p>
         <p>
             <input type="submit" value="Donate with WePay">
         </p>
