@@ -1,13 +1,12 @@
 import datetime
-from dismember.donations import donation_service
+from decimal import InvalidOperation
+import decimal
 
-from dismember.models.dues_payment_period import DuesPaymentPeriod
+from dismember.donations import donation_service
 from dismember.models.wepay_donation_payment import WePayDonationPayment
 from flask import render_template, redirect, url_for, request
 from flask.ext.login import login_required, current_user
 from dismember.service import app, db
-from dismember.dues import dues_service
-from dismember.models.dues_payment import DuesPayment
 from dismember.wepay import wepay_service
 from dismember.models.wepay_checkout import WePayCheckout
 from dismember.views.template_helpers import format_currency
@@ -36,7 +35,13 @@ def users_wepay_donation():
     # Take just the most recent ones (at the end)
     recent_donation_payments = sorted(all_donation_payments, key=lambda p: p.created)[-6:]
 
+    if current_user.member_type:
+        monthly_dues = format_currency(current_user.member_type.currency, current_user.member_type.monthly_dues)
+    else:
+        monthly_dues = None
+
     return render_template('/users/wepay_donation.html',
+                           monthly_dues=monthly_dues,
                            recent_donation_payments=recent_donation_payments,
                            utcnow=datetime.datetime.utcnow())
 
@@ -59,6 +64,16 @@ def users_wepay_donation_authorize():
         return 'Missing amount in request args', 403
     amount = request.args['amount']
 
+    # Parse with decimal as validation
+    try:
+        decimal_amount = decimal.Decimal(amount)
+    except InvalidOperation:
+        return 'Invalid amount', 403
+
+    # Don't allow small or negative amounts
+    if decimal_amount < 1:
+        return 'Amount must be at least 1', 403
+
     checkout = WePayCheckout()
     checkout.account_id = app.config['WEPAY_ACCOUNT_ID']
     checkout.short_description = '%s donation' % (app.config['DISMEMBER_ORG_NAME'])
@@ -68,6 +83,8 @@ def users_wepay_donation_authorize():
     checkout.callback_uri = url_for('wepay_checkout_callback', _external=True)
     checkout.auto_capture = True
     db.session.add(checkout)
+
+    create_donation_payment(checkout)
     db.session.commit()
 
     authorize_url = wepay_service.authorize_checkout(checkout, url_for('wepay_checkout_submit', _external=True))

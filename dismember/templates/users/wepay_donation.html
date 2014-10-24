@@ -1,69 +1,46 @@
 {% extends "_common/base.html" %}
 {% block head %}
-    <title>Pay Dues with WePay</title>
+    <title>Make a Donation with WePay</title>
 {% endblock %}
 
 {% block body %}
 
-    <h1>Pay Dues with WePay</h1>
+    <h1>Make a Donation with WePay</h1>
 
     {% if not current_user.member_type %}
         <p>
-            You don't appear to be an active member of {{ config['DISMEMBER_ORG_NAME'] }}, so there are no dues to
-            pay!
+            You don't appear to be an active member of {{ config['DISMEMBER_ORG_NAME'] }}, but donations
+            are still appreciated. If you would like to start or resume your membership, please contact a
+            member of the board or directors.
         </p>
     {% else %}
         <p>
-            Your membership type is {{ current_user.member_type }}, at {{ monthly_dues }} per month.
+            You are an active member of {{ config['DISMEMBER_ORG_NAME'] }}. We appreciate donations
+            from members, but remember that donations cannot be used to cover membership dues. Visit the
+            <a href="{{ url_for('users_wepay_dues') }}">membership dues</a> page to make dues payments.
         </p>
-        {% if not recent_paid_periods %}
+        {% if recent_donation_payments %}
             <p>
-                It doesn't look like you've made any dues payments yet. You'll need to make one soon to keep your
-                membership active.
-            </p>
-        {% else %}
-            <p>
-                Your recent dues payments:
+                Your recent donations (thank you!)
             </p>
             <ul>
-                {% for dues_payment_period in recent_paid_periods %}
-                    <li>{{ dues_payment_period }}
-                        ({{ dues_payment_period.dues_payment.payment_type }}
-                        {{ dues_payment_period.dues_payment.payer_reference }},
-                        {{ dues_payment_period.dues_payment.paid_amount_str }})
-                    </li>
+                {% for pmt in recent_donation_payments %}
+                    <li>{{ pmt.paid_amount_str }} on {{ iso_date(pmt.created) }}</li>
                 {% endfor %}
             </ul>
         {% endif %}
-
-        <form name="dues" method="GET" action="{{ url_for('users_wepay_dues_authorize') }}">
-            <p>
-                Choose the months to pay for:
-            </p>
-            <ul>
-                {% for period in past_payable_periods %}
-                    <li>
-                        <input type="checkbox" name="month" value="{{ period.period_string }}"
-                               checked="checked"> {{ period.period_string }} (past due)</input>
-                    </li>
-                {% endfor %}
-                {% for period in future_payable_periods %}
-                    <li>
-                        <input type="checkbox" name="month" value="{{ period.period_string }}"> {{ period.period_string }} </input>
-                    </li>
-                {% endfor %}
-            </ul>
-            <p>
-                <input type="checkbox" name="pay_fee" value="true" checked="true">
-                Add the service fee to my total (saves {{ config['DISMEMBER_ORG_NAME'] }} money)
-                </input>
-            </p>
-
-            <p>
-                <input type="submit" value="Pay Dues">
-            </p>
-        </form>
-
     {% endif %}
+
+    <form name="dues" method="GET" action="{{ url_for('users_wepay_donation_authorize') }}">
+        <p>
+            Amount (USD):
+            <input type="text" name="amount" value="50.00"/>
+        </p>
+
+        <p>
+            <input type="submit" value="Donate with WePay">
+        </p>
+    </form>
+
 
 {% endblock %}

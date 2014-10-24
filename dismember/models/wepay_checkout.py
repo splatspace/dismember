@@ -69,6 +69,7 @@ class WePayCheckout(db.Model):
     shipping_address = Column(Text)
 
     wepay_dues_payments = relationship('WePayDuesPayment', backref='wepay_checkout')
+    wepay_donation_payments = relationship('WePayDonationPayment', backref='wepay_checkout')
 
     def __str__(self):
         return '%s (%s <%s>)' % (format_currency('USD', self.amount), self.payer_name, self.payer_email)
