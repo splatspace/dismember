@@ -1,3 +1,6 @@
+"""
+Common view methods for WePay flows.
+"""
 from dismember.service import db, app
 from dismember.wepay import wepay_service
 from flask import request, url_for, redirect
