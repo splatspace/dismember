@@ -4,7 +4,7 @@ from dismember.models.dues_payment_period import DuesPaymentPeriod
 from flask import render_template, redirect, url_for, request
 from flask.ext.login import login_required, current_user
 from dismember.service import app, db
-from dismember.member_dues import member_dues_service
+from dismember.dues import dues_service
 from dismember.models.dues_payment import DuesPayment
 from dismember.wepay import wepay_service
 from dismember.models.wepay_checkout import WePayCheckout
@@ -49,7 +49,7 @@ def create_dues_payment(checkout, dues_payment_periods):
 @app.route('/users/wepay_dues')
 @login_required
 def users_wepay_dues():
-    all_dues_payments = member_dues_service.get_dues_payments(current_user)
+    all_dues_payments = dues_service.get_dues_payments(current_user)
 
     # Get all the periods covered by all the payments
     paid_periods = []
@@ -61,7 +61,7 @@ def users_wepay_dues():
 
     if current_user.member_type:
         monthly_dues = format_currency(current_user.member_type.currency, current_user.member_type.monthly_dues)
-        past_payable_periods, future_payable_periods = member_dues_service.generate_payable_periods(current_user)
+        past_payable_periods, future_payable_periods = dues_service.generate_payable_periods(current_user)
     else:
         monthly_dues = None
         past_payable_periods = []

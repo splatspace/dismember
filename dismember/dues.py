@@ -5,13 +5,10 @@ from dismember.models.dues_payment import DuesPayment
 from dismember.models.dues_payment_period import DuesPaymentPeriod
 
 
-class MemberDuesService(object):
+class DuesService(object):
     """
     Provides high-level methods for managing member dues.
     """
-
-    def __init__(self):
-        pass
 
     def get_dues_payments(self, user, include_void=False, include_exceptional=False):
         """
@@ -87,4 +84,4 @@ class MemberDuesService(object):
         return past_payable_periods, future_payable_periods
 
 
-member_dues_service = MemberDuesService()
+dues_service = DuesService()
