@@ -51,4 +51,7 @@ class User(db.Model, UserMixin):
         super(User, self).__init__(**kwargs)
 
     def __str__(self):
-        return '%s (%s)' % (self.email, self.full_name)
+        if self.full_name:
+            return '%s (%s)' % (self.email, self.full_name)
+        else:
+            return self.email
