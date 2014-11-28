@@ -63,10 +63,10 @@ def run():
     import dismember.views.admin
 
     create_builtins(db, user_datastore)
-    app.run(host=app.config['DISMEMBER_HOST'])
+    app.run(host=app.config['DISMEMBER_HOST'], port=app.config['DISMEMBER_PORT'])
 
 
-def create_builtins(db, user_datastore):
+def create_builtins(the_db, user_datastore):
     """
     Creates the built-in resources (users, etc.) that are defined in the
     config file.
@@ -89,4 +89,4 @@ def create_builtins(db, user_datastore):
             for role_name in builtin['roles']:
                 user_datastore.add_role_to_user(user, role_name)
 
-        db.session.commit()
+        the_db.session.commit()

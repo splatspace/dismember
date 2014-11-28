@@ -1,0 +1,26 @@
+{% extends "_common/base.html" %}
+{% block head %}
+    <title>Member Report</title>
+{% endblock %}
+
+{% block body %}
+
+    <h1>Member Report</h1>
+
+    <h4>Active Members</h4>
+    <table>
+        <tr>
+            <th>Full Name</th>
+            <th>E-mail</th>
+            <th>Most Recent Period Paid</th>
+        </tr>
+        {% for member in members %}
+            <tr>
+                <td>{{ member.full_name }}</td>
+                <td>{{ member.email }}</td>
+                <td>{{ most_recent_dues_payments[member] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

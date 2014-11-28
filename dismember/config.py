@@ -63,6 +63,9 @@ MAIL_PORT = 25
 # Host or IP to bind to
 DISMEMBER_HOST = '0.0.0.0'
 
+# TCP port to listen on
+DISMEMBER_PORT = 5005
+
 # The name of the organization that will appear in web page titles and e-mails
 DISMEMBER_ORG_NAME = 'Splat Space'
 
@@ -76,6 +79,11 @@ DISMEMBER_BUILTINS = {
             # The administrator role.  Don't rename or delete this role.
             'name': 'admin',
             'description': 'Organization administrator with full access'
+        },
+        {
+            # The board member role.  Don't rename or delete this role.
+            'name': 'board',
+            'description': 'A member of the board of directors'
         }
     ],
     'users': [
@@ -87,7 +95,7 @@ DISMEMBER_BUILTINS = {
             'email': 'admin@example.org',
             'password': 'admin',
             'full_name': 'Site Administrator',
-            'roles': ['admin']
+            'roles': ['admin', 'board']
         }
     ]
 }

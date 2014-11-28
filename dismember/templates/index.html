@@ -10,13 +10,16 @@
     {% if current_user.is_authenticated() %}
         <h2>Things you can do:</h2>
         <ul>
-            <li><a href="/users/me">View My Details</a></li>
+            <li><a href="{{ url_for('users_me') }}">View My Details</a></li>
             {% if current_user.member_type %}
-                <li><a href="/users/wepay_dues">Pay Dues</a></li>
-                <li><a href="/users/wepay_donation">Make a Donation</a></li>
+                <li><a href="{{ url_for('users_wepay_dues') }}">Pay Dues</a></li>
+                <li><a href="{{ url_for('users_wepay_donation') }}">Make a Donation</a></li>
+            {% endif %}
+            {% if current_user.has_role('board') %}
+                <li><a href="{{ url_for('board_index') }}">Board of Directors Reports</a></li>
             {% endif %}
             {% if current_user.has_role('admin') %}
-                <li><a href="/admin">Administration Dashboard</a></li>
+                <li><a href="{{ url_for('admin.index') }}">Administration Dashboard</a></li>
             {% endif %}
         </ul>
     {% else %}
