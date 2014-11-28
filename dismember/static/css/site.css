@@ -14,9 +14,3 @@ body {
 .input-group-addon {
     background-color:#FFF;
 }
-
-#userinfo {
-    text-align: right;
-    padding: 10px;
-    border: 2px dashed blue;
-}

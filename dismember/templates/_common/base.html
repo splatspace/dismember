@@ -7,20 +7,56 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-<div id="userinfo">
-    {% if current_user.is_authenticated() %}
-        Logged in as {{ current_user.email }}
-        (<a href="{{ url_for('security.logout') }}">log out</a>)
-    {% else %}
-        Not logged in
-        <ul>
-            <li><a href="{{ url_for('security.login', next=request.path) }}">login</a></li>
-            <li><a href="{{ url_for('security.register') }}">register</a></li>
-        </ul>
-    {% endif %}
-</div>
+<div class="container">
+    <div class="row" id="userinfo">
+        <div class="col-md-12">
+            <div class="panel panel-default text-right">
+                <div class="panel-body">
+                    {% if current_user.is_authenticated() %}
+                        {{ current_user.email }}
+                        <a href="{{ url_for('security.logout') }}" class="label label-primary">log out</a>
+                    {% else %}
+                        Not logged in
+                        <a href="{{ url_for('security.login', next=request.path) }}"
+                           class="label label-primary">login</a>
+                        <a href="{{ url_for('security.register') }}" class="label label-default">register</a>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 
-{% block body %}{% endblock %}
+    {% with errors = get_flashed_messages(category_filter=['error']) %}
+        {% if errors %}
+            <div class="row">
+                <div class="col-md-12 alert alert-danger">
+                    <ul>
+                        {%- for msg in errors %}
+                            <li>{{ msg }}</li>
+                        {% endfor -%}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+
+        {% with non_errors = get_flashed_messages_except(category_exclude_filter=['error']) %}
+            {% if non_errors %}
+                <div class="row">
+                    <div class="col-md-12 alert alert-info">
+                        <ul>
+                            {%- for msg in non_errors %}
+                                <li>{{ msg }}</li>
+                            {% endfor -%}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+        {% endwith %}
+    {% endwith %}
+
+    {% block body %}{% endblock %}
+</div>
 {# <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script> #}
 <script src="{{ url_for('static', filename='bootstrap-3.2.0-dist/js/bootstrap.min.js') }}"></script>
 </body>
