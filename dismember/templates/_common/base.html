@@ -39,20 +39,20 @@
                 </div>
             </div>
         {% endif %}
+    {% endwith %}
 
-        {% with non_errors = get_flashed_messages_except(category_exclude_filter=['error']) %}
-            {% if non_errors %}
-                <div class="row">
-                    <div class="col-md-12 alert alert-info">
-                        <ul>
-                            {%- for msg in non_errors %}
-                                <li>{{ msg }}</li>
-                            {% endfor -%}
-                        </ul>
-                    </div>
+    {% with non_errors = get_flashed_messages_except(category_exclude_filter=['error']) %}
+        {% if non_errors %}
+            <div class="row">
+                <div class="col-md-12 alert alert-info">
+                    <ul>
+                        {%- for msg in non_errors %}
+                            <li>{{ msg }}</li>
+                        {% endfor -%}
+                    </ul>
                 </div>
-            {% endif %}
-        {% endwith %}
+            </div>
+        {% endif %}
     {% endwith %}
 
     {% block body %}{% endblock %}
