@@ -68,11 +68,13 @@ class WePayCheckout(db.Model):
     refund_reason = Column(Text)
     shipping_address = Column(Text)
 
-    wepay_dues_payments = relationship('WePayDuesPayment', backref='wepay_checkout')
-    wepay_donation_payments = relationship('WePayDonationPayment', backref='wepay_checkout')
+    wepay_dues_payments = relationship('WePayDuesPayment', cascade='all, delete-orphan', backref='wepay_checkout')
+    wepay_donation_payments = relationship('WePayDonationPayment', cascade='all, delete-orphan',
+                                           backref='wepay_checkout')
 
     def __str__(self):
-        return '%s (%s <%s>)' % (format_currency('USD', self.amount), self.payer_name, self.payer_email)
+        return '%s (%s <%s>, #%d)' % (format_currency('USD', self.amount), self.payer_name, self.payer_email,
+                                      self.checkout_id)
 
     def to_create_dict(self):
         """Get a dictionary with only the values that are valid for /checkout/create"""

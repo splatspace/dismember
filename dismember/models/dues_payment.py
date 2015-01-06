@@ -10,10 +10,10 @@ class DuesPayment(Payment):
 
     __tablename__ = 'dues_payments'
 
-    id = Column(Integer, ForeignKey('payments.id'), primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    id = Column(Integer, ForeignKey('payments.id', onupdate='cascade', ondelete='cascade'), primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', onupdate='cascade', ondelete='cascade'), nullable=False)
     # user (backref)
-    periods = relationship('DuesPaymentPeriod', backref='dues_payment')
+    periods = relationship('DuesPaymentPeriod', cascade='all, delete-orphan', backref='dues_payment')
 
     __mapper_args__ = {
         'polymorphic_identity': 'dues_payment'

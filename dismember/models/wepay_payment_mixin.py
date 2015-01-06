@@ -1,8 +1,4 @@
 from dismember.currency import format_currency
-from dismember.models.dues_payment import DuesPayment
-from dismember.models.wepay_checkout import WePayCheckout
-from sqlalchemy import Integer, Column
-from sqlalchemy.sql.schema import ForeignKey
 
 
 class WePayPaymentMixin(object):

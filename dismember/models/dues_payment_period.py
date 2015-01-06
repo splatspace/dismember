@@ -8,7 +8,7 @@ class DuesPaymentPeriod(db.Model):
     __tablename__ = 'dues_payment_periods'
 
     id = Column(Integer, primary_key=True)
-    dues_payment_id = Column(ForeignKey('dues_payments.id'), nullable=False)
+    dues_payment_id = Column(ForeignKey('dues_payments.id', onupdate='cascade', ondelete='cascade'), nullable=False)
     # dues_payment (backref)
     year = Column(Integer, nullable=False)
     month = Column(Integer, nullable=False)

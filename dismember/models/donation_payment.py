@@ -10,10 +10,10 @@ class DonationPayment(Payment):
 
     __tablename__ = 'donation_payments'
 
-    id = Column(Integer, ForeignKey('payments.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('payments.id', onupdate='cascade', ondelete='cascade'), primary_key=True)
 
     # Optionally belongs to a user
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
+    user_id = Column(Integer, ForeignKey('users.id', onupdate='cascade', ondelete='cascade'), nullable=True)
     # user (backref)
 
     __mapper_args__ = {

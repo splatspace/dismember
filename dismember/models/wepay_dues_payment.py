@@ -10,9 +10,10 @@ class WePayDuesPayment(WePayPaymentMixin, DuesPayment):
 
     __tablename__ = 'wepay_dues_payments'
 
-    id = Column(Integer, ForeignKey('dues_payments.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('dues_payments.id', onupdate='cascade', ondelete='cascade'), primary_key=True)
 
-    wepay_checkout_id = Column(Integer, ForeignKey(WePayCheckout.id), index=True, nullable=False)
+    wepay_checkout_id = Column(Integer, ForeignKey(WePayCheckout.id, onupdate='cascade', ondelete='cascade'),
+                               index=True, nullable=False)
     # wepay_checkout (backref)
 
     __mapper_args__ = {

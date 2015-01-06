@@ -1,9 +1,13 @@
 # Import all concrete models
+import credential
 import donation_payment
 import dues_payment
 import dues_payment_period
+import manual_dues_payment
+import manual_dues_payment_type
 import member_type
 import payment
+import prox_credential
 import role
 import user
 import wepay_checkout

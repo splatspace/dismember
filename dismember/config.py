@@ -78,6 +78,9 @@ DISMEMBER_SITE_NAME = 'Dismembership System'
 # See http://pythonhosted.org/pytz/ for details
 DISMEMBER_UI_TIMEZONE = timezone('America/New_York')
 
+# The currency (ISO 4217 abbreviation) to default to for manual payment entry.
+DISMEMBER_DEFAULT_CURRENCY = 'USD'
+
 # Resources that will be created each time the service is started, if they do not exist.
 DISMEMBER_BUILTINS = {
     'roles': [

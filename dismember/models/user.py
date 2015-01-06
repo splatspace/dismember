@@ -43,13 +43,14 @@ class User(db.Model, UserMixin):
 
     # Membership information
     member_signup = Column(DateTime(timezone=True))
-    member_type_id = Column(Integer, ForeignKey(MemberType.id))
+    member_type_id = Column(Integer, ForeignKey(MemberType.id, onupdate='cascade', ondelete='cascade'))
     # member_type (backref)
     address = Column(Text)
     phone = Column(Text)
     emergency_contact = Column(Text)
 
-    dues_payments = relationship('DuesPayment', backref='user')
+    dues_payments = relationship('DuesPayment', cascade='all, delete-orphan', backref='user')
+    credentials = relationship('Credential', cascade='all, delete-orphan', backref='user')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
