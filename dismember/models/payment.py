@@ -15,7 +15,7 @@ class Payment(db.Model):
 
     id = Column(Integer, primary_key=True)
     type = Column(Text, nullable=False)
-    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(utc))
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.datetime.now(utc))
     void = Column(Boolean, nullable=False, default=False)
 
     __mapper_args__ = {

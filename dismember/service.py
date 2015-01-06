@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, g
 
 from dismember.reverse_proxied import ReverseProxied
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqla import ModelView
+from flask.ext.principal import identity_changed, identity_loaded
 from flask.ext.security import Security
 from flask.ext.security.confirmable import confirm_user
 from flask.ext.security.datastore import SQLAlchemyUserDatastore
@@ -27,7 +28,6 @@ db = None
 mail = None
 security = None
 admin = None
-
 
 def run():
     global app, db, mail, security, admin

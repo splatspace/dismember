@@ -28,16 +28,17 @@ class User(db.Model, UserMixin):
     active = Column(Boolean, nullable=False, default=True)
     roles = relationship(Role, secondary=users_roles)
 
-    # Flask-Security optional
-    confirmed_at = Column(DateTime(timezone=True))
-    last_login_at = Column(DateTime(timezone=True))
-    current_login_at = Column(DateTime(timezone=True))
+    # Flask-Security optional (naive UTC datetimes are used by Flask-Security, so don't use
+    # time zones in the database or you'll get conversion errors).
+    confirmed_at = Column(DateTime)
+    last_login_at = Column(DateTime)
+    current_login_at = Column(DateTime)
     last_login_ip = Column(Text)
     current_login_ip = Column(Text)
     login_count = Column(Integer)
 
     # Our fields
-    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(utc))
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.datetime.now(utc))
     full_name = Column(Text)
 
     # Membership information
