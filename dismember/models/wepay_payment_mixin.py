@@ -31,7 +31,7 @@ class WePayPaymentMixin(object):
         return format_currency(self.paid_currency, self.paid_amount)
 
     @property
-    def payment_type(self):
+    def payment_method(self):
         return 'WePay'
 
     @property

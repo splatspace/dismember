@@ -9,7 +9,7 @@ from dismember.service import db, admin, app
 class AllDuesPaymentsView(ModelView):
     can_create = False
 
-    column_list = ('created_at', 'user', 'periods', 'paid_amount_str', 'payment_type', 'exception')
+    column_list = ('created_at', 'user', 'periods', 'paid_amount_str', 'payment_method', 'exception')
     excluded_form_columns = ('type',)
 
     form_overrides = dict(

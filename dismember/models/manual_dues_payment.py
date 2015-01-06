@@ -39,7 +39,7 @@ class ManualDuesPayment(DuesPayment):
         return format_currency(self.paid_currency, self.paid_amount)
 
     @property
-    def payment_type(self):
+    def payment_method(self):
         return self.manual_dues_payment_type.name
 
     @property
@@ -53,4 +53,4 @@ class ManualDuesPayment(DuesPayment):
         return None
 
     def __str__(self):
-        return '%s (%s %s)' % (super(ManualDuesPayment, self).__str__(), self.payment_type, self.paid_amount_str)
+        return '%s (%s %s)' % (super(ManualDuesPayment, self).__str__(), self.payment_method, self.paid_amount_str)

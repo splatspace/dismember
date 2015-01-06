@@ -39,8 +39,8 @@ class Payment(db.Model):
         return None
 
     @property
-    def payment_type(self):
-        """Get a user-friendly string that describes the payment type (cash, check, WePay, etc.)"""
+    def payment_method(self):
+        """Get a user-friendly string that describes the payment method (cash, check, WePay, etc.)"""
         return None
 
     @property
