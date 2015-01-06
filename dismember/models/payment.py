@@ -1,4 +1,7 @@
+import datetime
+from dateutil.tz import tzutc
 from dismember.service import db
+from pytz import utc
 from sqlalchemy import Column, Integer, Text, DateTime, text, Boolean
 
 
@@ -12,7 +15,7 @@ class Payment(db.Model):
 
     id = Column(Integer, primary_key=True)
     type = Column(Text, nullable=False)
-    created = Column(DateTime, nullable=False, server_default=text('now()'))
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(utc))
     void = Column(Boolean, nullable=False, default=False)
 
     __mapper_args__ = {

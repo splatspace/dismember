@@ -10,6 +10,8 @@ import datetime
 
 # Enables debug information in the logs and in error pages (never enable this in
 # production)
+from pytz import timezone
+
 DEBUG = False
 
 # Every installation should use a different value for the secret key.
@@ -71,6 +73,10 @@ DISMEMBER_ORG_NAME = 'Splat Space'
 
 # Name that will appear in web page titles and e-mails
 DISMEMBER_SITE_NAME = 'Dismembership System'
+
+# The 'pytz' time zone to use to display and parse dates with in the web UI
+# See http://pythonhosted.org/pytz/ for details
+DISMEMBER_UI_TIMEZONE = timezone('America/New_York')
 
 # Resources that will be created each time the service is started, if they do not exist.
 DISMEMBER_BUILTINS = {

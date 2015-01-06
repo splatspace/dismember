@@ -1,7 +1,10 @@
+import datetime
+from dateutil.tz import tzutc
 from dismember.models.member_type import MemberType
 from dismember.service import db
 from flask.ext.security import UserMixin
 from dismember.models.role import Role
+from pytz import utc
 from sqlalchemy import Column, Integer, Text, Boolean, DateTime, Table, text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
@@ -26,19 +29,19 @@ class User(db.Model, UserMixin):
     roles = relationship(Role, secondary=users_roles)
 
     # Flask-Security optional
-    confirmed_at = Column(DateTime)
-    last_login_at = Column(DateTime)
-    current_login_at = Column(DateTime)
+    confirmed_at = Column(DateTime(timezone=True))
+    last_login_at = Column(DateTime(timezone=True))
+    current_login_at = Column(DateTime(timezone=True))
     last_login_ip = Column(Text)
     current_login_ip = Column(Text)
     login_count = Column(Integer)
 
     # Our fields
-    created = Column(DateTime, nullable=False, server_default=text('now()'))
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(utc))
     full_name = Column(Text)
 
     # Membership information
-    member_signup = Column(DateTime)
+    member_signup = Column(DateTime(timezone=True))
     member_type_id = Column(Integer, ForeignKey(MemberType.id))
     # member_type (backref)
     address = Column(Text)

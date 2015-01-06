@@ -33,7 +33,7 @@ def users_wepay_donation():
     all_donation_payments = donation_service.get_donation_payments(current_user)
 
     # Take just the most recent ones (at the end)
-    recent_donation_payments = sorted(all_donation_payments, key=lambda p: p.created)[-6:]
+    recent_donation_payments = sorted(all_donation_payments, key=lambda p: p.created_at)[-6:]
 
     if current_user.member_type:
         monthly_dues = format_currency(current_user.member_type.currency, current_user.member_type.monthly_dues)
