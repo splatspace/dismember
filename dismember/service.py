@@ -1,9 +1,8 @@
-from flask import Flask, g
+from flask import Flask
 
 from dismember.reverse_proxied import ReverseProxied
-from flask.ext.admin import Admin
-from flask.ext.admin.contrib.sqla import ModelView
-from flask.ext.principal import identity_changed, identity_loaded
+# from flask.ext.admin import Admin
+# from flask.ext.admin.contrib.sqla import ModelView
 from flask.ext.security import Security
 from flask.ext.security.confirmable import confirm_user
 from flask.ext.security.datastore import SQLAlchemyUserDatastore
@@ -28,6 +27,7 @@ db = None
 mail = None
 security = None
 admin = None
+
 
 def run():
     global app, db, mail, security, admin
@@ -58,9 +58,13 @@ def run():
     import dismember.views
 
     # Flask-Admin
-    admin = Admin(app, name=app.config['DISMEMBER_SITE_NAME'])
+    # admin = Admin(app, name=app.config['DISMEMBER_SITE_NAME'])
     # Import admin views so they can register endpoints on the "admin" object
-    import dismember.views.admin
+    # import dismember.views.admin
+
+    from dismember.admin import admin_bp
+
+    app.register_blueprint(admin_bp, url_prefix='/admin')
 
     create_builtins(db, user_datastore)
     app.run(host=app.config['DISMEMBER_HOST'], port=app.config['DISMEMBER_PORT'])

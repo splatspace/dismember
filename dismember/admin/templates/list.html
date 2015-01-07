@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+    <style>
+        .button {
+            color: white;
+            border-radius: 4px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+        }
+
+        .button.red {
+            background: #ca3c3c;
+        }
+
+        .button.blue {
+            background: #3caeca;
+        }
+
+        .listview > a {
+            margin: 10px 0 10px 20px;
+        }
+
+        .listview .pure-g {
+            margin: 2px auto;
+            padding: 10px 0 10px 20px;
+            background: #f4f6ff;
+        }
+
+        .listview .pure-u {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div class="listview">
+    <a class="pure-button pure-button-primary" href="{{ path + 'new' }}">Create new</a>
+
+    {% for item in obj %}
+        <div class="pure-g">
+            <div class="pure-u-2-24">
+                <a class="pure-button pure-button-primary button red" href="{{ path +'delete/'+ item.id|string }}">delete</a>
+            </div>
+            <div class="pure-u"><a class="pure-button pure-button-primary button blue"
+                                   href="{{ path + item.id|string }}">{{ item }}</a></div>
+        </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>

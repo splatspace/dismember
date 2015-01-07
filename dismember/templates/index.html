@@ -19,7 +19,7 @@
                 <li><a href="{{ url_for('board_index') }}">Board of Directors Reports</a></li>
             {% endif %}
             {% if current_user.has_role('admin') %}
-                <li><a href="{{ url_for('admin.index') }}">Administration Dashboard</a></li>
+{#                <li><a href="{{ url_for('newadmin.index') }}">Administration Dashboard</a></li>#}
             {% endif %}
         </ul>
     {% else %}
