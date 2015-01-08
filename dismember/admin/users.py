@@ -1,8 +1,8 @@
+from dismember.admin import admin_bp
 from dismember.models.user import User
 from dismember.service import db
 from dismember.wtforms_alchemy.forms import SessionModelForm, TimeZoneAwareFieldMeta
 from flask import url_for, request, redirect, render_template
-from flask.views import MethodView
 
 
 class UserForm(SessionModelForm):
@@ -10,32 +10,68 @@ class UserForm(SessionModelForm):
         model = User
 
 
-class UserView(MethodView):
-    def __init__(self, list_template=None, view_template=None):
-        self.list_template = list_template or 'list.html'
-        self.view_template = view_template or 'view.html'
+class NewUserForm(UserForm):
+    class Meta(UserForm.Meta):
+        exclude = ['confirmed_at', 'last_login_at', 'current_login_at', 'last_login_ip', 'current_login_ip',
+                   'login_count']
 
-    def get(self, obj_id=''):
-        if obj_id:
-            obj = User.query.get(obj_id)
-            form = UserForm(obj=obj)
 
-            action = request.path
-            return render_template(self.view_template, form=form, path=url_for(request.endpoint), action=action)
+@admin_bp.route('/users')
+def users_list():
+    users = User.query.order_by(User.full_name.desc()).all()
+    return render_template('list_items.html',
+                           items=users,
+                           title='Users',
+                           new_endpoint='admin.users_new',
+                           view_endpoint='admin.users_view')
 
-        obj = User.query.order_by(User.full_name.desc()).all()
-        return render_template(self.list_template, obj=obj, path=url_for(request.endpoint))
 
-    def post(self, obj_id=''):
-        if obj_id:
-            obj = User.query.get(obj_id)
-        else:
-            obj = User
+@admin_bp.route('/users', methods=['POST'])
+def users_create():
+    user = User()
+    form = UserForm(request.form)
+    form.populate_obj(user)
+    db.session.add(user)
+    db.session.commit()
+    return redirect(url_for('users.users_list'))
 
-        form = UserForm(request.form)
-        form.populate_obj(obj)
 
-        db.session.add(obj)
+@admin_bp.route('/users/new')
+def users_new():
+    form = NewUserForm()
+    return render_template('new_item.html',
+                           form=form,
+                           item=None,
+                           title='New User',
+                           create_endpoint='admin.users_create')
+
+
+@admin_bp.route('/users/<item_id>')
+def users_view(item_id):
+    user = User.query.get_or_404(item_id)
+    form = UserForm(obj=user)
+    return render_template('edit_item.html',
+                           form=form,
+                           item=user,
+                           title=str(user),
+                           update_endpoint='admin.users_update',
+                           delete_endpoint='admin.users_delete')
+
+
+@admin_bp.route('/users/<item_id>', methods=['POST'])
+def users_update(item_id):
+    user = User.query.get_or_404(item_id)
+    form = UserForm(request.form)
+    form.populate_obj(user)
+    db.session.add(user)
+    db.session.commit()
+    return redirect(url_for('users_update', item_id=item_id))
+
+
+@admin_bp.route('/users/<item_id>/delete', methods=['DELETE'])
+def users_delete(item_id):
+    user = User.query.get_or_404(item_id)
+    if user:
+        db.session.delete(user)
         db.session.commit()
-
-        return redirect(url_for(request.endpoint))
+    return redirect(url_for('users_list'))

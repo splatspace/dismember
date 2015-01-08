@@ -1,0 +1,33 @@
+{% extends "_common/base.html" %}
+{% block head %}
+    <title>{{ title }} - {{ config['DISMEMBER_SITE_NAME'] }}</title>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{{ title }}</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="btn-group">
+                <a class="btn btn-default" href="{{ url_for(new_endpoint) }}">Create User</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="list_group">
+                {% for item in items %}
+                    <li class="list-group-item">
+                        <a href="{{ url_for(view_endpoint, item_id=item.id) }}">{{ item }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+{% endblock %}
