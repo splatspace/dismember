@@ -4,7 +4,7 @@ from dismember.models.user import User
 from dismember.wtforms_alchemy.forms import SessionModelForm, TimeZoneAwareFieldMeta
 from wtforms import PasswordField
 from wtforms.validators import DataRequired, EqualTo
-from wtforms_components import EmailField
+from wtforms_components import EmailField, Unique
 
 
 class EditUserForm(SessionModelForm):
@@ -13,7 +13,8 @@ class EditUserForm(SessionModelForm):
         exclude = ['_password', 'confirmed_at', 'last_login_at', 'current_login_at', 'last_login_ip',
                    'current_login_ip', 'login_count']
 
-    email = EmailField(validators=[DataRequired()])
+    email = EmailField(validators=[DataRequired(),
+                                   Unique(User.email, message='That e-mail address is assigned to another user')])
     password = PasswordField(validators=[EqualTo('password_confirm', message='Passwords must match')])
     password_confirm = PasswordField('Password (again)')
 
