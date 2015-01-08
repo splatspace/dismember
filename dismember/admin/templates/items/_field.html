@@ -1,0 +1,19 @@
+<div class="form-group {{ "has-error" if field.errors }}">
+    {% if field.id != 'csrf_token' %}
+        {{ field.label() }}
+    {% endif %}
+
+    {{ field(class="form-control")|safe }}
+
+    {% if field.id != 'csrf_token' %}
+        {% if field.description %}
+            <span class="help-block">{{ field.description }}</span>
+        {% endif %}
+
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <span class="help-block">{{ error }}</span>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+</div>

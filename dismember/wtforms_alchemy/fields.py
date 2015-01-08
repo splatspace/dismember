@@ -2,6 +2,7 @@ from dateutil.parser import parse
 from pytz import timezone
 from wtforms_components import DateTimeField
 
+
 class SpecializableField:
     """
     A WTForms field that behaves differently depending on properties of the
@@ -9,6 +10,7 @@ class SpecializableField:
     field types for different column types, but sometimes one column type can
     be configured to support additional
     """
+
 
 class DateTimeWithTimeZoneField(DateTimeField):
     """A DateTimeField that always parses timezone aware Python datetimes."""

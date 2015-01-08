@@ -11,7 +11,7 @@
                     success: function () {
                         location.href = success_url
                     },
-                    error: function(jqXHR, textStatus, errorThrown) {
+                    error: function (jqXHR, textStatus, errorThrown) {
                         alert(textStatus + ':' + errorThrown);
                     }
                 });
@@ -30,12 +30,7 @@
     <form class="form-group" action="{{ url_for(update_endpoint, item_id=item.id) }}" method="post">
         <fieldset>
             {% for field in form %}
-                <div class="form-group">
-                    {% if field.id != 'csrf_token' %}
-                        {{ field.label() }}
-                    {% endif %}
-                    {{ field(class="form-control") }}
-                </div>
+                {% include 'items/_field.html' %}
             {% endfor %}
 
             <div class="row">

@@ -13,12 +13,7 @@
     <form class="form-group" action="{{ url_for(create_endpoint) }}" method="post">
         <fieldset>
             {% for field in form %}
-                <div class="form-group">
-                    {% if field.id != 'csrf_token' %}
-                        {{ field.label() }}
-                    {% endif %}
-                    {{ field(class="form-control") }}
-                </div>
+                {% include 'items/_field.html' %}
             {% endfor %}
 
             <div class="row">

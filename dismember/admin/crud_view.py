@@ -36,6 +36,12 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
         delete_endpoint=pfx + 'delete',
     )
 
+    def remove_empty_password_fields(form):
+        """Removes empty password fields from the form so those fields will not be updated in the model."""
+        for field in form:
+            if field.type == 'PasswordField' and field.data == '':
+                del form[field.name]
+
     def list_items():
         """Renders a list of all items."""
         q = item_cls.query
@@ -61,21 +67,35 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
         """Processes the view item form data and updates an existing item."""
         item = item_cls.query.get_or_404(item_id)
         form = edit_item_form_cls(request.form)
-        form.populate_obj(item)
-        db.session.add(item)
-        db.session.commit()
-        flash('%s "%s" updated' % (capitalize(item_name_singluar), str(item)))
-        return redirect(url_for(endpoints['view_endpoint'], item_id=item_id))
+        if form.validate():
+            remove_empty_password_fields(form)
+            form.populate_obj(item)
+            db.session.add(item)
+            db.session.commit()
+            flash('%s "%s" updated' % (capitalize(item_name_singluar), str(item)))
+            return redirect(url_for(endpoints['view_endpoint'], item_id=item_id))
+        return render_template('items/view.html',
+                               form=form,
+                               item=item,
+                               title=str(item),
+                               **endpoints)
 
     def create_item():
         """Processes the new item form data and creates an item."""
         item = item_cls()
         form = new_item_form_cls(request.form)
-        form.populate_obj(item)
-        db.session.add(item)
-        db.session.commit()
-        flash('%s "%s" created' % (capitalize(item_name_singluar), str(item)))
-        return redirect(url_for(endpoints['list_endpoint']))
+        if form.validate():
+            remove_empty_password_fields(form)
+            form.populate_obj(item)
+            db.session.add(item)
+            db.session.commit()
+            flash('%s "%s" created' % (capitalize(item_name_singluar), str(item)))
+            return redirect(url_for(endpoints['list_endpoint']))
+        return render_template('items/new.html',
+                               form=form,
+                               item=None,
+                               title='New %s' % capitalize(item_name_singluar),
+                               **endpoints)
 
     def new_item():
         """Renders the new item form."""
@@ -102,7 +122,7 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
         return endpoints[endpoint_name_key].split('.', 2)[-1]
 
     blueprint.add_url_rule('/%s' % name, short_endpoint('list_endpoint'),
-                           view_func=list_items, methods=['GET'])
+                           view_func=list_items, methods=['GET'], strict_slashes=False)
     blueprint.add_url_rule('/%s/new' % name, short_endpoint('new_endpoint'),
                            view_func=new_item, methods=['GET'])
     blueprint.add_url_rule('/%s/new' % name, short_endpoint('create_endpoint'),
