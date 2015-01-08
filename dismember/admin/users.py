@@ -4,6 +4,7 @@ from dismember.models.user import User
 from dismember.wtforms_alchemy.forms import SessionModelForm, TimeZoneAwareFieldMeta
 from wtforms import PasswordField
 from wtforms.validators import DataRequired, EqualTo
+from wtforms_alchemy import ModelFormField
 from wtforms_components import EmailField, Unique
 
 

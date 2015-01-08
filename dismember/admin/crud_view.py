@@ -36,6 +36,16 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
         delete_endpoint=pfx + 'delete',
     )
 
+    # Also useful inside of templates.
+    item_names = dict(
+        item_name_singluar=item_name_singluar,
+        item_name_plural=item_name_plural
+    )
+
+    template_kwargs = dict()
+    template_kwargs.update(endpoints)
+    template_kwargs.update(item_names)
+
     def remove_empty_password_fields(form):
         """Removes empty password fields from the form so those fields will not be updated in the model."""
         for field in form:
@@ -51,7 +61,7 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
         return render_template('items/list.html',
                                items=items,
                                title=item_name_plural,
-                               **endpoints)
+                               **template_kwargs)
 
     def view_item(item_id):
         """Renders a form that lets users view and edit item data."""
@@ -61,12 +71,12 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
                                form=form,
                                item=item,
                                title=str(item),
-                               **endpoints)
+                               **template_kwargs)
 
     def update_item(item_id):
         """Processes the view item form data and updates an existing item."""
         item = item_cls.query.get_or_404(item_id)
-        form = edit_item_form_cls(request.form)
+        form = edit_item_form_cls(request.form, obj=item)
         if form.validate():
             remove_empty_password_fields(form)
             form.populate_obj(item)
@@ -78,12 +88,12 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
                                form=form,
                                item=item,
                                title=str(item),
-                               **endpoints)
+                               **template_kwargs)
 
     def create_item():
         """Processes the new item form data and creates an item."""
         item = item_cls()
-        form = new_item_form_cls(request.form)
+        form = new_item_form_cls(request.form, obj=item)
         if form.validate():
             remove_empty_password_fields(form)
             form.populate_obj(item)
@@ -95,7 +105,7 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
                                form=form,
                                item=None,
                                title='New %s' % capitalize(item_name_singluar),
-                               **endpoints)
+                               **template_kwargs)
 
     def new_item():
         """Renders the new item form."""
@@ -104,7 +114,7 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
                                form=form,
                                item=None,
                                title='New %s' % capitalize(item_name_singluar),
-                               **endpoints)
+                               **template_kwargs)
 
     def delete_item(item_id):
         item = item_cls.query.get_or_404(item_id)
