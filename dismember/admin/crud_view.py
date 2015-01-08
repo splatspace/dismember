@@ -4,8 +4,8 @@ from dismember.service import db
 from flask import render_template, request, flash, redirect, url_for
 
 
-def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_form_cls, item_name_singluar='Item',
-                        item_name_plural='Items', list_order_by=None):
+def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_form_cls, item_type_singular='Item',
+                        item_type_plural='Items', list_order_by=None):
     """
     Configures a simple create/read/update/delete (CRUD) view for a SQLAlchemy model item.
 
@@ -16,8 +16,8 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
     :param item_cls: the SQLAlchemy model class being created/read/updated/deleted
     :param new_item_form_cls: the WTForms-Alchemy form class to show when creating a new item
     :param edit_item_form_cls: the WTForms-Alchemy form class to show when reading and updating a new item
-    :param item_name_singluar: a string used in the UI when a single item is described ('user', 'car', 'ox')
-    :param item_name_plural: a string used in the UI when multiple items are described ('users', 'cars', 'oxen')
+    :param item_type_singular: a string used in the UI when a single item is described ('user', 'car', 'ox')
+    :param item_type_plural: a string used in the UI when multiple items are described ('users', 'cars', 'oxen')
     :param list_order_by: a SQLAlchemy order_by clause to apply when listing items
     """
 
@@ -37,14 +37,14 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
     )
 
     # Also useful inside of templates.
-    item_names = dict(
-        item_name_singluar=item_name_singluar,
-        item_name_plural=item_name_plural
+    item_types = dict(
+        item_type_singular=item_type_singular,
+        item_type_plural=item_type_plural
     )
 
     template_kwargs = dict()
     template_kwargs.update(endpoints)
-    template_kwargs.update(item_names)
+    template_kwargs.update(item_types)
 
     def remove_empty_password_fields(form):
         """Removes empty password fields from the form so those fields will not be updated in the model."""
@@ -58,19 +58,18 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
         if list_order_by:
             q = q.order_by(list_order_by)
         items = q.all()
-        return render_template('items/list.html',
+        return render_template('admin/items/list.html',
                                items=items,
-                               title=item_name_plural,
                                **template_kwargs)
 
     def view_item(item_id):
         """Renders a form that lets users view and edit item data."""
         item = item_cls.query.get_or_404(item_id)
         form = edit_item_form_cls(obj=item)
-        return render_template('items/view.html',
+        return render_template('admin/items/view.html',
                                form=form,
                                item=item,
-                               title=str(item),
+                               item_name=str(item),
                                **template_kwargs)
 
     def update_item(item_id):
@@ -82,12 +81,12 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
             form.populate_obj(item)
             db.session.add(item)
             db.session.commit()
-            flash('%s "%s" updated' % (capitalize(item_name_singluar), str(item)))
+            flash('%s "%s" updated' % (capitalize(item_type_singular), str(item)))
             return redirect(url_for(endpoints['view_endpoint'], item_id=item_id))
-        return render_template('items/view.html',
+        return render_template('admin/items/view.html',
                                form=form,
                                item=item,
-                               title=str(item),
+                               item_name=str(item),
                                **template_kwargs)
 
     def create_item():
@@ -99,22 +98,20 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
             form.populate_obj(item)
             db.session.add(item)
             db.session.commit()
-            flash('%s "%s" created' % (capitalize(item_name_singluar), str(item)))
+            flash('%s "%s" created' % (capitalize(item_type_singular), str(item)))
             return redirect(url_for(endpoints['list_endpoint']))
-        return render_template('items/new.html',
+        return render_template('admin/items/new.html',
                                form=form,
                                item=None,
-                               title='New %s' % capitalize(item_name_singluar),
                                **template_kwargs)
 
     def new_item():
         """Renders the new item form."""
         # No obj arg enables smart defaults
         form = new_item_form_cls()
-        return render_template('items/new.html',
+        return render_template('admin/items/new.html',
                                form=form,
                                item=None,
-                               title='New %s' % capitalize(item_name_singluar),
                                **template_kwargs)
 
     def delete_item(item_id):
@@ -122,7 +119,7 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
         item_str = str(item)
         db.session.delete(item)
         db.session.commit()
-        flash('%s "%s" deleted' % (capitalize(item_name_singluar), item_str))
+        flash('%s "%s" deleted' % (capitalize(item_type_singular), item_str))
         return 'ok', 200
 
     def short_endpoint(endpoint_name_key):

@@ -1,0 +1,25 @@
+{% extends "_common/base.html" %}
+{% block head %}
+    <title>Admin - {{ config['DISMEMBER_SITE_NAME'] }}</title>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Admin</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="list_group">
+                {% for endpoint, name in sections %}
+                    <li class="list-group-item">
+                        <a href="{{ url_for(endpoint) }}">{{ name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+{% endblock %}

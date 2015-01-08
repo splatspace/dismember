@@ -1,13 +1,13 @@
 {% extends "_common/base.html" %}
-{% import 'items/_macros.html' as macros %}
+{% import 'admin/items/_macros.html' as macros %}
 {% block head %}
-    <title>{{ title }} - {{ config['DISMEMBER_SITE_NAME'] }}</title>
+    <title>New {{ item_type_singular.capitalize() }} - {{ config['DISMEMBER_SITE_NAME'] }}</title>
 {% endblock %}
 
 {% block body %}
     <div class="row">
         <div class="col-md-12">
-            <h3>{{ title }}</h3>
+            <h3>New {{ item_type_singular.capitalize() }}</h3>
         </div>
     </div>
 

@@ -1,7 +1,7 @@
 {% extends "_common/base.html" %}
-{% import 'items/_macros.html' as macros %}
+{% import 'admin/items/_macros.html' as macros %}
 {% block head %}
-    <title>{{ title }} - {{ config['DISMEMBER_SITE_NAME'] }}</title>
+    <title>{{ item_name }} - {{ config['DISMEMBER_SITE_NAME'] }}</title>
 
     <script>
         function delete_item(url, name, success_url) {
@@ -24,7 +24,7 @@
 {% block body %}
     <div class="row">
         <div class="col-md-12">
-            <h3>{{ title }}</h3>
+            <h3>{{ item_name }}</h3>
         </div>
     </div>
 
