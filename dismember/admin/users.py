@@ -2,7 +2,7 @@ from dismember.admin import admin_bp
 from dismember.models.user import User
 from dismember.service import db
 from dismember.wtforms_alchemy.forms import SessionModelForm, TimeZoneAwareFieldMeta
-from flask import url_for, request, redirect, render_template
+from flask import url_for, request, redirect, render_template, flash
 
 
 class UserForm(SessionModelForm):
@@ -33,6 +33,7 @@ def users_create():
     form.populate_obj(user)
     db.session.add(user)
     db.session.commit()
+    flash('User "%s" created' % str(user))
     return redirect(url_for('admin.users_list'))
 
 
@@ -66,13 +67,15 @@ def users_update(item_id):
     form.populate_obj(user)
     db.session.add(user)
     db.session.commit()
+    flash('User "%s" updated' % str(user))
     return redirect(url_for('admin.users_update', item_id=item_id))
 
 
 @admin_bp.route('/users/<item_id>/delete', methods=['DELETE'])
 def users_delete(item_id):
     user = User.query.get_or_404(item_id)
-    if user:
-        db.session.delete(user)
-        db.session.commit()
+    user_str = str(user)
+    db.session.delete(user)
+    db.session.commit()
+    flash('User "%s" deleted' % user_str)
     return 'ok', 200
