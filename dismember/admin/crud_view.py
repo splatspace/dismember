@@ -109,6 +109,7 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
 
     def new_item():
         """Renders the new item form."""
+        # No obj arg enables smart defaults
         form = new_item_form_cls()
         return render_template('items/new.html',
                                form=form,

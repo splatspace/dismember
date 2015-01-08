@@ -22,8 +22,12 @@ class TimeZoneAwareFieldMeta(object):
     form_generator = TimeZoneAwareFormGenerator
 
 
-class SessionModelForm(model_form_factory(Form)):
-    """Extends WTForms-Alchemy's enhanced ModelForm to provide a database session for validators."""
+ModelForm = model_form_factory(Form)
+"""A concrete WTForms-Alchemy model that derives from Flask-WTF's form (which adds CSRF protection."""
+
+
+class SessionModelForm(ModelForm):
+    """Provides get_session() for WTForms-Alchemy's enhanced ModelForm to use with validators."""
 
     @classmethod
     def get_session(cls):

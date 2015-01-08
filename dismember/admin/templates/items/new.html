@@ -1,4 +1,5 @@
 {% extends "_common/base.html" %}
+{% import 'items/_macros.html' as macros %}
 {% block head %}
     <title>{{ title }} - {{ config['DISMEMBER_SITE_NAME'] }}</title>
 {% endblock %}
@@ -13,7 +14,7 @@
     <form class="form-group" action="{{ url_for(create_endpoint) }}" method="post">
         <fieldset>
             {% for field in form %}
-                {% include 'items/_field.html' %}
+                {{ macros.render_field(field) }}
             {% endfor %}
 
             <div class="row">
