@@ -23,7 +23,8 @@
             <ul class="list_group">
                 {% for item in items %}
                     <li class="list-group-item">
-                        <a href="{{ url_for(view_endpoint, item_id=item.id) }}">{{ item }}</a>
+                        <a href="{{ url_for(view_endpoint, item_id=item.id) }}"><span
+                                class="glyphicon glyphicon-edit"> {{ item }}</span></a>
                     </li>
                 {% endfor %}
             </ul>

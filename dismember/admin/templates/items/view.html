@@ -51,7 +51,7 @@
                                     onclick="delete_item(
                                             '{{ url_for(delete_endpoint, item_id=item.id) }}',
                                             '{{ item|string }}',
-                                            '{{ url_for(after_delete_endpoint) }}'
+                                            '{{ url_for(list_endpoint) }}'
                                             )">
                                 Delete
                             </button>
