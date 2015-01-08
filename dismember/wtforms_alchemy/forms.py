@@ -16,8 +16,9 @@ class TimeZoneAwareFormGenerator(FormGenerator):
         return super(TimeZoneAwareFormGenerator, self).get_field_class(column)
 
 
-class TimeZoneAwareFieldMeta:
+class TimeZoneAwareFieldMeta(object):
     """A form Meta class that declares a type map that enables time-zone aware field controls."""
+
     form_generator = TimeZoneAwareFormGenerator
 
 

@@ -3,14 +3,19 @@
     <title>{{ title }} - {{ config['DISMEMBER_SITE_NAME'] }}</title>
 
     <script>
-        function delete_item(url, success_url) {
-            $.ajax({
-                type: 'DELETE',
-                url: url,
-                success: function () {
-                    location.href = success_url
-                }
-            });
+        function delete_item(url, name, success_url) {
+            if (window.confirm('Delete ' + name + '?')) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: url,
+                    success: function () {
+                        location.href = success_url
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert(textStatus + ':' + errorThrown);
+                    }
+                });
+            }
         }
     </script>
 {% endblock %}
@@ -43,7 +48,11 @@
                         <div class="btn-group pull-right">
                             <button type="button"
                                     class="btn btn-danger"
-                                    onclick="delete_item('{{ url_for(delete_endpoint, item_id=item.id) }}', '..')">
+                                    onclick="delete_item(
+                                            '{{ url_for(delete_endpoint, item_id=item.id) }}',
+                                            '{{ item|string }}',
+                                            '{{ url_for(after_delete_endpoint) }}'
+                                            )">
                                 Delete
                             </button>
                         </div>

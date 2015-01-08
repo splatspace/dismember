@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <form class="form-group" action="{{ url_for(create_endpoint, item_id=item.id) }}" method="post">
+    <form class="form-group" action="{{ url_for(create_endpoint) }}" method="post">
         <fieldset>
             {% for field in form %}
                 <div class="form-group">

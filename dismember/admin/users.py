@@ -33,7 +33,7 @@ def users_create():
     form.populate_obj(user)
     db.session.add(user)
     db.session.commit()
-    return redirect(url_for('users.users_list'))
+    return redirect(url_for('admin.users_list'))
 
 
 @admin_bp.route('/users/new')
@@ -55,7 +55,8 @@ def users_view(item_id):
                            item=user,
                            title=str(user),
                            update_endpoint='admin.users_update',
-                           delete_endpoint='admin.users_delete')
+                           delete_endpoint='admin.users_delete',
+                           after_delete_endpoint='admin.users_list')
 
 
 @admin_bp.route('/users/<item_id>', methods=['POST'])
@@ -65,7 +66,7 @@ def users_update(item_id):
     form.populate_obj(user)
     db.session.add(user)
     db.session.commit()
-    return redirect(url_for('users_update', item_id=item_id))
+    return redirect(url_for('admin.users_update', item_id=item_id))
 
 
 @admin_bp.route('/users/<item_id>/delete', methods=['DELETE'])
@@ -74,4 +75,4 @@ def users_delete(item_id):
     if user:
         db.session.delete(user)
         db.session.commit()
-    return redirect(url_for('users_list'))
+    return 'ok', 200
