@@ -10,7 +10,8 @@ from wtforms_components import EmailField
 class EditUserForm(SessionModelForm):
     class Meta(TimeZoneAwareFieldMeta):
         model = User
-        exclude = ['_password']
+        exclude = ['_password', 'confirmed_at', 'last_login_at', 'current_login_at', 'last_login_ip',
+                   'current_login_ip', 'login_count']
 
     email = EmailField(validators=[DataRequired()])
     password = PasswordField(validators=[EqualTo('password_confirm', message='Passwords must match')])
@@ -18,10 +19,6 @@ class EditUserForm(SessionModelForm):
 
 
 class NewUserForm(EditUserForm):
-    class Meta(EditUserForm.Meta):
-        exclude = EditUserForm.Meta.exclude + ['confirmed_at', 'last_login_at', 'current_login_at', 'last_login_ip',
-                                               'current_login_ip', 'login_count']
-
     password = PasswordField(validators=[DataRequired(), EqualTo('password_confirm', message='Passwords must match')])
     password_confirm = PasswordField('Password (again)')
 

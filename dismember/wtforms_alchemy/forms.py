@@ -23,7 +23,7 @@ class TimeZoneAwareFieldMeta(object):
 
 
 class SessionModelForm(model_form_factory(Form)):
-    """Extends WTForms-Alchemy's enhanced ModelForm to provide a database session."""
+    """Extends WTForms-Alchemy's enhanced ModelForm to provide a database session for validators."""
 
     @classmethod
     def get_session(cls):
