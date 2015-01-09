@@ -3,6 +3,7 @@ from flask import Flask
 from dismember.reverse_proxied import ReverseProxied
 # from flask.ext.admin import Admin
 # from flask.ext.admin.contrib.sqla import ModelView
+from flask.ext.bootstrap import Bootstrap
 from flask.ext.security import Security
 from flask.ext.security.confirmable import confirm_user
 from flask.ext.security.datastore import SQLAlchemyUserDatastore
@@ -57,13 +58,10 @@ def run():
     # Import normal views so they can register endpoints with Flask
     import dismember.views
 
-    # Flask-Admin
-    # admin = Admin(app, name=app.config['DISMEMBER_SITE_NAME'])
-    # Import admin views so they can register endpoints on the "admin" object
-    # import dismember.views.admin
+    # Flask-Bootstrap
+    bootstrap = Bootstrap(app)
 
     from dismember.admin import admin_bp
-
     app.register_blueprint(admin_bp, url_prefix='/admin')
 
     create_builtins(db, user_datastore)

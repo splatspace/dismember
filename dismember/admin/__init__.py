@@ -13,4 +13,4 @@ def admin_index():
     ])
 
 
-admin_bp.add_url_rule('/', endpoint='admin_index', view_func=admin_index, strict_slashes=False)
+admin_bp.add_url_rule('/', endpoint='index', view_func=admin_index, strict_slashes=False)

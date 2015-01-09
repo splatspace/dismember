@@ -1,11 +1,11 @@
 {% extends "_common/base.html" %}
-{% block head %}
-    <title>Pay Dues with WePay</title>
+{% block title %}
+    Pay Dues with WePay
 {% endblock %}
 
-{% block body %}
+{% block content %}
 
-    <h1>Pay Dues with WePay</h1>
+    <h3>Pay Dues with WePay</h3>
 
     {% if not current_user.member_type %}
         <p>
@@ -49,7 +49,8 @@
                 {% endfor %}
                 {% for period in future_payable_periods %}
                     <li>
-                        <input type="checkbox" name="month" value="{{ period.period_string }}"> {{ period.period_string }} </input>
+                        <input type="checkbox" name="month"
+                               value="{{ period.period_string }}"> {{ period.period_string }} </input>
                     </li>
                 {% endfor %}
             </ul>

@@ -1,13 +1,12 @@
 {% extends "_common/base.html" %}
-{% block head %}
-    <title>My Details</title>
+{% block title %}
+    My Details
 {% endblock %}
+{% block content %}
 
-{% block body %}
+    <h1>{{ current_user.full_name }} ({{ current_user.email }})</h1>
 
-    <h1>My Details</h1>
-
-    <h4>Contact Information</h4>
+    <h3>Contact Information</h3>
     <ul>
         <li>Email: {{ current_user.email }}</li>
         <li>Full name: {{ current_user.full_name or '' }}</li>
@@ -16,7 +15,7 @@
         <li>Emergency contact: {{ current_user.emergency_contact or '' }}</li>
     </ul>
 
-    <h4>Membership</h4>
+    <h3>Membership</h3>
     <ul>
         <li>Signed up: {{ current_user.member_signup or 'Not yet' }}</li>
         <li>Type: {{ current_user.member_type or 'Not a member' }}</li>

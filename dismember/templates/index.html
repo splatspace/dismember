@@ -1,12 +1,5 @@
 {% extends "_common/base.html" %}
-{% block head %}
-    <title></title>
-{% endblock %}
-
-{% block body %}
-
-    <h1>{{ config['DISMEMBER_SITE_NAME'] }}</h1>
-
+{% block content %}
     {% if current_user.is_authenticated() %}
         <h2>Things you can do:</h2>
         <ul>
@@ -19,13 +12,11 @@
                 <li><a href="{{ url_for('board_index') }}">Board of Directors Reports</a></li>
             {% endif %}
             {% if current_user.has_role('admin') %}
-{#                <li><a href="{{ url_for('newadmin.index') }}">Administration Dashboard</a></li>#}
+                {#                <li><a href="{{ url_for('newadmin.index') }}">Administration Dashboard</a></li>#}
             {% endif %}
         </ul>
     {% else %}
         <p>Please <a href="{{ url_for('security.login', next=request.path) }}">login</a> to use the system.
         </p>
     {% endif %}
-
-
 {% endblock %}

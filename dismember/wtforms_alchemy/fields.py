@@ -1,5 +1,6 @@
 from dateutil.parser import parse
 from pytz import timezone
+from wtforms.widgets import ListWidget, HTMLString, html_params
 from wtforms_components import DateTimeField
 
 
@@ -16,8 +17,8 @@ class DateTimeWithTimeZoneField(DateTimeField):
         """
         super(DateTimeWithTimeZoneField, self).__init__(label, validators, **kwargs)
 
-        self.display_format = display_format or '%Y-%m-%d %H:%M:%S %Z'
-        self.tzinfo = tzinfo or timezone('UTC')
+        self._display_format = display_format or '%Y-%m-%d %H:%M:%S %Z'
+        self._tzinfo = tzinfo or timezone('UTC')
 
     def _value(self):
         if self.raw_data:
@@ -26,8 +27,8 @@ class DateTimeWithTimeZoneField(DateTimeField):
             if self.data:
                 dt = self.data
                 if self.data.tzinfo is None:
-                    dt = self.tzinfo.localize(self.data)
-                return dt.strftime(self.display_format)
+                    dt = self._tzinfo.localize(self.data)
+                return dt.strftime(self._display_format)
             else:
                 return ''
 
@@ -38,7 +39,7 @@ class DateTimeWithTimeZoneField(DateTimeField):
                 self.data = parse(date_str)
                 # If no time zone was parsed use the default
                 if self.data.tzinfo is None:
-                    self.data = self.tzinfo.localize(self.data)
+                    self.data = self._tzinfo.localize(self.data)
             except ValueError:
                 self.data = None
                 raise ValueError(self.gettext('Not a valid datetime value'))

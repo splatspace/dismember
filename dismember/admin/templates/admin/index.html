@@ -1,17 +1,17 @@
 {% extends "_common/base.html" %}
-{% block head %}
-    <title>Admin - {{ config['DISMEMBER_SITE_NAME'] }}</title>
+{% block title %}
+    Admin - {{ config['DISMEMBER_SITE_NAME'] }}
 {% endblock %}
 
-{% block body %}
+{% block content %}
     <div class="row">
         <div class="col-md-12">
-            <h1>Admin</h1>
+            <h3>Administration</h3>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-5">
             <ul class="list_group">
                 {% for endpoint, name in sections %}
                     <li class="list-group-item">

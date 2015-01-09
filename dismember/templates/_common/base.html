@@ -1,63 +1,89 @@
-<html xmlns="http://www.w3.org/1999/html">
-<head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-3.2.0-dist/css/bootstrap.min.css') }}"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-3.2.0-dist/css/bootstrap-theme.min.css') }}"/>
+{% extends "bootstrap/base.html" %}
+{% block styles %}
+    {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    {% block head %}{% endblock %}
-</head>
-<body>
-<div class="container">
-    <div class="row" id="userinfo">
-        <div class="col-md-12">
-            <div class="panel panel-default text-right">
-                <div class="panel-body">
-                    {% if current_user.is_authenticated() %}
-                        {{ current_user.email }}
-                        <a href="{{ url_for('security.logout') }}" class="label label-primary">log out</a>
-                    {% else %}
-                        Not logged in
-                        <a href="{{ url_for('security.login', next=request.path) }}"
-                           class="label label-primary">login</a>
-                        <a href="{{ url_for('security.register') }}" class="label label-default">register</a>
-                        </ul>
+{% endblock %}
+{% block navbar %}
+    <div class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{{ url_for('index') }}">{{ config['DISMEMBER_SITE_NAME'] }}</a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    {% if current_user.has_role('admin') %}
+                        <li>
+                            <a href="{{ url_for('admin.index') }}">Administration</a>
+                        </li>
                     {% endif %}
-                </div>
+
+                    <li class="active"><a href="#">Thing 1 <span class="sr-only">(current)</span></a></li>
+                    <li><a href="#">Thing 2</a></li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.is_authenticated() %}
+                        <li>
+                            <a href="{{ url_for('users_me') }}">{{ current_user|string }}</a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('security.logout') }}">Log out</a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="{{ url_for('security.login', next=request.path) }}">Login</a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('security.register') }}">Register</a>
+                        </li>
+                    {% endif %}
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 
-    {% with errors = get_flashed_messages(category_filter=['error']) %}
-        {% if errors %}
-            <div class="row">
-                <div class="col-md-12 alert alert-danger">
-                    <ul>
-                        {%- for msg in errors %}
-                            <li>{{ msg }}</li>
-                        {% endfor -%}
-                    </ul>
-                </div>
-            </div>
-        {% endif %}
-    {% endwith %}
+    <div class="container">
+        <div class="row" id="userinfo">
+            <div class="col-md-12">
+                {% with errors = get_flashed_messages(category_filter=['error']) %}
+                    {% if errors %}
+                        <div class="row">
+                            <div class="col-md-12 alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                                <ul class="list-unstyled">
+                                    {%- for msg in errors %}
+                                        <li>{{ msg }}</li>
+                                    {% endfor -%}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endwith %}
 
-    {% with non_errors = get_flashed_messages_except(category_exclude_filter=['error']) %}
-        {% if non_errors %}
-            <div class="row">
-                <div class="col-md-12 alert alert-info">
-                    <ul>
-                        {%- for msg in non_errors %}
-                            <li>{{ msg }}</li>
-                        {% endfor -%}
-                    </ul>
-                </div>
+                {% with non_errors = get_flashed_messages_except(category_exclude_filter=['error']) %}
+                    {% if non_errors %}
+                        <div class="row">
+                            <div class="col-md-12 alert alert-info alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                                <ul class="list-unstyled">
+                                    {%- for msg in non_errors %}
+                                        <li>{{ msg }}</li>
+                                    {% endfor -%}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endwith %}
             </div>
-        {% endif %}
-    {% endwith %}
-
-    {% block body %}{% endblock %}
-</div>
-<script src="{{ url_for('static', filename='jquery/jquery-2.1.3.min.js') }}"></script>
-<script src="{{ url_for('static', filename='bootstrap-3.2.0-dist/js/bootstrap.min.js') }}"></script>
-</body>
-</html>
+        </div>
+    </div>
+{% endblock %}
