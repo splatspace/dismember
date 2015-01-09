@@ -2,6 +2,7 @@ from string import capitalize
 
 from dismember.service import db
 from flask import render_template, request, flash, redirect, url_for
+from wtforms import SubmitField
 
 
 def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_form_cls, item_type_singular='Item',
@@ -46,6 +47,15 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
     template_kwargs.update(endpoints)
     template_kwargs.update(item_types)
 
+    class DynamicEditItemForm(edit_item_form_cls):
+        btn_save = SubmitField('Save')
+        btn_cancel = SubmitField('Cancel')
+        btn_delete = SubmitField('Delete')
+
+    class DynamicNewItemForm(new_item_form_cls):
+        btn_save = SubmitField('Save')
+        btn_cancel = SubmitField('Cancel')
+
     def remove_empty_password_fields(form):
         """Removes empty password fields from the form so those fields will not be updated in the model."""
         for field in form:
@@ -65,7 +75,7 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
     def view_item(item_id):
         """Renders a form that lets users view and edit item data."""
         item = item_cls.query.get_or_404(item_id)
-        form = edit_item_form_cls(obj=item)
+        form = DynamicEditItemForm(obj=item)
         return render_template('admin/items/view.html',
                                form=form,
                                item=item,
@@ -75,7 +85,7 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
     def update_item(item_id):
         """Processes the view item form data and updates an existing item."""
         item = item_cls.query.get_or_404(item_id)
-        form = edit_item_form_cls(request.form, obj=item)
+        form = DynamicEditItemForm(request.form, obj=item)
         if form.validate():
             remove_empty_password_fields(form)
             form.populate_obj(item)
@@ -92,7 +102,7 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
     def create_item():
         """Processes the new item form data and creates an item."""
         item = item_cls()
-        form = new_item_form_cls(request.form, obj=item)
+        form = DynamicNewItemForm(request.form, obj=item)
         if form.validate():
             remove_empty_password_fields(form)
             form.populate_obj(item)
@@ -108,7 +118,7 @@ def configure_crud_view(blueprint, name, item_cls, new_item_form_cls, edit_item_
     def new_item():
         """Renders the new item form."""
         # No obj arg enables smart defaults
-        form = new_item_form_cls()
+        form = DynamicNewItemForm()
         return render_template('admin/items/new.html',
                                form=form,
                                item=None,

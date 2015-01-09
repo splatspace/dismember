@@ -1,0 +1,23 @@
+<script>
+    function delete_item(url, name, success_url) {
+        if (window.confirm('Delete ' + name + '?')) {
+            $.ajax({
+                type: 'DELETE',
+                url: url,
+                success: function () {
+                    location.href = success_url
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(textStatus + ':' + errorThrown);
+                }
+            });
+        }
+    }
+
+    // Turns an input control into a "button" type that runs the following function on click
+    // but does not submit the form.
+    function js_button(input, fn) {
+        input.attr('type', 'button');
+        input.click(fn);
+    }
+</script>

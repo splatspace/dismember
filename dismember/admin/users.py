@@ -15,7 +15,7 @@ email_field = lambda: EmailField(validators=[
 ])
 
 roles_field = lambda: QuerySelectMultipleField(query_factory=lambda: Role.query.all(), allow_blank=True,
-                                               widget=ListWidget(prefix_label=False), option_widget=CheckboxInput())
+                                               widget=ListWidget(), option_widget=CheckboxInput())
 
 password_field = lambda required=False: PasswordField(validators=[
     DataRequired() if required else Optional(),
