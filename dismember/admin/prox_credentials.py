@@ -1,5 +1,5 @@
 from dismember.admin import admin_bp
-from dismember.admin.crud_view import configure_crud_view
+from dismember.admin.crud_view import CrudView
 from dismember.models.prox_credential import ProxCredential
 from dismember.models.user import User
 from dismember.wtforms_components.forms import DismemberModelForm
@@ -21,6 +21,5 @@ class ProxCredentialForm(DismemberModelForm):
     ], default=True)
 
 
-prox_credentials_view = configure_crud_view(admin_bp, 'prox_credentials', ProxCredential, ProxCredentialForm,
-                                            ProxCredentialForm, 'HID Prox credential', 'HID Prox credentials',
-                                            ProxCredential.number)
+crud_view = CrudView(admin_bp, 'prox_credentials', ProxCredential, ProxCredentialForm, ProxCredentialForm,
+                     'HID Prox Credential', 'HID Prox Credentials', ProxCredential.number)

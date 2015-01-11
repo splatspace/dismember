@@ -1,5 +1,5 @@
 from dismember.admin import admin_bp
-from dismember.admin.crud_view import configure_crud_view
+from dismember.admin.crud_view import CrudView
 from dismember.models.member_type import MemberType
 from dismember.models.role import Role
 from dismember.wtforms_components.forms import DismemberModelForm
@@ -28,5 +28,5 @@ class MemberTypeForm(DismemberModelForm):
     ])
 
 
-member_types_view = configure_crud_view(admin_bp, 'member_types', MemberType, MemberTypeForm, MemberTypeForm,
-                                        'member type', 'member types', MemberType.name)
+crud_view = CrudView(admin_bp, 'member_types', MemberType, MemberTypeForm, MemberTypeForm, 'Member Type',
+                     'Member Types', MemberType.name)

@@ -1,5 +1,5 @@
 from dismember.admin import admin_bp
-from dismember.admin.crud_view import configure_crud_view
+from dismember.admin.crud_view import CrudView
 from dismember.models.member_type import MemberType
 from dismember.models.role import Role
 from dismember.models.user import User
@@ -58,5 +58,4 @@ class NewUserForm(EditUserForm):
     password_confirm = password_confirm_field()
 
 
-users_view = configure_crud_view(admin_bp, 'users', User, NewUserForm, EditUserForm, 'user', 'users',
-                                 User.full_name)
+crud_view = CrudView(admin_bp, 'users', User, NewUserForm, EditUserForm, 'User', 'Users', User.full_name)

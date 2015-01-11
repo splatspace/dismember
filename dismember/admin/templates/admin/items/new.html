@@ -3,7 +3,7 @@
 {% import 'bootstrap/wtf.html' as bootstrap %}
 
 {% block title %}
-    New {{ item_type_singular.capitalize() }} - {{ config['DISMEMBER_SITE_NAME'] }}
+    New {{ item_type_singular|title }} - {{ config['DISMEMBER_SITE_NAME'] }}
 {% endblock %}
 
 {% block scripts %}
@@ -19,7 +19,7 @@
 {% block content %}
     <div class="row">
         <div class="col-md-12">
-            <h3>New {{ item_type_singular.capitalize() }}</h3>
+            <h3>New {{ item_type_singular }}</h3>
         </div>
     </div>
 

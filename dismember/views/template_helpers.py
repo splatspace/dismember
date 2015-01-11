@@ -15,6 +15,8 @@ def get_flashed_messages_except(with_categories=False, category_exclude_filter=[
     else:
         return [message for category, message in filtered_messages]
 
+def upcase_first_letter(s):
+    return s[0].upper() + s[1:]
 
 @app.context_processor
 def inject_template_helpers():

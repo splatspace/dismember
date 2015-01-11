@@ -9,12 +9,15 @@ import prox_credentials
 
 
 def admin_index():
-    return render_template('admin/index.html', sections=[
-        ('admin.users_list', 'Users'),
-        ('admin.roles_list', 'Roles'),
-        ('admin.member_types_list', 'Member Types'),
-        ('admin.prox_credentials_list', 'HID Prox Credentials'),
-    ])
+    modules = (
+        users,
+        roles,
+        member_types,
+        prox_credentials,
+    )
+    sections = [(m.crud_view.endpoints['list_endpoint'], m.crud_view.item_type_plural) for m in modules]
+
+    return render_template('admin/index.html', sections=sections)
 
 
 admin_bp.add_url_rule('/', endpoint='index', view_func=admin_index, strict_slashes=False)
