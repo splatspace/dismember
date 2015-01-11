@@ -1,0 +1,33 @@
+{% extends "_common/base.html" %}
+
+{% block title %}
+    My User - {{ config['DISMEMBER_SITE_NAME'] }}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h3>{{ current_user }}</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-5">
+
+            <h3>Contact Information</h3>
+            <ul>
+                <li>Email: {{ current_user.email }}</li>
+                <li>Full name: {{ current_user.full_name or '' }}</li>
+                <li>Phone: {{ current_user.phone or '' }}</li>
+                <li>Address: {{ current_user.address or '' }}</li>
+                <li>Emergency contact: {{ current_user.emergency_contact or '' }}</li>
+            </ul>
+
+            <h3>Membership</h3>
+            <ul>
+                <li>Signed up: {{ current_user.member_signup or 'Not yet' }}</li>
+                <li>Type: {{ current_user.member_type or 'Not a member' }}</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

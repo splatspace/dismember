@@ -1,3 +1,0 @@
-import me
-import wepay_donation
-import wepay_dues

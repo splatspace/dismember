@@ -1,12 +1,13 @@
 """
 Common view methods for WePay flows.
 """
-from dismember.service import db, app
+from dismember.service import db
+from dismember.user import user_bp
 from dismember.wepay import wepay_service
 from flask import request, url_for, redirect
 
 
-@app.route('/wepay/checkout_submit')
+@user_bp.route('/wepay/checkout_submit')
 def wepay_checkout_submit():
     """
     Handle the second part of the WePay checkout flow. This is where the user ends up after WePay finishes
@@ -17,12 +18,12 @@ def wepay_checkout_submit():
         return 'The state parameter is missing', 403
 
     # Yes, the URL sent to wepay is the URL of this method
-    submit_url = wepay_service.submit_checkout(url_for('wepay_checkout_submit', _external=True), state)
+    submit_url = wepay_service.submit_checkout(url_for('.wepay_checkout_submit', _external=True), state)
     db.session.commit()
     return redirect(submit_url)
 
 
-@app.route('/wepay/checkout_callback', methods=['POST'])
+@user_bp.route('/wepay/checkout_callback', methods=['POST'])
 def wepay_checkout_callback():
     """
     Handle an Instant Payment Notification: an asynchronous POST from WePay about a

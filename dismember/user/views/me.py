@@ -1,10 +1,11 @@
+from dismember.user import user_bp
 from flask import render_template
 
 from dismember.service import app
 from flask.ext.login import login_required
 
 
-@app.route('/users/me')
+@user_bp.route('/me')
 @login_required
-def users_me():
-    return render_template('/users/me.html')
+def me():
+    return render_template('/user/me.html')

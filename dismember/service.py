@@ -55,20 +55,29 @@ def run():
     app.config['SECURITY_CHANGEABLE'] = True
     security = Security(app, user_datastore)
 
-    # Import the CRUD blueprint so views can use it
+    # General Jinja utils
+    import template_helpers
+
+    # Import the CRUD blueprint so views can use its templates
     from dismember.crud import crud_bp
 
     app.register_blueprint(crud_bp)
+
+    # Admin views
+    from dismember.admin import admin_bp
+
+    app.register_blueprint(admin_bp, url_prefix='/admin')
+
+    # User views
+    from dismember.user import user_bp
+
+    app.register_blueprint(user_bp, url_prefix='/user')
 
     # Import normal views so they can register endpoints with Flask
     import dismember.views
 
     # Flask-Bootstrap
     bootstrap = Bootstrap(app)
-
-    from dismember.admin import admin_bp
-
-    app.register_blueprint(admin_bp, url_prefix='/admin')
 
     create_builtins(db, user_datastore)
     app.run(host=app.config['DISMEMBER_HOST'], port=app.config['DISMEMBER_PORT'])

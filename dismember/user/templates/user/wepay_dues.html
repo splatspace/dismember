@@ -1,4 +1,5 @@
 {% extends "_common/base.html" %}
+
 {% block title %}
     Pay Dues with WePay
 {% endblock %}
@@ -36,7 +37,7 @@
             </ul>
         {% endif %}
 
-        <form name="dues" method="GET" action="{{ url_for('users_wepay_dues_authorize') }}">
+        <form name="dues" method="GET" action="{{ url_for('.wepay_dues_authorize') }}">
             <p>
                 Choose the months to pay for:
             </p>

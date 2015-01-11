@@ -32,7 +32,7 @@
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_authenticated() %}
                         <li>
-                            <a href="{{ url_for('users_me') }}">{{ current_user|string }}</a>
+                            <a href="{{ url_for('user.me') }}">{{ current_user|string }}</a>
                         </li>
                         <li>
                             <a href="{{ url_for('security.logout') }}">Log out</a>

@@ -1,6 +1,8 @@
 import datetime
 
+from dismember.currency import format_currency
 from dismember.models.dues_payment_period import DuesPaymentPeriod
+from dismember.user import user_bp
 from flask import render_template, redirect, url_for, request
 from flask.ext.login import login_required, current_user
 from dismember.service import app, db
@@ -9,7 +11,6 @@ from dismember.models.dues_payment import DuesPayment
 from dismember.wepay import wepay_service
 from dismember.models.wepay_checkout import WePayCheckout
 from dismember.models.wepay_dues_payment import WePayDuesPayment
-from dismember.views.template_helpers import format_currency
 
 
 def create_dues_payment(checkout, dues_payment_periods):
@@ -46,9 +47,9 @@ def create_dues_payment(checkout, dues_payment_periods):
     return pmt
 
 
-@app.route('/users/wepay_dues')
+@user_bp.route('/wepay/dues')
 @login_required
-def users_wepay_dues():
+def wepay_dues():
     all_dues_payments = dues_service.get_dues_payments(current_user)
 
     # Get all the periods covered by all the payments
@@ -67,7 +68,7 @@ def users_wepay_dues():
         past_payable_periods = []
         future_payable_periods = []
 
-    return render_template('/users/wepay_dues.html',
+    return render_template('/user/wepay_dues.html',
                            monthly_dues=monthly_dues,
                            recent_paid_periods=recent_paid_periods,
                            past_payable_periods=past_payable_periods,
@@ -75,9 +76,9 @@ def users_wepay_dues():
                            utcnow=datetime.datetime.utcnow())
 
 
-@app.route('/users/wepay_dues_authorize')
+@user_bp.route('/wepay/dues_authorize')
 @login_required
-def users_wepay_dues_authorize():
+def wepay_dues_authorize():
     """Handle the HTTP GET that authorizes a payment and starts the flow through WePay."""
     if not current_user.member_type:
         return 'User is not an active member', 403
@@ -113,7 +114,7 @@ def users_wepay_dues_authorize():
     checkout.type = 'SERVICE'
     checkout.amount = str(amount)
     checkout.fee_payer = fee_payer
-    checkout.callback_uri = url_for('wepay_checkout_callback', _external=True)
+    checkout.callback_uri = url_for('.wepay_checkout_callback', _external=True)
     checkout.auto_capture = True
     db.session.add(checkout)
 
@@ -124,6 +125,6 @@ def users_wepay_dues_authorize():
         return str(err), 403
     db.session.commit()
 
-    authorize_url = wepay_service.authorize_checkout(checkout, url_for('wepay_checkout_submit', _external=True))
+    authorize_url = wepay_service.authorize_checkout(checkout, url_for('.wepay_checkout_submit', _external=True))
     db.session.commit()
     return redirect(authorize_url)
