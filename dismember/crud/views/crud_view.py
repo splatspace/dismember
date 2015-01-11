@@ -1,4 +1,5 @@
 from dismember.service import db
+from dismember.wtforms_components.fields import remove_empty_password_fields
 from flask import render_template, request, flash, redirect, url_for
 from wtforms import SubmitField
 
@@ -116,7 +117,7 @@ class CrudView(object):
         item = self._item_cls.query.get_or_404(item_id)
         form = self.dynamic_edit_item_form(request.form, obj=item)
         if form.validate():
-            self._remove_empty_password_fields(form)
+            remove_empty_password_fields(form)
             form.populate_obj(item)
             db.session.add(item)
             db.session.commit()
@@ -133,7 +134,7 @@ class CrudView(object):
         item = self._item_cls()
         form = self.dynamic_new_item_form(request.form, obj=item)
         if form.validate():
-            self._remove_empty_password_fields(form)
+            remove_empty_password_fields(form)
             form.populate_obj(item)
             db.session.add(item)
             db.session.commit()
@@ -167,9 +168,3 @@ class CrudView(object):
         inside a blueprint).
         """
         return self._endpoints[endpoint_name_key].split('.', 2)[-1]
-
-    def _remove_empty_password_fields(self, form):
-        """Removes empty password fields from the form so those fields will not be updated in the model."""
-        for field in form:
-            if field.type == 'PasswordField' and field.data == '':
-                del form[field.name]

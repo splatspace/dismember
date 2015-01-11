@@ -3,6 +3,13 @@ from pytz import timezone
 from wtforms_components import DateTimeField
 
 
+def remove_empty_password_fields(form):
+    """Removes empty password fields from the form so those fields will not be updated in the model."""
+    for field in form:
+        if field.type == 'PasswordField' and field.data == '':
+            del form[field.name]
+
+
 class DateTimeWithTimeZoneField(DateTimeField):
     """A DateTimeField that always parses timezone aware Python datetimes."""
 

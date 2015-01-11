@@ -22,3 +22,15 @@ def inject_template_helpers():
     return dict(format_currency=format_currency,
                 iso_date=iso_date,
                 get_flashed_messages_except=get_flashed_messages_except)
+
+
+def date_format(value, fmt='%Y-%m-%d'):
+    return value.strftime(fmt)
+
+
+def datetime_format(value, fmt='%Y-%m-%d %H:%M:%s'):
+    return value.strftime(fmt)
+
+
+app.jinja_env.filters['date'] = date_format
+app.jinja_env.filters['datetime'] = datetime_format

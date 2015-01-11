@@ -1,5 +1,7 @@
 {% extends "_common/base.html" %}
 
+{% import 'bootstrap/wtf.html' as bootstrap %}
+
 {% block title %}
     My User - {{ config['DISMEMBER_SITE_NAME'] }}
 {% endblock %}
@@ -7,27 +9,45 @@
 {% block content %}
     <div class="row">
         <div class="col-md-12">
-            <h3>{{ current_user }}</h3>
+            <h3>{{ current_user.full_name }} ({{ current_user.email }})</h3>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-5">
+        <div class="col-md-12">
 
-            <h3>Contact Information</h3>
-            <ul>
-                <li>Email: {{ current_user.email }}</li>
-                <li>Full name: {{ current_user.full_name or '' }}</li>
-                <li>Phone: {{ current_user.phone or '' }}</li>
-                <li>Address: {{ current_user.address or '' }}</li>
-                <li>Emergency contact: {{ current_user.emergency_contact or '' }}</li>
-            </ul>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Membership</h4>
+                </div>
+                <div class="panel-body">
+                    {% if current_user.member_signup and current_user.member_type %}
+                        Your membership was approved <strong>{{ current_user.member_signup|date }}</strong>.  Your
+                        current membership type is <strong>{{ current_user.member_type }}</strong>, which
+                        requires you to pay monthly dues of
+                        <strong>{{ format_currency(
+                            current_user.member_type.currency,
+                            current_user.member_type.monthly_dues) }}</strong>.
+                    {% else %}
+                        You are not an active member of the organization.  Contact a board member to
+                        join.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-            <h3>Membership</h3>
-            <ul>
-                <li>Signed up: {{ current_user.member_signup or 'Not yet' }}</li>
-                <li>Type: {{ current_user.member_type or 'Not a member' }}</li>
-            </ul>
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Details</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                        {{ bootstrap.quick_form(form, action=url_for('.me_update'), method='post',
+                    button_map=dict(update='primary')) }}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
