@@ -11,11 +11,13 @@
     </div>
 
     <div class="row">
-        <div class="col-md-5">
-            <ul class="list_group">
-                {% for endpoint, name in sections %}
-                    <li class="list-group-item">
-                        <a href="{{ url_for(endpoint) }}">{{ name }}</a>
+        <div class="col-md-12">
+            <ul class="list-unstyled">
+                {% for cv in crud_views %}
+                    <li>
+                        <span class="glyphicon {{ icons[cv.name] if cv.name in icons }}"/></span>
+                        &nbsp;
+                        <a href="{{ url_for(cv.endpoints['list_endpoint']) }}">{{ cv.item_type_plural }}</a>
                     </li>
                 {% endfor %}
             </ul>

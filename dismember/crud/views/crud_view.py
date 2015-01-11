@@ -175,6 +175,10 @@ class CrudView(object):
                                view_func=delete_item, methods=['DELETE'])
 
     @property
+    def name(self):
+        return self._name
+
+    @property
     def item_type_singular(self):
         return self._item_type_singular
 
@@ -185,7 +189,6 @@ class CrudView(object):
     @property
     def endpoints(self):
         return self._endpoints
-
 
     def _short_endpoint(self, endpoint_name_key):
         """

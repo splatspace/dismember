@@ -11,15 +11,21 @@ import views.prox_credentials
 
 @roles_accepted('admin')
 def admin_index():
-    modules = (
-        views.users,
-        views.roles,
-        views.member_types,
-        views.prox_credentials,
-    )
-    sections = [(m.crud_view.endpoints['list_endpoint'], m.crud_view.item_type_plural) for m in modules]
+    crud_views = [
+        views.users.crud_view,
+        views.roles.crud_view,
+        views.member_types.crud_view,
+        views.prox_credentials.crud_view
+    ]
 
-    return render_template('admin/index.html', sections=sections)
+    icons = {
+        views.users.crud_view.name: 'glyphicon-user',
+        views.roles.crud_view.name: 'glyphicon-certificate',
+        views.member_types.crud_view.name: 'glyphicon-tags',
+        views.prox_credentials.crud_view.name: 'glyphicon-lock',
+    }
+
+    return render_template('admin/index.html', crud_views=crud_views, icons=icons)
 
 
 admin_bp.add_url_rule('/', endpoint='index', view_func=admin_index, strict_slashes=False)

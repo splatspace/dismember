@@ -26,13 +26,23 @@
                     {% endif %}
 
                     {% if current_user.is_authenticated() and current_user.member_type %}
-                        <li><a href="{{ url_for('user.wepay_dues') }}">Pay Dues</a></li>
+                        <li>
+                            <a href="{{ url_for('user.wepay_dues') }}">
+                                Pay Membership Dues
+                            </a>
+                        </li>
+
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Payment
-                                History<span class="caret"></span></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+                                Payment History <span class="caret"></span>
+                            </a>
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="{{ url_for('user.dues_history') }}">Dues</a></li>
-                                <li><a href="{{ url_for('user.donation_history') }}">Donations</a></li>
+                                <li><a href="{{ url_for('user.dues_history') }}">
+                                    <span class="glyphicon glyphicon-user"></span> Membership Dues</a>
+                                </li>
+                                <li><a href="{{ url_for('user.donation_history') }}">
+                                    <span class="glyphicon glyphicon-gift"></span> Donations</a>
+                                </li>
                             </ul>
                         </li>
                     {% endif %}
