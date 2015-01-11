@@ -14,8 +14,8 @@ email_field = lambda: EmailField(validators=[
     Unique(User.email, message='That e-mail address is assigned to another user')
 ])
 
-roles_field = lambda: QuerySelectMultipleField(query_factory=lambda: Role.query.all(), allow_blank=True,
-                                               widget=ListWidget(), option_widget=CheckboxInput())
+roles_field = lambda: QuerySelectMultipleField(query_factory=lambda: Role.query.all(), allow_blank=True)
+                                               # widget=ListWidget(), option_widget=CheckboxInput())
 
 password_field = lambda required=False: PasswordField(validators=[
     DataRequired() if required else Optional(),
