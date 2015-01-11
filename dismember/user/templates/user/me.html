@@ -25,9 +25,7 @@
                         Your membership was approved <strong>{{ current_user.member_signup|date }}</strong>.  Your
                         current membership type is <strong>{{ current_user.member_type }}</strong>, which
                         requires you to pay monthly dues of
-                        <strong>{{ format_currency(
-                            current_user.member_type.currency,
-                            current_user.member_type.monthly_dues) }}</strong>.
+                        <strong>{{ current_user.member_type.monthly_dues|currency(current_user.member_type.currency) }}</strong>.
                     {% else %}
                         You are not an active member of the organization.  Contact a board member to
                         join.

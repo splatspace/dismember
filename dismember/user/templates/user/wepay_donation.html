@@ -26,7 +26,7 @@
             </p>
             <ul>
                 {% for pmt in recent_donation_payments %}
-                    <li>{{ pmt.paid_amount_str }} on {{ iso_date(pmt.created_at) }}</li>
+                    <li>{{ pmt.paid_amount|currency(pmt.paid_currency) }} on {{ pmt.created_at|date }}</li>
                 {% endfor %}
             </ul>
         {% endif %}

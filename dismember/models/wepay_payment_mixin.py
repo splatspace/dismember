@@ -31,10 +31,6 @@ class WePayPaymentMixin(object):
         return self.wepay_checkout.currency
 
     @property
-    def paid_amount_str(self):
-        return format_currency(self.paid_currency, self.paid_amount)
-
-    @property
     def payment_method(self):
         return 'WePay'
 
@@ -46,15 +42,17 @@ class WePayPaymentMixin(object):
     def exception(self):
         # Chargebacks are always exceptional
         if self.wepay_checkout.amount_charged_back > 0:
-            return 'Charge back %s (of %s total)' % (
-                self.wepay_checkout.amount_charged_back,
-                self.wepay_checkout.amount)
+            return 'Charge back %s (of %s total) leaves net %s' % (
+                format_currency(self.paid_currency, self.wepay_checkout.amount_charged_back),
+                format_currency(self.paid_currency, self.wepay_checkout.amount),
+                format_currency(self.paid_currency, self.paid_amount))
 
         # Refunds are always exceptional
         if self.wepay_checkout.amount_refunded > 0:
-            return 'Refund of %s (of %s total)' % (
-                self.wepay_checkout.amount_refunded,
-                self.wepay_checkout.amount)
+            return 'Refund of %s (of %s total) leaves net %s' % (
+                format_currency(self.paid_currency, self.wepay_checkout.amount_refunded),
+                format_currency(self.paid_currency, self.wepay_checkout.amount),
+                format_currency(self.paid_currency, self.paid_amount))
 
         # These probably indicate a problem
         if self.wepay_checkout.state in [None, 'new', 'failed', 'cancelled', 'charged back', 'refunded', 'expired']:

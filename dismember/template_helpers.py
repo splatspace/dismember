@@ -34,3 +34,4 @@ def datetime_format(value, fmt='%Y-%m-%d %H:%M:%s'):
 
 app.jinja_env.filters['date'] = date_format
 app.jinja_env.filters['datetime'] = datetime_format
+app.jinja_env.filters['currency'] = lambda c, a: format_currency(a, c)

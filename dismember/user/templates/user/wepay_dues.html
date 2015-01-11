@@ -27,11 +27,10 @@
                 Your recent dues payments:
             </p>
             <ul>
-                {% for dues_payment_period in recent_paid_periods %}
-                    <li>{{ dues_payment_period }}
-                        (with {{ dues_payment_period.dues_payment.payment_method }}
-                        {{ dues_payment_period.dues_payment.payer_reference }},
-                        {{ dues_payment_period.dues_payment.paid_amount_str }})
+                {% for p in recent_paid_periods %}
+                    <li>{{ p }} (with {{ p.dues_payment.payment_method }}
+                        {{ p.dues_payment.payer_reference }},
+                        {{ p.dues_payment.paid_amount|currency(p.dues_payment.paid_currency) }})
                     </li>
                 {% endfor %}
             </ul>
