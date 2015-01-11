@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired, Optional
 from wtforms_components import StringField, Unique, DecimalField, SelectField
 
 
-class MemberTypesForm(DismemberModelForm):
+class MemberTypeForm(DismemberModelForm):
     name = StringField(label='Name', validators=[
         DataRequired(),
         Unique(Role.name, message='That role name is already in use')
@@ -28,5 +28,5 @@ class MemberTypesForm(DismemberModelForm):
     ])
 
 
-member_types_view = configure_crud_view(admin_bp, 'member_types', MemberType, MemberTypesForm, MemberTypesForm,
+member_types_view = configure_crud_view(admin_bp, 'member_types', MemberType, MemberTypeForm, MemberTypeForm,
                                         'member type', 'member types', MemberType.name)
