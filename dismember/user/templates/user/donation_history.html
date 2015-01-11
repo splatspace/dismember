@@ -1,0 +1,28 @@
+{% extends "_common/base.html" %}
+
+{% import 'bootstrap/wtf.html' as bootstrap %}
+{% import 'user/_macros.html' as user %}
+
+{% block title %}
+    Dues - {{ config['DISMEMBER_SITE_NAME'] }}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Donation History</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            {% if not payments %}
+                <p>
+                    It doesn't look like you've made any donations yet.
+                </p>
+            {% else %}
+                {{ user.donation_payment_history(payments) }}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -47,16 +47,16 @@ class WePayPaymentMixin(object):
     def exception(self):
         # Chargebacks are always exceptional
         if self.wepay_checkout.amount_charged_back > 0:
-            return 'Charge back %s (of %s total) leaves net %s' % (
+            return 'Charge back %s from %s gross leaves net %s' % (
                 format_currency(self.paid_currency, self.wepay_checkout.amount_charged_back),
-                format_currency(self.paid_currency, self.wepay_checkout.amount),
+                format_currency(self.paid_currency, self.wepay_checkout.gross),
                 format_currency(self.paid_currency, self.paid_amount))
 
         # Refunds are always exceptional
         if self.wepay_checkout.amount_refunded > 0:
-            return 'Refund of %s (of %s total) leaves net %s' % (
+            return 'Refund of %s from %s gross leaves net %s' % (
                 format_currency(self.paid_currency, self.wepay_checkout.amount_refunded),
-                format_currency(self.paid_currency, self.wepay_checkout.amount),
+                format_currency(self.paid_currency, self.wepay_checkout.gross),
                 format_currency(self.paid_currency, self.paid_amount))
 
         # These probably indicate a problem
