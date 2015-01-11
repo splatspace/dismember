@@ -17,4 +17,4 @@ class RoleForm(DismemberModelForm):
     ])
 
 
-crud_view = CrudView(admin_bp, 'roles', Role, RoleForm, RoleForm, 'Role', "Roles", Role.name)
+crud_view = CrudView(admin_bp, 'roles', Role, RoleForm, RoleForm, 'Role', "Roles", Role.name, roles=['admin'])

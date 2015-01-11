@@ -22,4 +22,4 @@ class ProxCredentialForm(DismemberModelForm):
 
 
 crud_view = CrudView(admin_bp, 'prox_credentials', ProxCredential, ProxCredentialForm, ProxCredentialForm,
-                     'HID Prox Credential', 'HID Prox Credentials', ProxCredential.number)
+                     'HID Prox Credential', 'HID Prox Credentials', ProxCredential.number, roles=['admin'])

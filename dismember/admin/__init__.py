@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template
+from flask.ext.security import roles_accepted
 
 admin_bp = Blueprint('admin', __name__, template_folder='templates')
 
@@ -8,6 +9,7 @@ import views.member_types
 import views.prox_credentials
 
 
+@roles_accepted('admin')
 def admin_index():
     modules = (
         views.users,

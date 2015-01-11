@@ -1,12 +1,16 @@
+from functools import wraps
+
 from dismember.service import db
 from dismember.wtforms_components.fields import remove_empty_password_fields
 from flask import render_template, request, flash, redirect, url_for
+from flask.ext.principal import Permission, RoleNeed
+from flask.ext.security.decorators import _get_unauthorized_view
 from wtforms import SubmitField
 
 
 class CrudView(object):
     def __init__(self, blueprint, name, item_cls, new_item_form_cls, edit_item_form_cls, item_type_singular='Item',
-                 item_type_plural='Items', list_order_by=None):
+                 item_type_plural='Items', list_order_by=None, roles=()):
         """
         Creates a simple create/read/update/delete (CRUD) view for a SQLAlchemy model item.
 
@@ -20,6 +24,7 @@ class CrudView(object):
         :param item_type_singular: a string used in the UI when a single item is described ('user', 'car', 'ox')
         :param item_type_plural: a string used in the UI when multiple items are described ('users', 'cars', 'oxen')
         :param list_order_by: a SQLAlchemy order_by clause to apply when listing items
+        :param roles: an iterable of roles, any of which grants access to the CRUD view; None to require no roles
         """
         super(CrudView, self).__init__()
 
@@ -67,18 +72,107 @@ class CrudView(object):
 
         self.dynamic_new_item_form = DynamicNewItemForm
 
+        def assert_roles():
+            def wrapper(fn):
+                @wraps(fn)
+                def decorated_view(*args, **kwargs):
+                    perm = Permission(*[RoleNeed(role) for role in roles])
+                    if perm.can():
+                        return fn(*args, **kwargs)
+                    return _get_unauthorized_view()
+
+                return decorated_view
+
+            return wrapper
+
+        @assert_roles()
+        def list_items():
+            """Renders a list of all items."""
+            q = self._item_cls.query
+            if self._list_order_by:
+                q = q.order_by(self._list_order_by)
+            items = q.all()
+            return render_template('crud/list.html',
+                                   items=items,
+                                   **self.template_kwargs)
+
+        @assert_roles()
+        def view_item(item_id):
+            """Renders a form that lets users view and edit item data."""
+            item = self._item_cls.query.get_or_404(item_id)
+            form = self.dynamic_edit_item_form(obj=item)
+            return render_template('crud/view.html',
+                                   form=form,
+                                   item=item,
+                                   item_name=str(item),
+                                   **self.template_kwargs)
+
+        @assert_roles()
+        def update_item(item_id):
+            """Processes the view item form data and updates an existing item."""
+            item = self._item_cls.query.get_or_404(item_id)
+            form = self.dynamic_edit_item_form(request.form, obj=item)
+            if form.validate():
+                remove_empty_password_fields(form)
+                form.populate_obj(item)
+                db.session.add(item)
+                db.session.commit()
+                flash('%s "%s" updated' % (self.item_type_singular, str(item)))
+                return redirect(url_for(self._endpoints['view_endpoint'], item_id=item_id))
+            return render_template('crud/view.html',
+                                   form=form,
+                                   item=item,
+                                   item_name=str(item),
+                                   **self.template_kwargs)
+
+        @assert_roles()
+        def create_item():
+            """Processes the new item form data and creates an item."""
+            item = self._item_cls()
+            form = self.dynamic_new_item_form(request.form, obj=item)
+            if form.validate():
+                remove_empty_password_fields(form)
+                form.populate_obj(item)
+                db.session.add(item)
+                db.session.commit()
+                flash('%s "%s" created' % (self.item_type_singular, str(item)))
+                return redirect(url_for(self._endpoints['list_endpoint']))
+            return render_template('crud/new.html',
+                                   form=form,
+                                   item=None,
+                                   **self.template_kwargs)
+
+        @assert_roles()
+        def new_item():
+            """Renders the new item form."""
+            # No obj arg enables smart defaults
+            form = self.dynamic_new_item_form()
+            return render_template('crud/new.html',
+                                   form=form,
+                                   item=None,
+                                   **self.template_kwargs)
+
+        @assert_roles()
+        def delete_item(item_id):
+            item = self._item_cls.query.get_or_404(item_id)
+            item_str = str(item)
+            db.session.delete(item)
+            db.session.commit()
+            flash('%s "%s" deleted' % (self.item_type_singular, item_str))
+            return 'ok', 200
+
         blueprint.add_url_rule('/%s' % name, self._short_endpoint('list_endpoint'),
-                               view_func=self.list_items, methods=['GET'], strict_slashes=False)
+                               view_func=list_items, methods=['GET'], strict_slashes=False)
         blueprint.add_url_rule('/%s/new' % name, self._short_endpoint('new_endpoint'),
-                               view_func=self.new_item, methods=['GET'])
+                               view_func=new_item, methods=['GET'])
         blueprint.add_url_rule('/%s/new' % name, self._short_endpoint('create_endpoint'),
-                               view_func=self.create_item, methods=['POST'])
+                               view_func=create_item, methods=['POST'])
         blueprint.add_url_rule('/%s/<int:item_id>' % name, self._short_endpoint('view_endpoint'),
-                               view_func=self.view_item, methods=['GET'])
+                               view_func=view_item, methods=['GET'])
         blueprint.add_url_rule('/%s/<int:item_id>' % name, self._short_endpoint('update_endpoint'),
-                               view_func=self.update_item, methods=['POST'])
+                               view_func=update_item, methods=['POST'])
         blueprint.add_url_rule('/%s/<int:item_id>' % name, self._short_endpoint('delete_endpoint'),
-                               view_func=self.delete_item, methods=['DELETE'])
+                               view_func=delete_item, methods=['DELETE'])
 
     @property
     def item_type_singular(self):
@@ -92,75 +186,6 @@ class CrudView(object):
     def endpoints(self):
         return self._endpoints
 
-    def list_items(self):
-        """Renders a list of all items."""
-        q = self._item_cls.query
-        if self._list_order_by:
-            q = q.order_by(self._list_order_by)
-        items = q.all()
-        return render_template('crud/list.html',
-                               items=items,
-                               **self.template_kwargs)
-
-    def view_item(self, item_id):
-        """Renders a form that lets users view and edit item data."""
-        item = self._item_cls.query.get_or_404(item_id)
-        form = self.dynamic_edit_item_form(obj=item)
-        return render_template('crud/view.html',
-                               form=form,
-                               item=item,
-                               item_name=str(item),
-                               **self.template_kwargs)
-
-    def update_item(self, item_id):
-        """Processes the view item form data and updates an existing item."""
-        item = self._item_cls.query.get_or_404(item_id)
-        form = self.dynamic_edit_item_form(request.form, obj=item)
-        if form.validate():
-            remove_empty_password_fields(form)
-            form.populate_obj(item)
-            db.session.add(item)
-            db.session.commit()
-            flash('%s "%s" updated' % (self.item_type_singular, str(item)))
-            return redirect(url_for(self._endpoints['view_endpoint'], item_id=item_id))
-        return render_template('crud/view.html',
-                               form=form,
-                               item=item,
-                               item_name=str(item),
-                               **self.template_kwargs)
-
-    def create_item(self):
-        """Processes the new item form data and creates an item."""
-        item = self._item_cls()
-        form = self.dynamic_new_item_form(request.form, obj=item)
-        if form.validate():
-            remove_empty_password_fields(form)
-            form.populate_obj(item)
-            db.session.add(item)
-            db.session.commit()
-            flash('%s "%s" created' % (self.item_type_singular, str(item)))
-            return redirect(url_for(self._endpoints['list_endpoint']))
-        return render_template('crud/new.html',
-                               form=form,
-                               item=None,
-                               **self.template_kwargs)
-
-    def new_item(self):
-        """Renders the new item form."""
-        # No obj arg enables smart defaults
-        form = self.dynamic_new_item_form()
-        return render_template('crud/new.html',
-                               form=form,
-                               item=None,
-                               **self.template_kwargs)
-
-    def delete_item(self, item_id):
-        item = self._item_cls.query.get_or_404(item_id)
-        item_str = str(item)
-        db.session.delete(item)
-        db.session.commit()
-        flash('%s "%s" deleted' % (self.item_type_singular, item_str))
-        return 'ok', 200
 
     def _short_endpoint(self, endpoint_name_key):
         """

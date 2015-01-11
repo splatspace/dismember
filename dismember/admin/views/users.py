@@ -58,4 +58,5 @@ class NewUserForm(EditUserForm):
     password_confirm = password_confirm_field()
 
 
-crud_view = CrudView(admin_bp, 'users', User, NewUserForm, EditUserForm, 'User', 'Users', User.full_name)
+crud_view = CrudView(admin_bp, 'users', User, NewUserForm, EditUserForm, 'User', 'Users', User.full_name,
+                     roles=['admin'])
