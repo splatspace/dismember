@@ -55,6 +55,11 @@ def run():
     app.config['SECURITY_CHANGEABLE'] = True
     security = Security(app, user_datastore)
 
+    # Import the CRUD blueprint so views can use it
+    from dismember.crud import crud_bp
+
+    app.register_blueprint(crud_bp)
+
     # Import normal views so they can register endpoints with Flask
     import dismember.views
 
@@ -62,6 +67,7 @@ def run():
     bootstrap = Bootstrap(app)
 
     from dismember.admin import admin_bp
+
     app.register_blueprint(admin_bp, url_prefix='/admin')
 
     create_builtins(db, user_datastore)

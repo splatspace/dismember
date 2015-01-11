@@ -8,7 +8,7 @@
 
 {% block scripts %}
     {{ super() }}
-    {% include 'admin/items/_scripts.html' %}
+    {% include 'crud/_scripts.html' %}
     <script>
         js_button($('#btn_cancel'), function () {
             history.back();

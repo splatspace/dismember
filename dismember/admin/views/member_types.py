@@ -1,5 +1,5 @@
 from dismember.admin import admin_bp
-from dismember.admin.crud_view import CrudView
+from dismember.crud.views.crud_view import CrudView
 from dismember.models.member_type import MemberType
 from dismember.models.role import Role
 from dismember.wtforms_components.forms import DismemberModelForm

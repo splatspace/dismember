@@ -97,7 +97,7 @@ class CrudView(object):
         if self._list_order_by:
             q = q.order_by(self._list_order_by)
         items = q.all()
-        return render_template('admin/items/list.html',
+        return render_template('crud/list.html',
                                items=items,
                                **self.template_kwargs)
 
@@ -105,7 +105,7 @@ class CrudView(object):
         """Renders a form that lets users view and edit item data."""
         item = self._item_cls.query.get_or_404(item_id)
         form = self.dynamic_edit_item_form(obj=item)
-        return render_template('admin/items/view.html',
+        return render_template('crud/view.html',
                                form=form,
                                item=item,
                                item_name=str(item),
@@ -122,7 +122,7 @@ class CrudView(object):
             db.session.commit()
             flash('%s "%s" updated' % (self.item_type_singular, str(item)))
             return redirect(url_for(self._endpoints['view_endpoint'], item_id=item_id))
-        return render_template('admin/items/view.html',
+        return render_template('crud/view.html',
                                form=form,
                                item=item,
                                item_name=str(item),
@@ -139,7 +139,7 @@ class CrudView(object):
             db.session.commit()
             flash('%s "%s" created' % (self.item_type_singular, str(item)))
             return redirect(url_for(self._endpoints['list_endpoint']))
-        return render_template('admin/items/new.html',
+        return render_template('crud/new.html',
                                form=form,
                                item=None,
                                **self.template_kwargs)
@@ -148,7 +148,7 @@ class CrudView(object):
         """Renders the new item form."""
         # No obj arg enables smart defaults
         form = self.dynamic_new_item_form()
-        return render_template('admin/items/new.html',
+        return render_template('crud/new.html',
                                form=form,
                                item=None,
                                **self.template_kwargs)

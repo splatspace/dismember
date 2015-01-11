@@ -2,18 +2,18 @@ from flask import Blueprint, render_template
 
 admin_bp = Blueprint('admin', __name__, template_folder='templates')
 
-import users
-import roles
-import member_types
-import prox_credentials
+import views.users
+import views.roles
+import views.member_types
+import views.prox_credentials
 
 
 def admin_index():
     modules = (
-        users,
-        roles,
-        member_types,
-        prox_credentials,
+        views.users,
+        views.roles,
+        views.member_types,
+        views.prox_credentials,
     )
     sections = [(m.crud_view.endpoints['list_endpoint'], m.crud_view.item_type_plural) for m in modules]
 
