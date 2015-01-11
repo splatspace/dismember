@@ -3,7 +3,7 @@ import datetime
 from dismember.currency import format_currency
 from dismember.models.dues_payment_period import DuesPaymentPeriod
 from dismember.user import user_bp
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, flash
 from flask.ext.login import login_required, current_user
 from dismember.service import app, db
 from dismember.dues import dues_service
@@ -11,6 +11,7 @@ from dismember.models.dues_payment import DuesPayment
 from dismember.wepay import wepay_service
 from dismember.models.wepay_checkout import WePayCheckout
 from dismember.models.wepay_dues_payment import WePayDuesPayment
+
 
 
 def create_dues_payment(checkout, dues_payment_periods):
@@ -61,15 +62,12 @@ def wepay_dues():
     recent_paid_periods = sorted(paid_periods, key=lambda p: (p.year, p.month))[-6:]
 
     if current_user.member_type:
-        monthly_dues = format_currency(current_user.member_type.currency, current_user.member_type.monthly_dues)
         past_payable_periods, future_payable_periods = dues_service.generate_payable_periods(current_user)
     else:
-        monthly_dues = None
         past_payable_periods = []
         future_payable_periods = []
 
     return render_template('/user/wepay_dues.html',
-                           monthly_dues=monthly_dues,
                            recent_paid_periods=recent_paid_periods,
                            past_payable_periods=past_payable_periods,
                            future_payable_periods=future_payable_periods,
@@ -90,17 +88,20 @@ def wepay_dues_authorize():
 
     months = request.args.getlist('month', None)
     if not months:
-        return 'Missing month parameter(s)', 403
+        flash('You must select at least one period.', 'error')
+        return redirect(url_for('.wepay_dues'))
 
     # Parse the month strings into dues payment periods
     try:
         dues_payment_periods = [DuesPaymentPeriod.from_period_string(period_string) for period_string in months]
     except ValueError as err:
-        return 'Error parsing month: %s' % (str(err)), 403
+        flash('Error parsing month: %s' % (str(err)), 'error')
+        return redirect(url_for('.wepay_dues'))
 
     num_months = len(dues_payment_periods)
     if num_months < 1:
-        return 'You have to pay for at least 1 period', 403
+        flash('You must select at least one period.', 'error')
+        return redirect(url_for('.wepay_dues'))
 
     fee_payer = 'payee'
     if 'pay_fee' in request.args:

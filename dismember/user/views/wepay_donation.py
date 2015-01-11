@@ -6,7 +6,7 @@ from dismember.currency import format_currency
 from dismember.donations import donation_service
 from dismember.models.wepay_donation_payment import WePayDonationPayment
 from dismember.user import user_bp
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, flash
 from flask.ext.login import login_required, current_user
 from dismember.service import app, db
 from dismember.wepay import wepay_service
@@ -69,11 +69,13 @@ def wepay_donation_authorize():
     try:
         decimal_amount = decimal.Decimal(amount)
     except InvalidOperation:
-        return 'Invalid amount', 403
+        flash('Invalid amount.', 'error')
+        return redirect(url_for('.wepay_donation'))
 
     # Don't allow small or negative amounts
     if decimal_amount < 1:
-        return 'Amount must be at least 1', 403
+        flash('Invalid amount.', 'error')
+        return redirect(url_for('.wepay_donation'))
 
     checkout = WePayCheckout()
     checkout.account_id = app.config['WEPAY_ACCOUNT_ID']

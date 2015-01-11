@@ -1,70 +1,95 @@
 {% extends "_common/base.html" %}
 
+{% import 'user/_macros.html' as user %}
+
 {% block title %}
     Pay Dues with WePay
 {% endblock %}
 
 {% block content %}
-
-    <h3>Pay Dues with WePay</h3>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Pay Dues with WePay</h3>
+        </div>
+    </div>
 
     {% if not current_user.member_type %}
-        <p>
-            You don't appear to be an active member of {{ config['DISMEMBER_ORG_NAME'] }}, so there are no dues to
-            pay!
-        </p>
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    You don't appear to be an active member of {{ config['DISMEMBER_ORG_NAME'] }}, so there are no dues
+                    to pay!
+                </p>
+            </div>
+        </div>
     {% else %}
-        <p>
-            Your membership type is {{ current_user.member_type }}, at {{ monthly_dues }} per month.
-        </p>
+        {# Membership type description #}
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    Your membership type is <strong>{{ current_user.member_type }}</strong>, at
+                    <strong>{{ current_user.member_type.monthly_dues|currency(current_user.member_type.currency) }}</strong>
+                    per month. Payments are due before the first day of the period they are for.
+                </p>
+            </div>
+        </div>
+
         {% if not recent_paid_periods %}
-            <p>
-                It doesn't look like you've made any dues payments yet. You'll need to make one soon to keep your
-                membership active.
-            </p>
-        {% else %}
-            <p>
-                Your recent dues payments:
-            </p>
-            <ul>
-                {% for p in recent_paid_periods %}
-                    <li>{{ p }} (with {{ p.dues_payment.payment_method }}
-                        {{ p.dues_payment.payer_reference }},
-                        {{ p.dues_payment.paid_amount|currency(p.dues_payment.paid_currency) }})
-                    </li>
-                {% endfor %}
-            </ul>
+            <div class="alert alert-info" role="alert">
+                It doesn't look like you've made any dues payments yet. You'll need to make one soon to
+                keep your membership active.
+            </div>
         {% endif %}
 
-        <form name="dues" method="GET" action="{{ url_for('.wepay_dues_authorize') }}">
-            <p>
-                Choose the months to pay for:
-            </p>
-            <ul>
-                {% for period in past_payable_periods %}
-                    <li>
-                        <input type="checkbox" name="month" value="{{ period.period_string }}"
-                               checked="checked"> {{ period.period_string }} (past due)</input>
-                    </li>
-                {% endfor %}
-                {% for period in future_payable_periods %}
-                    <li>
-                        <input type="checkbox" name="month"
-                               value="{{ period.period_string }}"> {{ period.period_string }} </input>
-                    </li>
-                {% endfor %}
-            </ul>
-            <p>
-                <input type="checkbox" name="pay_fee" value="true" checked="true">
-                Add the service fee to my total (saves {{ config['DISMEMBER_ORG_NAME'] }} money)
-                </input>
-            </p>
+        {# Period selection #}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Choose Periods</h4>
+            </div>
+            <div class="panel-body">
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                    <form class="form" name="dues" method="GET" action="{{ url_for('.wepay_dues_authorize') }}">
+                        <div class="form-group">
+                            {% for period in past_payable_periods %}
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="month" value="{{ period.period_string }}"
+                                               checked="checked"/> {{ period.period_string }}
+                                        <span class="label label-warning">Past Due</span>
+                                    </label>
+                                </div>
+                            {% endfor %}
 
-            <p>
-                <input type="submit" value="Pay Dues with WePay">
-            </p>
-        </form>
+                            {% for period in future_payable_periods %}
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="month" value="{{ period.period_string }}">
+                                        {{ period.period_string }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="pay_fee" value="true" checked="true"/>
+                                Add the service fee to my total (saves {{ config['DISMEMBER_ORG_NAME'] }} money)
+                            </label>
+                        </div>
+                        <button class="btn btn-primary" type="submit">Pay Dues with WePay</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {# Recent payments #}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Recent Payments</h4>
+            </div>
+            <div class="panel-body">
+                    {{ user.dues_payment_history(recent_paid_periods) }}
+            </div>
+        </div>
 
     {% endif %}
-
 {% endblock %}
