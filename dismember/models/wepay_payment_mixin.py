@@ -5,6 +5,10 @@ class WePayPaymentMixin(object):
     """Implements methods required by Payment that are common to all types of WePay payments."""
 
     @property
+    def charged_amount(self):
+        return self.wepay_checkout.amount
+
+    @property
     def paid_amount(self):
         amount = self.wepay_checkout.amount or 0
         refunded_gross = self.wepay_checkout.amount_refunded or 0

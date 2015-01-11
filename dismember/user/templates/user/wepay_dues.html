@@ -29,7 +29,7 @@
             <ul>
                 {% for dues_payment_period in recent_paid_periods %}
                     <li>{{ dues_payment_period }}
-                        ({{ dues_payment_period.dues_payment.payment_method }}
+                        (with {{ dues_payment_period.dues_payment.payment_method }}
                         {{ dues_payment_period.dues_payment.payer_reference }},
                         {{ dues_payment_period.dues_payment.paid_amount_str }})
                     </li>

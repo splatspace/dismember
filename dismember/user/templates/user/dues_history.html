@@ -1,0 +1,63 @@
+{% extends "_common/base.html" %}
+
+{% import 'bootstrap/wtf.html' as bootstrap %}
+
+{% block title %}
+    Dues - {{ config['DISMEMBER_SITE_NAME'] }}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Dues Payments History</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            {% if not paid_periods %}
+                <p>
+                    It doesn't look like you've made any dues payments yet. You'll need to make one soon to keep your
+                    membership active.
+                </p>
+            {% else %}
+                <table class="table table-striped">
+                    <tr>
+                        <th>Period</th>
+                        <th>Payment Date</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Reference</th>
+                    </tr>
+                    {% for dues_payment_period in paid_periods %}
+                        <tr class="{{ 'danger' if dues_payment_period.dues_payment.void }}
+                                   {{ 'warning' if dues_payment_period.dues_payment.exception }}">
+                            <td>{{ dues_payment_period }}</td>
+                            <td>{{ dues_payment_period.dues_payment.created_at|date }}</td>
+                            <td>
+                                {{ dues_payment_period.dues_payment.charged_amount }}
+                                <ul class="list-unstyled">
+                                    {# Display the (manual) void status first, then refund cases #}
+                                    {% if dues_payment_period.dues_payment.void %}
+                                        <li>
+                                            <span class="glyphicon glyphicon-warning-sign"></span>
+                                            <span class="small">This payment was voided</span>
+                                        </li>
+                                    {% elif dues_payment_period.dues_payment.exception %}
+                                        <li>
+                                            <span class="glyphicon glyphicon-warning-sign"></span>
+                                            <span class="small">{{ dues_payment_period.dues_payment.exception }}
+                                                yields net {{ dues_payment_period.dues_payment.paid_amount }}</span>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </td>
+                            <td>{{ dues_payment_period.dues_payment.payment_method }}</td>
+                            <td>{{ dues_payment_period.dues_payment.payer_reference }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

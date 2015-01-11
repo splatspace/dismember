@@ -25,8 +25,11 @@
                         </li>
                     {% endif %}
 
-                    <li class="active"><a href="#">Thing 1 <span class="sr-only">(current)</span></a></li>
-                    <li><a href="#">Thing 2</a></li>
+                    {% if current_user.is_authenticated() and current_user.member_type %}
+                        <li>
+                            <a href="{{ url_for('user.dues_history') }}">Dues History</a>
+                        </li>
+                    {% endif %}
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">

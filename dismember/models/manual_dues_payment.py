@@ -27,8 +27,12 @@ class ManualDuesPayment(DuesPayment):
     }
 
     @property
-    def paid_amount(self):
+    def charged_amount(self):
         return self.amount
+
+    @property
+    def paid_amount(self):
+        return 0 if self.void else self.amount
 
     @property
     def paid_currency(self):

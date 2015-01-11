@@ -24,6 +24,11 @@ class Payment(db.Model):
     }
 
     @property
+    def charged_amount(self):
+        """Get the amount that was originally charged.  This value will not change even if the payment is refunded."""
+        return None
+
+    @property
     def paid_amount(self):
         """Get the amount that was paid.  This value may change over time (charge backs to credit cards, etc.)"""
         return None
