@@ -37,7 +37,7 @@
                             <td>
                                 {{ dues_payment_period.dues_payment.charged_amount }}
                                 <ul class="list-unstyled">
-                                    {# Display the (manual) void status first, then refund cases #}
+                                    {# Give (manual) voids precedence over exceptions (which could be transient) #}
                                     {% if dues_payment_period.dues_payment.void %}
                                         <li>
                                             <span class="glyphicon glyphicon-warning-sign"></span>
