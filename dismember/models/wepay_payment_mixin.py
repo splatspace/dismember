@@ -5,6 +5,11 @@ class WePayPaymentMixin(object):
     """Implements methods required by Payment that are common to all types of WePay payments."""
 
     @property
+    def visible(self):
+        # The state will be None if the user never finished the WePay web flow
+        return self.wepay_checkout.state is not None
+
+    @property
     def charged_amount(self):
         return self.wepay_checkout.amount
 

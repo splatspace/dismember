@@ -27,6 +27,10 @@ class ManualDuesPayment(DuesPayment):
     }
 
     @property
+    def visible(self):
+        return True
+
+    @property
     def charged_amount(self):
         return self.amount
 

@@ -24,34 +24,34 @@ class Payment(db.Model):
     }
 
     @property
+    def visible(self):
+        """Get whether this payment should be visible to users."""
+        raise NotImplementedError()
+
+    @property
     def charged_amount(self):
         """Get the amount that was originally charged.  This value will not change even if the payment is refunded."""
-        return None
+        raise NotImplementedError()
 
     @property
     def paid_amount(self):
         """Get the amount that was paid.  This value may change over time (charge backs to credit cards, etc.)"""
-        return None
+        raise NotImplementedError()
 
     @property
     def paid_currency(self):
         """Get the currency abbreviation used for the payment."""
-        return None
-
-    @property
-    def paid_amount_str(self):
-        """Get a formatted string describing the paid amount in the paid currency."""
-        return None
+        raise NotImplementedError()
 
     @property
     def payment_method(self):
         """Get a user-friendly string that describes the payment method (cash, check, WePay, etc.)"""
-        return None
+        raise NotImplementedError()
 
     @property
     def payer_reference(self):
         """Get an ID that the payer can correlate with their method of payment (check number, CC transaction, cash receipt number, etc.)"""
-        return None
+        raise NotImplementedError()
 
     @property
     def exception(self):
@@ -60,4 +60,4 @@ class Payment(db.Model):
 
         :return: a string describing the exception or None if there is no exception
         """
-        return None
+        raise NotImplementedError()

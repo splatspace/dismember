@@ -10,7 +10,7 @@ class DuesService(object):
     Provides high-level methods for managing member dues.
     """
 
-    def get_dues_payments(self, user, include_void=False, include_exceptional=False):
+    def get_dues_payments(self, user, include_void=False, include_exceptional=False, include_invisible=False):
         """
         Get all dues payments made by a user.
 
@@ -27,6 +27,9 @@ class DuesService(object):
 
         if not include_exceptional:
             dues_payments = filter(lambda p: p.exception is None, dues_payments)
+
+        if not include_invisible:
+            dues_payments = filter(lambda p: p.visible, dues_payments)
 
         return dues_payments
 
