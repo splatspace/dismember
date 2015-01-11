@@ -9,7 +9,7 @@ from wtforms_components import StringField, Unique, ModelForm
 class RoleForm(DismemberModelForm):
     name = StringField(label='Name', validators=[
         DataRequired(),
-        Unique(Role.name, message='That role name is already in use')
+        Unique(Role.name, message='That member type name is already in use')
     ])
 
     description = StringField(label='Description', validators=[
