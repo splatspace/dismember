@@ -34,11 +34,14 @@ class DateTimeWithTimeZoneField(DateTimeField):
     def process_formdata(self, valuelist):
         if valuelist:
             date_str = ' '.join(valuelist)
-            try:
-                self.data = parse(date_str)
-                # If no time zone was parsed use the default
-                if self.data.tzinfo is None:
-                    self.data = self._tzinfo.localize(self.data)
-            except ValueError:
+            if date_str.strip() == '':
                 self.data = None
-                raise ValueError(self.gettext('Not a valid datetime value'))
+            else:
+                try:
+                    self.data = parse(date_str)
+                    # If no time zone was parsed use the default
+                    if self.data.tzinfo is None:
+                        self.data = self._tzinfo.localize(self.data)
+                except (ValueError, TypeError):
+                    self.data = None
+                    raise ValueError(self.gettext('Not a valid datetime value'))

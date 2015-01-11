@@ -1,12 +1,15 @@
 from dismember.admin import admin_bp
 from dismember.admin.crud_view import configure_crud_view
+from dismember.models.member_type import MemberType
 from dismember.models.role import Role
 from dismember.models.user import User
+from dismember.service import app
+from dismember.wtforms_components.fields import DateTimeWithTimeZoneField
 from dismember.wtforms_components.forms import DismemberModelForm
 from wtforms import PasswordField
-from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField
+from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 from wtforms.validators import DataRequired, EqualTo, Optional
-from wtforms_components import EmailField, Unique, StringField, ModelForm
+from wtforms_components import EmailField, Unique, StringField
 
 password_field = lambda required=False: PasswordField(validators=[
     DataRequired() if required else Optional(),
@@ -24,6 +27,23 @@ class EditUserForm(DismemberModelForm):
     full_name = StringField(label='Full Name', validators=[
         DataRequired(),
     ])
+
+    address = StringField(label='Address', validators=[
+        DataRequired(),
+    ])
+
+    phone = StringField(label='Phone', validators=[
+        DataRequired(),
+    ])
+
+    emergency_contact = StringField(label='Emergency Contact', validators=[
+        DataRequired(),
+    ])
+
+    member_signup = DateTimeWithTimeZoneField(label='Membership Approval Date',
+                                              tzinfo=app.config['DISMEMBER_UI_TIMEZONE'])
+
+    member_type = QuerySelectField(label='Member Type', query_factory=lambda: MemberType.query.all(), allow_blank=True)
 
     roles = QuerySelectMultipleField(label='Roles', query_factory=lambda: Role.query.all(), allow_blank=True)
 
