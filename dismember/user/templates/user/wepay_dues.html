@@ -1,5 +1,6 @@
 {% extends "_common/base.html" %}
 
+{% import 'common/macros.html' as common %}
 {% import 'user/_macros.html' as user %}
 
 {% block title %}
@@ -42,7 +43,7 @@
         {% endif %}
 
         {# Period selection #}
-        {% call user.centered_form_panel_row('Choose Periods', panel_class='panel-primary') %}
+        {% call common.centered_form_panel_row('Choose Periods', panel_class='panel-primary') %}
             <form class="form" name="dues" method="GET" action="{{ url_for('.wepay_dues_authorize') }}">
                 <div class="form-group">
                     {% for period in past_payable_periods %}

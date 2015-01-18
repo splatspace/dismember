@@ -1,24 +1,22 @@
-{% extends "security/index.html" %}
+{% extends "_common/base.html" %}
 
+{% import "_common/macros.html" as common %}
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
     Login - {{ config['DISMEMBER_SITE_NAME'] }}
 {% endblock %}
 
-{% block form_content %}
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h4>Login</h4>
-        </div>
-        <div class="panel-body">
-            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
-                {{ wtf.quick_form(login_user_form, action=url_for('security.login'), method='post',
+{% block content %}
+    {% call common.centered_form_panel_row('Login', panel_class='panel-primary') %}
+        <div>
+            {{ wtf.quick_form(login_user_form, action=url_for('security.login'), method='post',
                         button_map=dict(submit='primary')) }}
-            </div>
         </div>
-        <div class="panel-body">
+        <div style="margin-top: 30px">
             <a href="{{ url_for('security.forgot_password') }}">Forgot password</a>
         </div>
-    </div>
+    {% endcall %}
+
 {% endblock %}
+
