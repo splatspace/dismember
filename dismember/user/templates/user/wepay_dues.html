@@ -42,42 +42,37 @@
         {% endif %}
 
         {# Period selection #}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h4>Choose Periods</h4>
-            </div>
-            <div class="panel-body">
-                <form class="form" name="dues" method="GET" action="{{ url_for('.wepay_dues_authorize') }}">
-                    <div class="form-group">
-                        {% for period in past_payable_periods %}
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="month" value="{{ period.period_string }}"
-                                           checked="checked"/> {{ period.period_string }}
-                                    <span class="label label-warning">Past Due</span>
-                                </label>
-                            </div>
-                        {% endfor %}
+        {% call user.centered_form_panel_row('Choose Periods', panel_class='panel-primary') %}
+            <form class="form" name="dues" method="GET" action="{{ url_for('.wepay_dues_authorize') }}">
+                <div class="form-group">
+                    {% for period in past_payable_periods %}
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="month" value="{{ period.period_string }}"
+                                       checked="checked"/> {{ period.period_string }}
+                                <span class="label label-warning">Past Due</span>
+                            </label>
+                        </div>
+                    {% endfor %}
 
-                        {% for period in future_payable_periods %}
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="month" value="{{ period.period_string }}"/>
-                                    {{ period.period_string }}
-                                </label>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="pay_fee" value="true" checked="true"/>
-                            Add the service fee to my total (saves {{ config['DISMEMBER_ORG_NAME'] }} money)
-                        </label>
-                    </div>
-                    <button class="btn btn-primary" type="submit">Pay Dues with WePay</button>
-                </form>
-            </div>
-        </div>
+                    {% for period in future_payable_periods %}
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="month" value="{{ period.period_string }}"/>
+                                {{ period.period_string }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="pay_fee" value="true" checked="true"/>
+                        Add the service fee to my total (saves {{ config['DISMEMBER_ORG_NAME'] }} money)
+                    </label>
+                </div>
+                <button class="btn btn-primary" type="submit">Pay Dues with WePay</button>
+            </form>
+        {% endcall %}
 
         {# Recent payments #}
         <div class="panel panel-default">

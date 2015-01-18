@@ -1,3 +1,20 @@
+{% macro centered_form_panel_row(panel_heading, panel_class='') %}
+    <div class="row form-row">
+        <div class="col-xs-0 col-sm-2 col-md-3 col-lg-4"></div>
+        <div class="col-xs-12 col-sm-8 col-md-6 col-lg-4">
+            <div class="panel panel-default {{ panel_class }}">
+                <div class="panel-heading">
+                    <h4>{{ panel_heading }}</h4>
+                </div>
+                <div class="panel-body">
+                    {{ caller() }}
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-0 col-sm-2 col-md-3 col-lg-4"></div>
+    </div>
+{% endmacro %}
+
 {% macro dues_payment_history(paid_periods) %}
     <table class="table table-striped">
         <tr>

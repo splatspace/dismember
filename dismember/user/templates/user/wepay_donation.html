@@ -33,30 +33,23 @@
         </div>
     {% endif %}
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h4>Amount</h4>
-        </div>
-        <div class="panel-body">
-            <form class="form" name="dues" method="GET" action="{{ url_for('.wepay_donation_authorize') }}">
-                <div class="input-group">
-                    <span class="input-group-addon">$</span>
-                    <input type="text" class="form-control" name="amount" value="50.00"/>
-                </div>
+    {% call user.centered_form_panel_row('Amount', panel_class='panel-primary') %}
+        <form class="form" name="dues" method="GET" action="{{ url_for('.wepay_donation_authorize') }}">
+            <div class="input-group">
+                <span class="input-group-addon">$</span>
+                <input type="text" class="form-control" name="amount" value="50.00"/>
+            </div>
 
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" name="pay_fee" value="true" checked="true"/>
-                        Add the service fee to my total (saves {{ config['DISMEMBER_ORG_NAME'] }} money)
-                    </label>
-                </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="pay_fee" value="true" checked="true"/>
+                    Add the service fee to my total (saves {{ config['DISMEMBER_ORG_NAME'] }} money)
+                </label>
+            </div>
 
-                <button class="btn btn-primary" type="submit">Donate with WePay</button>
-
-            </form>
-        </div>
-    </div>
-
+            <button class="btn btn-primary" type="submit">Donate with WePay</button>
+        </form>
+    {% endcall %}
 
     {# Recent payments #}
     <div class="panel panel-default">
@@ -67,6 +60,7 @@
             {{ user.donation_payment_history(recent_donation_payments) }}
         </div>
     </div>
+    <div class="col-xs-0 col-sm-2"></div>
 
 
 {% endblock %}

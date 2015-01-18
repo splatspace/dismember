@@ -18,3 +18,8 @@ body {
 .menu-icon {
     padding-right: 10px;
 }
+
+.form-row {
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
