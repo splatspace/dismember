@@ -6,7 +6,7 @@ from dismember.wtforms_components.forms import DismemberModelForm
 from flask import render_template, request, flash, redirect, url_for
 
 from flask.ext.login import login_required, current_user
-from wtforms import PasswordField, StringField, SubmitField
+from wtforms import PasswordField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Optional, EqualTo
 from wtforms_components import EmailField, Unique, read_only
 
@@ -36,7 +36,7 @@ class MyDetailsForm(DismemberModelForm):
         DataRequired(),
     ], description='We will never share your phone number with other organizations')
 
-    emergency_contact = StringField(label='Emergency Contact', validators=[
+    emergency_contact = TextAreaField(label='Emergency Contact', validators=[
         DataRequired(),
     ], description='Please provide the name and phone number of a person to contact in case of an emergency')
 
