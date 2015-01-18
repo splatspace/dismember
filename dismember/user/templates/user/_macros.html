@@ -48,20 +48,22 @@
                 <td>{{ p.created_at|date }}</td>
                 <td>
                     {{ p.charged_amount|currency(p.paid_currency) }}
-                    <ul class="list-unstyled">
-                        {# Give (manual) voids precedence over exceptions (which could be transient) #}
-                        {% if p.void %}
-                            <li>
-                                <span class="glyphicon glyphicon-warning-sign"></span>
-                                <span class="small">This payment was voided</span>
-                            </li>
-                        {% elif p.exception %}
-                            <li>
-                                <span class="glyphicon glyphicon-warning-sign"></span>
-                                <span class="small">{{ p.exception }}</span>
-                            </li>
-                        {% endif %}
-                    </ul>
+                    {% if p.void or p.exception %}
+                        <ul class="list-unstyled" style="margin-bottom: 0px;">
+                            {# Give (manual) voids precedence over exceptions (which could be transient) #}
+                            {% if p.void %}
+                                <li>
+                                    <span class="glyphicon glyphicon-warning-sign"></span>
+                                    <span class="small">This payment was voided</span>
+                                </li>
+                            {% elif p.exception %}
+                                <li>
+                                    <span class="glyphicon glyphicon-warning-sign"></span>
+                                    <span class="small">{{ p.exception }}</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
                 </td>
                 <td>{{ p.payment_method }}</td>
                 <td>{{ p.payer_reference }}</td>

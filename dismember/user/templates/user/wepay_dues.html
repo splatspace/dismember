@@ -47,47 +47,45 @@
                 <h4>Choose Periods</h4>
             </div>
             <div class="panel-body">
-                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
-                    <form class="form" name="dues" method="GET" action="{{ url_for('.wepay_dues_authorize') }}">
-                        <div class="form-group">
-                            {% for period in past_payable_periods %}
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" name="month" value="{{ period.period_string }}"
-                                               checked="checked"/> {{ period.period_string }}
-                                        <span class="label label-warning">Past Due</span>
-                                    </label>
-                                </div>
-                            {% endfor %}
+                <form class="form" name="dues" method="GET" action="{{ url_for('.wepay_dues_authorize') }}">
+                    <div class="form-group">
+                        {% for period in past_payable_periods %}
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="month" value="{{ period.period_string }}"
+                                           checked="checked"/> {{ period.period_string }}
+                                    <span class="label label-warning">Past Due</span>
+                                </label>
+                            </div>
+                        {% endfor %}
 
-                            {% for period in future_payable_periods %}
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" name="month" value="{{ period.period_string }}">
-                                        {{ period.period_string }}
-                                    </label>
-                                </div>
-                            {% endfor %}
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="pay_fee" value="true" checked="true"/>
-                                Add the service fee to my total (saves {{ config['DISMEMBER_ORG_NAME'] }} money)
-                            </label>
-                        </div>
-                        <button class="btn btn-primary" type="submit">Pay Dues with WePay</button>
-                    </form>
-                </div>
+                        {% for period in future_payable_periods %}
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="month" value="{{ period.period_string }}"/>
+                                    {{ period.period_string }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="pay_fee" value="true" checked="true"/>
+                            Add the service fee to my total (saves {{ config['DISMEMBER_ORG_NAME'] }} money)
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Pay Dues with WePay</button>
+                </form>
             </div>
         </div>
 
         {# Recent payments #}
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h4>Recent Payments</h4>
+                <h4>Your Recent Payments</h4>
             </div>
             <div class="panel-body">
-                    {{ user.dues_payment_history(recent_paid_periods) }}
+                {{ user.dues_payment_history(recent_paid_periods) }}
             </div>
         </div>
 

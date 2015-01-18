@@ -6,7 +6,7 @@ class DonationService(object):
     Provides high-level methods for managing donations.
     """
 
-    def get_donation_payments(self, user=None, include_void=False, include_exceptional=False):
+    def get_donation_payments(self, user=None, include_void=False, include_exceptional=False, include_invisible=False):
         """
         Get all donation payments made by a user.
 
@@ -25,6 +25,9 @@ class DonationService(object):
 
         if not include_exceptional:
             donation_payments = filter(lambda p: p.exception is None, donation_payments)
+
+        if not include_invisible:
+            donation_payments = filter(lambda p: p.visible, donation_payments)
 
         return donation_payments
 

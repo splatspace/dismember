@@ -1,5 +1,7 @@
 {% extends "_common/base.html" %}
 
+{% import 'user/_macros.html' as user %}
+
 {% block title %}
     Make a Donation with WePay
 {% endblock %}
@@ -9,45 +11,62 @@
     <h3>Make a Donation with WePay</h3>
 
     {% if not current_user.member_type %}
-        <p>
-            You don't appear to be an active member of {{ config['DISMEMBER_ORG_NAME'] }}, but donations
-            are still appreciated. If you would like to start or resume your membership, please contact a
-            member of the board or directors.
-        </p>
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    You don't appear to be an active member of {{ config['DISMEMBER_ORG_NAME'] }}, but donations
+                    are still appreciated. If you would like to start or resume your membership, please contact a
+                    member of the board or directors.
+                </p>
+            </div>
+        </div>
     {% else %}
-        <p>
-            You are an active member of {{ config['DISMEMBER_ORG_NAME'] }}. We appreciate donations
-            from members, but remember that donations cannot be used to cover membership dues. Visit the
-            <a href="{{ url_for('.wepay_dues') }}">membership dues</a> page to make dues payments.
-        </p>
-        {% if recent_donation_payments %}
-            <p>
-                Your recent donations (thank you!)
-            </p>
-            <ul>
-                {% for pmt in recent_donation_payments %}
-                    <li>{{ pmt.paid_amount|currency(pmt.paid_currency) }} on {{ pmt.created_at|date }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+        {# Notice that donations are not dues #}
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    You are an active member of {{ config['DISMEMBER_ORG_NAME'] }}. We appreciate donations
+                    from members, but remember that donations cannot be used to cover membership dues. Visit the
+                    <a href="{{ url_for('.wepay_dues') }}">membership dues</a> page to make dues payments.
+                </p>
+            </div>
+        </div>
     {% endif %}
 
-    <form name="dues" method="GET" action="{{ url_for('.wepay_donation_authorize') }}">
-        <p>
-            Amount (USD):
-            <input type="text" name="amount" value="50.00"/>
-        </p>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4>Amount</h4>
+        </div>
+        <div class="panel-body">
+            <form class="form" name="dues" method="GET" action="{{ url_for('.wepay_donation_authorize') }}">
+                <div class="input-group">
+                    <span class="input-group-addon">$</span>
+                    <input type="text" class="form-control" name="amount" value="50.00"/>
+                </div>
 
-        <p>
-            <input type="checkbox" name="pay_fee" value="true" checked="true">
-            Add the service fee to my total (saves {{ config['DISMEMBER_ORG_NAME'] }} money)
-            </input>
-        </p>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="pay_fee" value="true" checked="true"/>
+                        Add the service fee to my total (saves {{ config['DISMEMBER_ORG_NAME'] }} money)
+                    </label>
+                </div>
 
-        <p>
-            <input type="submit" value="Donate with WePay">
-        </p>
-    </form>
+                <button class="btn btn-primary" type="submit">Donate with WePay</button>
+
+            </form>
+        </div>
+    </div>
+
+
+    {# Recent payments #}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4>Your Recent Donations</h4>
+        </div>
+        <div class="panel-body">
+            {{ user.donation_payment_history(recent_donation_payments) }}
+        </div>
+    </div>
 
 
 {% endblock %}
