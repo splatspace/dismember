@@ -14,3 +14,7 @@ body {
 .input-group-addon {
     background-color:#FFF;
 }
+
+.menu-icon {
+    padding-right: 10px;
+}

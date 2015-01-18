@@ -26,11 +26,8 @@
                     {% endif %}
 
                     {% if current_user.is_authenticated() and current_user.member_type %}
-                        <li>
-                            <a href="{{ url_for('user.wepay_dues') }}">
-                                Pay Membership Dues
-                            </a>
-                        </li>
+                        <li><a href="{{ url_for('user.wepay_dues') }}">Pay Dues</a></li>
+                        <li><a href="{{ url_for('user.wepay_donation') }}">Donate</a></li>
 
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
@@ -38,10 +35,10 @@
                             </a>
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="{{ url_for('user.dues_history') }}">
-                                    <span class="glyphicon glyphicon-user"></span> Membership Dues</a>
+                                    <span class="glyphicon glyphicon-user menu-icon"></span>Membership Dues</a>
                                 </li>
                                 <li><a href="{{ url_for('user.donation_history') }}">
-                                    <span class="glyphicon glyphicon-gift"></span> Donations</a>
+                                    <span class="glyphicon glyphicon-gift menu-icon"></span>Donations</a>
                                 </li>
                             </ul>
                         </li>
@@ -50,18 +47,36 @@
 
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_authenticated() %}
-                        <li>
-                            <a href="{{ url_for('user.me') }}">{{ current_user|string }}</a>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle text-right" data-toggle="dropdown" role="button"
+                               style="padding-top: 5px; padding-bottom: 5px;">
+                                <ul class="list-unstyled">
+                                    <li>{{ current_user.full_name|string }} <span class="caret"></span></li>
+                                    <li><span class="small">{{ current_user.email|string }}</span>
+                                        <span class="caret" style="visibility: hidden;"></span>
+                                    </li>
+                                </ul>
+                            </a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li>
+                                    <a href="{{ url_for('user.me') }}">
+                                        <span class="glyphicon glyphicon-list menu-icon"></span>My details</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li><a href="{{ url_for('security.logout') }}">
+                                    <span class="glyphicon glyphicon-log-out menu-icon"></span>Log out</a>
+                                </li>
+                            </ul>
                         </li>
-                        <li>
-                            <a href="{{ url_for('security.logout') }}">Log out</a>
-                        </li>
+
                     {% else %}
                         <li>
-                            <a href="{{ url_for('security.login', next=request.path) }}">Login</a>
+                            <a href="{{ url_for('security.login', next=request.path) }}"><span
+                                    class="glyphicon glyphicon-log-in menu-icon"></span>Login</a>
                         </li>
                         <li>
-                            <a href="{{ url_for('security.register') }}">Register</a>
+                            <a href="{{ url_for('security.register') }}"><span
+                                    class="glyphicon glyphicon-pencil menu-icon"></span>Register</a>
                         </li>
                     {% endif %}
                     </li>
