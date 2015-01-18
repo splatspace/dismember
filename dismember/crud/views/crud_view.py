@@ -1,7 +1,7 @@
 from functools import wraps
 
 from dismember.service import db
-from dismember.wtforms_components.fields import remove_empty_password_fields
+from dismember.wtforms_components.fields import remove_empty_password_fields, encrypt_password_fields
 from flask import render_template, request, flash, redirect, url_for
 from flask.ext.principal import Permission, RoleNeed
 from flask.ext.security.decorators import _get_unauthorized_view
@@ -10,7 +10,7 @@ from wtforms import SubmitField
 
 class CrudView(object):
     def __init__(self, blueprint, name, item_cls, new_item_form_cls, edit_item_form_cls, item_type_singular='Item',
-                 item_type_plural='Items', list_order_by=None, roles=()):
+                 item_type_plural='Items', list_order_by=None, roles=(), encrypt_password_func=None):
         """
         Creates a simple create/read/update/delete (CRUD) view for a SQLAlchemy model item.
 
@@ -36,6 +36,7 @@ class CrudView(object):
         self._list_order_by = list_order_by
         self._item_type_singular = item_type_singular
         self._item_type_plural = item_type_plural
+        self._encrypt_password_func = encrypt_password_func
 
         # Compute the endpoint names for this item so they can be used inside templates to link
         # to other CRUD endpoints and for redirection.
@@ -115,6 +116,8 @@ class CrudView(object):
             if form.validate():
                 remove_empty_password_fields(form)
                 form.populate_obj(item)
+                if self._encrypt_password_func:
+                    encrypt_password_fields(form, item, self._encrypt_password_func)
                 db.session.add(item)
                 db.session.commit()
                 flash('%s "%s" updated' % (self.item_type_singular, str(item)))
@@ -133,6 +136,8 @@ class CrudView(object):
             if form.validate():
                 remove_empty_password_fields(form)
                 form.populate_obj(item)
+                if self._encrypt_password_func:
+                    encrypt_password_fields(form, item, self._encrypt_password_func)
                 db.session.add(item)
                 db.session.commit()
                 flash('%s "%s" created' % (self.item_type_singular, str(item)))

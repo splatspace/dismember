@@ -6,6 +6,7 @@ from dismember.models.user import User
 from dismember.service import app
 from dismember.wtforms_components.fields import DateTimeWithTimeZoneField
 from dismember.wtforms_components.forms import DismemberModelForm
+from flask.ext.security.utils import encrypt_password
 from wtforms import PasswordField
 from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 from wtforms.validators import DataRequired, EqualTo, Optional
@@ -59,4 +60,4 @@ class NewUserForm(EditUserForm):
 
 
 crud_view = CrudView(admin_bp, 'users', User, NewUserForm, EditUserForm, 'User', 'Users', User.full_name,
-                     roles=['admin'])
+                     roles=['admin'], encrypt_password_func=encrypt_password)

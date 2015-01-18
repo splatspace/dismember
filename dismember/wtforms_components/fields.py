@@ -10,6 +10,13 @@ def remove_empty_password_fields(form):
             del form[field.name]
 
 
+def encrypt_password_fields(form, item, encrypt_func):
+    for field in form:
+        if field.type == 'PasswordField':
+            encrypted = encrypt_func(form[field.name].data)
+            setattr(item, field.name, encrypted)
+
+
 class DateTimeWithTimeZoneField(DateTimeField):
     """A DateTimeField that always parses timezone aware Python datetimes."""
 

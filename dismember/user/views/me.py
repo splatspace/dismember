@@ -6,8 +6,9 @@ from dismember.wtforms_components.forms import DismemberModelForm
 from flask import render_template, request, flash, redirect, url_for
 
 from flask.ext.login import login_required, current_user
-from wtforms import PasswordField, StringField, SubmitField, TextAreaField
-from wtforms.validators import DataRequired, Optional, EqualTo
+from flask.ext.security.utils import encrypt_password
+from wtforms import StringField, SubmitField, TextAreaField, PasswordField
+from wtforms.validators import DataRequired, Optional, EqualTo, Length
 from wtforms_components import EmailField, Unique, read_only
 
 
@@ -17,11 +18,12 @@ class MyDetailsForm(DismemberModelForm):
         Unique(User.email, message='That e-mail address is assigned to another user')
     ])
 
-    password_field = lambda required=False: PasswordField(validators=[
+    password = PasswordField(validators=[
         Optional(),
-        EqualTo('password_confirm', message='Passwords must match')
+        EqualTo('password_confirm', message='Passwords must match'),
+        Length(min=6),
     ])
-    password_confirm_field = lambda: PasswordField('Password (again)')
+    password_confirm = PasswordField(label='Password (again)')
 
     full_name = StringField(label='Full Name', validators=[
         DataRequired(),
@@ -63,6 +65,7 @@ def me_update():
     if form.validate():
         remove_empty_password_fields(form)
         form.populate_obj(user)
+        user.password = encrypt_password(user.password)
         db.session.add(user)
         db.session.commit()
         flash('Your user details have been updated.')

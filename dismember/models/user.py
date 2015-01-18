@@ -4,7 +4,6 @@ from dismember.models.member_type import MemberType
 from dismember.service import db
 from flask.ext.security import UserMixin
 from dismember.models.role import Role
-from flask.ext.security.utils import encrypt_password
 from pytz import utc
 from sqlalchemy import Column, Integer, Text, Boolean, DateTime, Table
 from sqlalchemy.orm import relationship
@@ -26,7 +25,7 @@ class User(db.Model, UserMixin):
     # Flask-Security required
     id = Column(Integer, primary_key=True)
     email = Column(Text, unique=True, index=True, nullable=False)
-    _password = Column(Text, name='password', nullable=False)
+    password = Column(Text, nullable=False)
     active = Column(Boolean, nullable=False, default=True)
     roles = relationship(Role, secondary=users_roles)
 
@@ -62,11 +61,3 @@ class User(db.Model, UserMixin):
             return '%s (%s)' % (self.email, self.full_name)
         else:
             return self.email
-
-    @property
-    def password(self):
-        return self._password
-
-    @password.setter
-    def password(self, value):
-        self._password = encrypt_password(value)
