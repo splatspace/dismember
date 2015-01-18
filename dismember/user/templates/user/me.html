@@ -1,6 +1,6 @@
 {% extends "_common/base.html" %}
 
-{% import 'bootstrap/wtf.html' as bootstrap %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
 {% block title %}
     My User - {{ config['DISMEMBER_SITE_NAME'] }}
@@ -41,7 +41,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
-                        {{ bootstrap.quick_form(form, action=url_for('.me_update'), method='post',
+                        {{ wtf.quick_form(form, action=url_for('.me_update'), method='post',
                     button_map=dict(update='primary')) }}
                     </div>
                 </div>
