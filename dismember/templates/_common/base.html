@@ -72,12 +72,12 @@
                         </li>
                     {% else %}
                         <li>
-                            <a href="{{ url_for('security.login', next=request.path) }}"><span
-                                    class="glyphicon glyphicon-log-in menu-icon"></span>Login</a>
-                        </li>
-                        <li>
                             <a href="{{ url_for('security.register') }}"><span
                                     class="glyphicon glyphicon-pencil menu-icon"></span>Register</a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('security.login', next=request.path) }}"><span
+                                    class="glyphicon glyphicon-log-in menu-icon"></span>Login</a>
                         </li>
                     {% endif %}
                     </li>
