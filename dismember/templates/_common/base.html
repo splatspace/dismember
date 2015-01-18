@@ -19,12 +19,6 @@
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    {% if current_user.has_role('admin') %}
-                        <li>
-                            <a href="{{ url_for('admin.index') }}">Administration</a>
-                        </li>
-                    {% endif %}
-
                     {% if current_user.is_authenticated() and current_user.member_type %}
                         <li><a href="{{ url_for('user.wepay_dues') }}">Pay Dues</a></li>
                         <li><a href="{{ url_for('user.wepay_donation') }}">Donate</a></li>
@@ -43,6 +37,12 @@
                             </ul>
                         </li>
                     {% endif %}
+                    {% if current_user.has_role('admin') %}
+                        <li class="bg-success">
+                            <a href="{{ url_for('admin.index') }}"><span
+                                class="glyphicon glyphicon-flash menu-icon"></span>Administration</a>
+                        </li>
+                    {% endif %}
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
@@ -52,7 +52,7 @@
                                style="padding-top: 5px; padding-bottom: 5px;">
                                 <ul class="list-unstyled">
                                     <li>{{ current_user.full_name|string }} <span class="caret"></span></li>
-                                    <li><span class="small">{{ current_user.email|string }}</span>
+                                    <li style="line-height: 1em;"><span class="small">{{ current_user.email|string }}</span>
                                         <span class="caret" style="visibility: hidden;"></span>
                                     </li>
                                 </ul>
