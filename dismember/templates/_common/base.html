@@ -38,10 +38,6 @@
                         </li>
                     {% endif %}
                     {% if current_user.has_role('admin') %}
-                        {#                        <li class="bg-success">#}
-                        {#                            <a href="{{ url_for('admin.index') }}"><span#}
-                        {#                                    class="glyphicon glyphicon-flash menu-icon"></span>Administration</a>#}
-                        {#                        </li>#}
                         <li class="dropdown bg-success">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
                                 <span class="glyphicon glyphicon-flash menu-icon"></span>
