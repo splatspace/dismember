@@ -1,3 +1,4 @@
+from dismember.admin import admin_views
 from dismember.currency import format_currency
 from dismember.service import app
 from flask import get_flashed_messages
@@ -21,7 +22,8 @@ def inject_template_helpers():
     """Inject some helper functions for template rendering."""
     return dict(format_currency=format_currency,
                 iso_date=iso_date,
-                get_flashed_messages_except=get_flashed_messages_except)
+                get_flashed_messages_except=get_flashed_messages_except,
+                admin_views=admin_views)
 
 
 def date_format(value, fmt='%Y-%m-%d'):

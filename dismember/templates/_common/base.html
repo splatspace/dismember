@@ -38,9 +38,22 @@
                         </li>
                     {% endif %}
                     {% if current_user.has_role('admin') %}
-                        <li class="bg-success">
-                            <a href="{{ url_for('admin.index') }}"><span
-                                    class="glyphicon glyphicon-flash menu-icon"></span>Administration</a>
+                        {#                        <li class="bg-success">#}
+                        {#                            <a href="{{ url_for('admin.index') }}"><span#}
+                        {#                                    class="glyphicon glyphicon-flash menu-icon"></span>Administration</a>#}
+                        {#                        </li>#}
+                        <li class="dropdown bg-success">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+                                <span class="glyphicon glyphicon-flash menu-icon"></span>
+                                Administration <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" role="menu">
+                                {% for v, icon in admin_views %}
+                                    <li><a href="{{ url_for(v.endpoints['list_endpoint']) }}">
+                                        <span class="glyphicon {{ icon }} menu-icon"></span>{{ v.item_type_plural }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </li>
                     {% endif %}
                 </ul>
