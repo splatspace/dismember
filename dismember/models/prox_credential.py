@@ -17,5 +17,11 @@ class ProxCredential(Credential):
     }
 
     def __str__(self):
-        return 'HID Prox %d' % self.number
+        return '%d' % self.number
 
+    @property
+    def details(self):
+        ret = super(ProxCredential, self).details
+        if not self.enabled:
+            ret.append('disabled')
+        return ret

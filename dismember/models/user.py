@@ -1,6 +1,7 @@
 import datetime
 
 from dismember.models.member_type import MemberType
+from dismember.models.model_mixins import DetailsMixin
 from dismember.service import db
 from flask.ext.security import UserMixin
 from dismember.models.role import Role
@@ -18,7 +19,7 @@ users_roles = Table(
 )
 
 
-class User(db.Model, UserMixin):
+class User(db.Model, UserMixin, DetailsMixin):
     """A human or other being authorized to use this application."""
     __tablename__ = 'users'
 
@@ -58,6 +59,13 @@ class User(db.Model, UserMixin):
 
     def __str__(self):
         if self.full_name:
-            return '%s (%s)' % (self.full_name, self.email)
+            return self.full_name
         else:
             return self.email
+
+    @property
+    def details(self):
+        ret = [self.email]
+        if not self.active:
+            ret.append('account disabled')
+        return ret

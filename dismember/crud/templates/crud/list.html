@@ -7,29 +7,30 @@
 {% block content %}
     <div class="row">
         <div class="col-md-12">
-            <h1>{{ item_type_plural }}</h1>
+            <h1>{{ item_type_plural }}
+                <div class="btn-group">
+                    <a class="btn btn-default" href="{{ url_for(new_endpoint) }}">New {{ item_type_singular }}</a>
+                </div>
+            </h1>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-12">
-            <div class="btn-group">
-                <a class="btn btn-default" href="{{ url_for(new_endpoint) }}">New {{ item_type_singular }}</a>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="list-group">
+                {% for item in items %}
+                    <a href="{{ url_for(view_endpoint, item_id=item.id) }}" class="list-group-item">
+                        <h5 class="list-group-item-heading">{{ item }}</h5>
+                        {% if item.details %}
+                            <ul class="list-group-item-text list-unstyled small">
+                                {% for detail in item.details %}
+                                    <li>{{ detail }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </a>
+                {% endfor %}
             </div>
         </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xs-0 col-sm-1 col-md-1 col-lg-1"></div>
-        <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
-            <ul class="list-group">
-                {% for item in items %}
-                    <li class="list-group-item">
-                        <a href="{{ url_for(view_endpoint, item_id=item.id) }}">{{ item }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="col-xs-0 col-sm-1 col-md-1 col-lg-1"></div>
     </div>
 {% endblock %}

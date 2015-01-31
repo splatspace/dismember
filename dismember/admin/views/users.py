@@ -7,7 +7,8 @@ from dismember.service import app
 from dismember.wtforms_components.fields import DateTimeWithTimeZoneField
 from dismember.wtforms_components.forms import DismemberModelForm
 from flask.ext.security.utils import encrypt_password
-from wtforms import PasswordField
+from sqlalchemy import func
+from wtforms import PasswordField, BooleanField
 from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 from wtforms.validators import DataRequired, EqualTo, Optional
 from wtforms_components import EmailField, Unique, StringField
@@ -41,6 +42,8 @@ class EditUserForm(DismemberModelForm):
         DataRequired(),
     ])
 
+    active = BooleanField(label='Account enabled', default=True)
+
     member_signup = DateTimeWithTimeZoneField(label='Membership Approval Date',
                                               tzinfo=app.config['DISMEMBER_UI_TIMEZONE'])
 
@@ -59,5 +62,5 @@ class NewUserForm(EditUserForm):
     password_confirm = password_confirm_field()
 
 
-crud_view = CrudView(admin_bp, 'users', User, NewUserForm, EditUserForm, 'User', 'Users', User.full_name,
+crud_view = CrudView(admin_bp, 'users', User, NewUserForm, EditUserForm, 'User', 'Users', func.lower(User.full_name),
                      roles=['admin'], encrypt_password_func=encrypt_password)

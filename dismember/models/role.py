@@ -1,9 +1,10 @@
+from dismember.models.model_mixins import DetailsMixin
 from dismember.service import db
 from flask.ext.security import RoleMixin
 from sqlalchemy import Column, Integer, Text
 
 
-class Role(db.Model, RoleMixin):
+class Role(db.Model, RoleMixin, DetailsMixin):
     __tablename__ = 'roles'
 
     # Flask-Security required
@@ -13,3 +14,9 @@ class Role(db.Model, RoleMixin):
 
     def __str__(self):
         return self.name
+
+
+    @property
+    def details(self):
+        return [self.description]
+

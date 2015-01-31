@@ -1,9 +1,10 @@
+from dismember.models.model_mixins import DetailsMixin
 from dismember.service import db
 from sqlalchemy import Column, Integer, Text
 from sqlalchemy.sql.schema import ForeignKey
 
 
-class Credential(db.Model):
+class Credential(db.Model, DetailsMixin):
     """A proof of identity or access for a user."""
     __tablename__ = 'credentials'
 
@@ -21,3 +22,9 @@ class Credential(db.Model):
 
     def __str__(self):
         return self.type
+
+    @property
+    def details(self):
+        return [str(self.user)]
+
+

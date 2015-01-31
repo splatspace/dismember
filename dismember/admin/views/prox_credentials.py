@@ -3,6 +3,7 @@ from dismember.crud.views.crud_view import CrudView
 from dismember.models.prox_credential import ProxCredential
 from dismember.models.user import User
 from dismember.wtforms_components.forms import DismemberModelForm
+from sqlalchemy import func
 from wtforms import BooleanField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired

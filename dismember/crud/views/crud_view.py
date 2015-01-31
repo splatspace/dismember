@@ -90,7 +90,7 @@ class CrudView(object):
         def list_items():
             """Renders a list of all items."""
             q = self._item_cls.query
-            if self._list_order_by:
+            if self._list_order_by is not None:
                 q = q.order_by(self._list_order_by)
             items = q.all()
             return render_template('crud/list.html',
@@ -120,8 +120,9 @@ class CrudView(object):
                     encrypt_password_fields(form, item, self._encrypt_password_func)
                 db.session.add(item)
                 db.session.commit()
-                flash('%s "%s" updated' % (self.item_type_singular, str(item)))
+                flash('%s "%s" updated.' % (self.item_type_singular, str(item)))
                 return redirect(url_for(self._endpoints['view_endpoint'], item_id=item_id))
+            flash('The item could not be updated because one or more entries is invalid.', category='error')
             return render_template('crud/view.html',
                                    form=form,
                                    item=item,
@@ -140,8 +141,9 @@ class CrudView(object):
                     encrypt_password_fields(form, item, self._encrypt_password_func)
                 db.session.add(item)
                 db.session.commit()
-                flash('%s "%s" created' % (self.item_type_singular, str(item)))
+                flash('%s "%s" created.' % (self.item_type_singular, str(item)))
                 return redirect(url_for(self._endpoints['list_endpoint']))
+            flash('The item could not be created because one or more entries is invalid.', category='error')
             return render_template('crud/new.html',
                                    form=form,
                                    item=None,
@@ -163,7 +165,7 @@ class CrudView(object):
             item_str = str(item)
             db.session.delete(item)
             db.session.commit()
-            flash('%s "%s" deleted' % (self.item_type_singular, item_str))
+            flash('%s "%s" deleted.' % (self.item_type_singular, item_str))
             return 'ok', 200
 
         blueprint.add_url_rule('/%s' % name, self._short_endpoint('list_endpoint'),
