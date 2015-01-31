@@ -1,6 +1,7 @@
 {% extends "_common/base.html" %}
 
 {% import 'bootstrap/wtf.html' as wtf %}
+{% import 'crud/macros.html' as crud %}
 
 {% block title %}
     {{ item_name }} - {{ config['DISMEMBER_SITE_NAME'] }}
@@ -25,13 +26,13 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-md-12">
-            <h3>{{ item_name }}</h3>
-        </div>
-    </div>
 
-    {{ wtf.quick_form(form, action=url_for(update_endpoint, item_id=item.id), method='post',
-        button_map=dict(btn_save='primary', btn_delete='danger')) }}
+    {% call crud.centered_form_panel_row(item_name, subheading=item_type_singular, panel_class='panel-primary') %}
+        <div>
+            {{ wtf.quick_form(form, action=url_for(update_endpoint, item_id=item.id), method='post',
+                button_map=dict(btn_save='primary', btn_delete='danger')) }}
+        </div>
+    {% endcall %}
+
 
 {% endblock %}

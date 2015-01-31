@@ -1,6 +1,6 @@
 {% extends "_common/base.html" %}
 
-{% import "_common/macros.html" as common %}
+{% import 'crud/macros.html' as crud %}
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-    {% call common.centered_form_panel_row('Login', panel_class='panel-primary') %}
+    {% call crud.centered_form_panel_row('Login', panel_class='panel-primary') %}
         <div>
             {{ wtf.quick_form(login_user_form, action=url_for('security.login'), method='post',
                         button_map=dict(submit='primary')) }}

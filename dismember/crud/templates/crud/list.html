@@ -14,21 +14,22 @@
     <div class="row">
         <div class="col-md-12">
             <div class="btn-group">
-                <a class="btn btn-default" href="{{ url_for(new_endpoint) }}">Create</a>
+                <a class="btn btn-default" href="{{ url_for(new_endpoint) }}">New {{ item_type_singular }}</a>
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-12">
-            <ul class="list_group">
+        <div class="col-xs-0 col-sm-1 col-md-1 col-lg-1"></div>
+        <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+            <ul class="list-group">
                 {% for item in items %}
                     <li class="list-group-item">
-                        <a href="{{ url_for(view_endpoint, item_id=item.id) }}"><span
-                                class="glyphicon glyphicon-edit"></span> {{ item }}</a>
+                        <a href="{{ url_for(view_endpoint, item_id=item.id) }}">{{ item }}</a>
                     </li>
                 {% endfor %}
             </ul>
         </div>
+        <div class="col-xs-0 col-sm-1 col-md-1 col-lg-1"></div>
     </div>
 {% endblock %}

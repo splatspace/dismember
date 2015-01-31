@@ -58,6 +58,6 @@ class User(db.Model, UserMixin):
 
     def __str__(self):
         if self.full_name:
-            return '%s (%s)' % (self.email, self.full_name)
+            return '%s (%s)' % (self.full_name, self.email)
         else:
             return self.email

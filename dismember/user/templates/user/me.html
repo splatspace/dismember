@@ -1,7 +1,7 @@
 {% extends "_common/base.html" %}
 
 {% import 'bootstrap/wtf.html' as wtf %}
-{% import '_common/macros.html' as common %}
+{% import 'crud/macros.html' as crud %}
 {% import 'user/_macros.html' as user %}
 
 {% block title %}
@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    {% call common.centered_form_panel_row('My Details', panel_class='panel-primary') %}
+    {% call crud.centered_form_panel_row('My Details', panel_class='panel-primary') %}
         {{ wtf.quick_form(form, action=url_for('.me_update'), method='post',
                     button_map=dict(update='primary')) }}
     {% endcall %}
