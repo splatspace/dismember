@@ -59,12 +59,12 @@ make them (cash, check, WePay), different currencies (US dollars, Bitcoin), and
 all kinds of states they may be in (check bounced, refunded, partially refunded,
 charged back).  Here's a graph of inheritance of the payment classes in Dismember:
 
-- Payment
-  - DonationPayment
-    - WePayDonationPayment
-  - DuesPayment
-    - WePayDuesPayment
-    - ManualDuesPayment
+-  Payment
+    -  DonationPayment
+        -  WePayDonationPayment
+    -  DuesPayment
+        -  WePayDuesPayment
+        -  ManualDuesPayment
 
 The top-level Payment class is essentially a virtual class that defines a few things
 all payments must be, but knows nothing about what kind of thing was paid for or
