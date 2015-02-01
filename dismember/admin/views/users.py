@@ -63,4 +63,5 @@ class NewUserForm(EditUserForm):
 
 
 crud_view = CrudView(admin_bp, 'users', User, NewUserForm, EditUserForm, 'User', 'Users', func.lower(User.full_name),
-                     roles=['admin'], encrypt_password_func=encrypt_password)
+                     roles=['admin'], encrypt_password_func=encrypt_password, searchable_columns=[User.full_name,
+                                                                                                  User.email])

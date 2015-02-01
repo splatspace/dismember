@@ -29,4 +29,4 @@ class MemberTypeForm(DismemberModelForm):
 
 
 crud_view = CrudView(admin_bp, 'member_types', MemberType, MemberTypeForm, MemberTypeForm, 'Member Type',
-                     'Member Types', MemberType.name, roles=['admin'])
+                     'Member Types', MemberType.name, roles=['admin'], searchable_columns=[MemberType.name])

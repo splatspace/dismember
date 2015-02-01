@@ -1,16 +1,19 @@
 from functools import wraps
+from decimal import Decimal
 
 from dismember.service import db
 from dismember.wtforms_components.fields import remove_empty_password_fields, encrypt_password_fields
 from flask import render_template, request, flash, redirect, url_for
 from flask.ext.principal import Permission, RoleNeed
 from flask.ext.security.decorators import _get_unauthorized_view
+from sqlalchemy import or_, String, Integer, Numeric
 from wtforms import SubmitField
 
 
 class CrudView(object):
     def __init__(self, blueprint, name, item_cls, new_item_form_cls, edit_item_form_cls, item_type_singular='Item',
-                 item_type_plural='Items', list_order_by=None, roles=(), encrypt_password_func=None):
+                 item_type_plural='Items', list_order_by=None, roles=(), encrypt_password_func=None,
+                 searchable_columns=None):
         """
         Creates a simple create/read/update/delete (CRUD) view for a SQLAlchemy model item.
 
@@ -25,6 +28,7 @@ class CrudView(object):
         :param item_type_plural: a string used in the UI when multiple items are described ('users', 'cars', 'oxen')
         :param list_order_by: a SQLAlchemy order_by clause to apply when listing items
         :param roles: an iterable of roles, any of which grants access to the CRUD view; None to require no roles
+        :param searchable_columns: an iterable of the model's columns that are searchable
         """
         super(CrudView, self).__init__()
 
@@ -37,6 +41,7 @@ class CrudView(object):
         self._item_type_singular = item_type_singular
         self._item_type_plural = item_type_plural
         self._encrypt_password_func = encrypt_password_func
+        self._searchable_columns = searchable_columns
 
         # Compute the endpoint names for this item so they can be used inside templates to link
         # to other CRUD endpoints and for redirection.
@@ -90,6 +95,7 @@ class CrudView(object):
         def list_items():
             """Renders a list of all items."""
             q = self._item_cls.query
+            q = self._search(q)
             if self._list_order_by is not None:
                 q = q.order_by(self._list_order_by)
             items = q.all()
@@ -203,3 +209,30 @@ class CrudView(object):
         inside a blueprint).
         """
         return self._endpoints[endpoint_name_key].split('.', 2)[-1]
+
+    def _search(self, q):
+        if 'search' not in request.args or not self._searchable_columns:
+            return q
+
+        searched_value = request.args['search']
+
+        clauses = []
+        for column in self._searchable_columns:
+            expression = self._match(column, searched_value)
+            if expression is not None:
+                clauses.append(expression)
+
+        q = q.filter(or_(*clauses))
+        return q
+
+    def _match(self, column, value):
+        try:
+            if isinstance(column.type, String):
+                return column.ilike('%' + str(value) + '%')
+            elif isinstance(column.type, Integer):
+                return column == int(value)
+            elif isinstance(column.type, Numeric):
+                return column == Decimal(value)
+        except ValueError:
+            pass
+        return None
