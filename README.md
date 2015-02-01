@@ -46,8 +46,11 @@ Activate the virtual environment and start the service:
 
     source ./venv/bin/activate && python service.py
 
-The application will automatically create its database schema when it
-starts.
+The application creates missing database tables and types (enums, etc.) when it
+starts.  Tables and types that already exist are not altered, but the application
+starts anyway.
+
+In the future we should use a schema migration tool.
 
 ## Running as a Service
 
