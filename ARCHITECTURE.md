@@ -29,6 +29,21 @@ Views are organized in the source tree according to the type of service they pro
 Move views live inside blueprints, but a few general views can be found at the top-level
 views directory dismember/views.  Use url_for() to link into views (see the Flask docs).
 
+## Security
+
+Dismember uses Flask-Security, which provides password-protected user authentication
+with persistent login sessions and role-based access control on views.  Users can
+self-register but e-mail confirmation is required before a new account can be used.
+
+Users can be granted full access to the system by assigning the 'admin' role to
+their account.  Other roles can be defined and used as needed in the system.
+
+User passwords are hashed using bcrypt and stored in the relational database.
+
+**You must review the application configuration file and customize it before
+deploying the application for production use.**  If you don't do this, your
+deployment will be insecure.
+
 # Database
 
 Dismember uses a relational database to store all its information.  SQLAlchemy's
