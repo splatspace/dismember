@@ -6,12 +6,26 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-md-12">
-            <h1>{{ item_type_plural }}
-                <div class="btn-group">
-                    <a class="btn btn-default" href="{{ url_for(new_endpoint) }}">New {{ item_type_singular }}</a>
-                </div>
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            <h1>
+                {{ item_type_plural }}
+            <div class="btn-group">
+                <a class="btn btn-primary" href="{{ url_for(new_endpoint) }}">New</a>
+            </div>
             </h1>
+
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 text-right">
+            {% if searchable_column_names %}
+                <div class="input-group">
+                    <input type="text" class="form-control"
+                           placeholder="Search {{ searchable_column_names|join(', ') }}...">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">Search</button>
+                </span>
+                </div>
+            {% endif %}
+
         </div>
     </div>
 

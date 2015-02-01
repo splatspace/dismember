@@ -16,10 +16,17 @@
     <div class="row">
         <div class="col-md-12">
             {% if not paid_periods %}
-                <p>
-                    It doesn't look like you've made any dues payments yet. You'll need to make one soon to keep your
-                    membership active.
-                </p>
+                {% if not user.member_type %}
+                    <p>
+                        You are not currently a member of the organization. Please see a member of the
+                        board of directors to join.
+                    </p>
+                {% else %}
+                    <p>
+                        It doesn't look like you've made any dues payments yet. You'll need to make one soon to keep
+                        your membership active.
+                    </p>
+                {% endif %}
             {% else %}
                 {{ user.dues_payment_history(paid_periods) }}
             {% endif %}

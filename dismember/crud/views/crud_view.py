@@ -57,8 +57,10 @@ class CrudView(object):
 
         # Also useful inside of templates.
         item_types = dict(
+            item_cls=item_cls,
             item_type_singular=item_type_singular,
-            item_type_plural=item_type_plural
+            item_type_plural=item_type_plural,
+            searchable_column_names=[self._pretty_column_name(c) for c in searchable_columns]
         )
 
         self.template_kwargs = dict()
@@ -236,3 +238,6 @@ class CrudView(object):
         except ValueError:
             pass
         return None
+
+    def _pretty_column_name(self, column):
+        return column.name.replace('_', ' ').lower()
