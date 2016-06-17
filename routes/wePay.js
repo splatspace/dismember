@@ -73,6 +73,7 @@ exports.authorize = function (req, res) {
     short_description: req.query.description,
     type: purposeToWePayCheckoutType(req.query.purpose),
     amount: req.query.amount,
+    currency: 'USD',
     fee_payer: req.query.payFee == 'true' ? 'payer' : 'payee',
     callback_uri:  getIpnUri(req),
     auto_capture: true,
