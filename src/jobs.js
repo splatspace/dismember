@@ -14,5 +14,5 @@ exports.schedule = Q.fcall(function() {
   schedule.scheduleJob('0 0,6,12,18 * * *', require('./jobs/cleanWePayCheckouts').run);
 
   // Refresh checkouts we may have missed IPNs for; once a day is enough
-  schedule.scheduleJob('0 0 * * *', require('./jobs/refreshWePayCheckouts').run);
+  //schedule.scheduleJob('0 0 * * *', require('./jobs/refreshWePayCheckouts').run);
 });
