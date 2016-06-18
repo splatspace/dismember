@@ -113,5 +113,5 @@ exports.call = function (accessToken, method, params) {
   };
 
   var url = baseUrl + method;
-  return restler.post(url, { data: params, headers: headers });
+  return restler.postJson(url, params, { headers: headers });
 }

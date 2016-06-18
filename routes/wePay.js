@@ -7,9 +7,9 @@ function purposeToWePayCheckoutType(purpose) {
   switch (purpose) {
     case 'dues':
     case 'security':
-      return 'SERVICE';
+      return 'service';
     case 'donation':
-      return 'DONATION';
+      return 'donation';
     default:
       throw 'Unknown payment purpose ' + purpose;
   }

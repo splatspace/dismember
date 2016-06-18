@@ -49,7 +49,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       validate: {
         isIn: [
-          ['GOODS', 'SERVICE', 'DONATION', 'EVENT', 'PERSONAL']
+          ['goods', 'service', 'donation', 'event', 'personal']
         ]
       }
     },

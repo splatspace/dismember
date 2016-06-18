@@ -10,33 +10,25 @@ var wePayApi = require('./wePayApi');
  * Returns a copy of the specified checkout object with only the properties allowed
  * by the WePay web service.
  */
-function preserveWePayCheckoutProperties(checkout) {
-  return _.pick(checkout,
-    'account_id',
-    'short_description',
-    'type',
-    'amount',
-    'currency',
-    'long_description',
-    'payer_email_message',
-    'payee_email_message',
-    'reference_id',
-    'app_fee',
-    'fee_payer',
-    'redirect_uri',
-    'callback_uri',
-    'fallback_uri',
-    'auto_capture',
-    'require_shipping',
-    'shipping_fee',
-    'charge_tax',
-    'mode',
-    'preapproval_id',
-    'prefill_info',
-    'funding_sources',
-    'payment_method_id',
-    'payment_method_type'
-  );
+function dbToApi(checkout) {
+  return {
+    account_id: checkout['account_id'],
+    short_description: checkout['short_description'],
+    type: checkout['type'],
+    amount: checkout['amount'],
+    currency: checkout['currency'],
+    long_description: checkout['long_description'],
+    reference_id: checkout['reference_id'],
+    fee: {
+      fee_payer: checkout['fee_payer'],
+    },
+    callback_uri: checkout['callback_uri'],
+    auto_capture: checkout['auto_capture'],
+    hosted_checkout: {
+      mode: 'regular',
+      funding_sources: ['credit_card', 'payment_bank']
+    }
+  };
 }
 
 /**
@@ -74,12 +66,12 @@ function createOrUpdatePayment(checkout) {
   // of the payer's service fee, if they paid it).
   var refundedNet = checkout.amount_refunded || 0;
   var chargedBackNet = checkout.amount_charged_back || 0;
-  if (checkout.fee_payer === 'payer') {
+  if (checkout.fee != null && checkout.fee.fee_payer === 'payer') {
     if (refundedNet > 0) {
-      refundedNet = refundedNet - checkout.fee;
+      refundedNet = refundedNet - checkout.fee.processing_fee;
     }
     if (chargedBackNet > 0) {
-      chargedBackNet = chargedBackNet - checkout.fee;
+      chargedBackNet = chargedBackNet - checkout.fee.processing_fee;
     }
   }
 
@@ -158,8 +150,8 @@ exports.submitCheckout = function (checkoutUuid) {
   return db.WePayCheckout.find(checkoutUuid)
     .then(function (checkout) {
       if (checkout) {
-        // Scrub extra DB info from the object we send to WePay
-        var checkoutValues = preserveWePayCheckoutProperties(checkout.values);
+        // Convert the database object to the API object
+        var checkoutValues = dbToApi(checkout.values);
 
         // Submit the checkout to WePay
         return wePayApi.call(config.wePayAccount.accessToken, '/checkout/create', checkoutValues)
@@ -170,7 +162,7 @@ exports.submitCheckout = function (checkoutUuid) {
               .then(function (checkout) {
                 // Promise the confirmation URI
                 return Q.fcall(function () {
-                  return checkoutResponse.checkout_uri;
+                  return checkoutResponse.hosted_checkout.checkout_uri;
                 });
               });
           });
@@ -203,13 +195,13 @@ exports.refreshCheckout = function (checkoutId) {
             var oldState = checkout.state;
 
             // Update the database with new info about the checkout
-            checkout.amount_refunded = checkoutResponse.amount_refunded;
-            checkout.amount_charged_back = checkoutResponse.amount_charged_back;
+            checkout.amount_refunded = checkoutResponse.refund.amount_refunded;
+            checkout.amount_charged_back = checkoutResponse.chargeback.amount_charged_back;
             checkout.state = checkoutResponse.state;
-            checkout.payer_name = checkoutResponse.payer_name;
-            checkout.payer_email = checkoutResponse.payer_email;
+            checkout.payer_name = checkoutResponse.payer.name;
+            checkout.payer_email = checkoutResponse.payer.email;
             checkout.gross = checkoutResponse.gross;
-            checkout.fee = checkoutResponse.fee;
+            checkout.fee = checkoutResponse.fee.processing_fee;
 
             return checkout.updateAttributes(checkout, ['amount_refunded', 'amount_charged_back', 'state', 'payer_name', 'payer_email', 'gross', 'fee'])
               .then(function (checkout) {
