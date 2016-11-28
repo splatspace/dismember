@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "node --max-old-space-size=24 app.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "express": "3.5.1",
     "jade": "*",
-    "pg": "^2.11.1",
+    "pg": "^6.1.0",
     "sequelize": "^1.7.0",
     "node-uuid": "^1.4.1",
     "underscore": "^1.6.0",
